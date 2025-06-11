@@ -61,6 +61,14 @@
     "48": "icons/copilot_icon.png",
     "128": "icons/copilot_icon.png"
   },
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icons/copilot_icon.png",
+      "48": "icons/copilot_icon.png",
+      "128": "icons/copilot_icon.png"
+    }
+  },
   "background": {
     "service_worker": "core/background_emailsearch.js",
     "type": "module"

@@ -1,5 +1,10 @@
 (function() {
-    try {
+    chrome.storage.local.get({ extensionEnabled: true }, ({ extensionEnabled }) => {
+        if (!extensionEnabled) {
+            console.log('[FENNEC] Extension disabled, skipping USPS launcher.');
+            return;
+        }
+        try {
         const params = new URLSearchParams(window.location.search);
         const addr = params.get('fennec_addr');
         if (!addr) return;
@@ -87,4 +92,5 @@
     } catch (e) {
         console.error('[FENNEC USPS] Launcher error:', e);
     }
+    });
 })();
