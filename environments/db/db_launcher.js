@@ -104,7 +104,6 @@
         // 1. COMPANY
         const companyRaw = extractSingle('#vcomp .form-body', [
             {name: 'name', label: 'company name'},
-            {name: 'originalName', label: 'original name'},
             {name: 'state', label: 'state of formation'},
             {name: 'purpose', label: 'purpose'},
             {name: 'street', label: 'street'},
@@ -114,7 +113,6 @@
         ]);
         const company = companyRaw ? {
             name: companyRaw.name,
-            originalName: companyRaw.originalName,
             state: companyRaw.state,
             purpose: companyRaw.purpose,
             address: [
@@ -200,7 +198,6 @@
             <div class="white-box" style="margin-bottom:14px">
                 <div class="box-title">COMPANY</div>
                 <div><strong>Name:</strong> ${company.name || '<span style="color:#aaa">-</span>'}</div>
-                <div><strong>Original Name:</strong> ${company.originalName || '<span style="color:#aaa">-</span>'}</div>
                 <div><strong>State:</strong> ${company.state || '<span style="color:#aaa">-</span>'}</div>
                 <div><strong>Purpose:</strong> ${company.purpose || '<span style="color:#aaa">-</span>'}</div>
                 <div><strong>Address:</strong> ${company.address || '<span style="color:#aaa">-</span>'}</div>
