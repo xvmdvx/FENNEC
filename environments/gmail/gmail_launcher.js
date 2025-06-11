@@ -134,6 +134,7 @@
             document.getElementById('copilot-close').onclick = () => {
                 sidebar.remove();
                 mainPanels.forEach(el => el.style.paddingRight = '');
+                sessionStorage.setItem('copilotSidebarClosed', 'true');
                 console.log("[Copilot] Sidebar cerrado manualmente en Gmail.");
             };
 
@@ -142,6 +143,7 @@
         }
 
         function injectSidebarIfMissing() {
+            if (sessionStorage.getItem('copilotSidebarClosed') === 'true') return;
             if (!document.getElementById('copilot-sidebar')) {
                 console.log("[Copilot] Sidebar no encontrado, inyectando en Gmail...");
                 const mainPanels = applyPaddingToMainPanels();
