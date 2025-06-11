@@ -1,0 +1,59 @@
+{
+  "manifest_version": 3,
+  "name": "Copilot Sidebar",
+  "description": "Barra lateral tipo copilot para Gmail y DB",
+  "version": "1.0.3",
+  "permissions": [
+    "storage",
+    "activeTab",
+    "scripting",
+    "tabs"
+  ],
+  "host_permissions": [
+    "https://mail.google.com/*",
+    "https://db.incfile.com/incfile/order/detail/*"
+  ],
+  "content_scripts": [
+    {
+      "matches": [
+        "https://mail.google.com/*"
+      ],
+      "js": [
+        "environments/gmail/gmail_launcher.js"
+      ],
+      "css": [
+        "styles/sidebar.css"
+      ]
+    },
+    {
+      "matches": [
+        "https://db.incfile.com/incfile/order/detail/*"
+      ],
+      "js": [
+        "environments/db/db_launcher.js"
+      ],
+      "css": [
+        "styles/sidebar.css"
+      ]
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "icons/copilot_icon.png"
+      ],
+      "matches": [
+        "<all_urls>"
+      ]
+    }
+  ],
+  "icons": {
+    "16": "icons/copilot_icon.png",
+    "48": "icons/copilot_icon.png",
+    "128": "icons/copilot_icon.png"
+  },
+  "background": {
+    "service_worker": "core/background_emailsearch.js",
+    "type": "module"
+  }
+}
