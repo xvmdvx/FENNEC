@@ -104,6 +104,7 @@
 #copilot-sidebar .white-box {
     background-color: #fff;
     color: #000 !important;
+    border-radius: 8px;
 }
 
 /* inherit text color for nested elements */
