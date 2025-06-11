@@ -67,7 +67,10 @@
         const isValid = val => val && val.trim() && val.trim().toLowerCase() !== 'n/a';
 
         const parts = [];
-        const line1 = obj.address || obj.street || obj.street1;
+
+        const line1 = isValid(obj.street1) ? obj.street1
+                    : isValid(obj.street) ? obj.street
+                    : obj.address;
         if (isValid(line1)) parts.push(line1.trim());
         if (isValid(obj.street2)) parts.push(obj.street2.trim());
 
