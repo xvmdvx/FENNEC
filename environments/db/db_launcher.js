@@ -295,7 +295,8 @@
             {name: 'cityStateZipCountry', label: 'city, state, zip, country'},
             {name: 'cityStateZip', label: 'city, state, zip'},
             {name: 'country', label: 'country'},
-            {name: 'status', label: 'subscription'}
+            {name: 'status', label: 'subscription'},
+            {name: 'status', label: 'registered agent service'}
         ]);
         const agent = agentRaw ? {
             name: agentRaw.name,
