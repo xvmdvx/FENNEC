@@ -17,6 +17,7 @@ information scraped from the current page.
 ### Gmail
 - Adds a sidebar with **EMAIL SEARCH** and **OPEN ORDER** buttons.
 - Extracts order number, sender email and name from the open email.
+- The order number parser is tolerant to common formats (e.g. with `#`, parentheses or spaces).
 - Displays a small order summary inside the sidebar.
 - Opens Gmail search and the DB order page in new tabs when clicking the buttons.
 - Uses `margin-right` to ensure Gmail navigation controls stay visible.
