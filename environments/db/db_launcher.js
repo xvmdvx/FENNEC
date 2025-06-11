@@ -74,6 +74,12 @@
         return `<span class="address-wrapper"><a href="#" class="copilot-address" data-address="${esc}">${esc}</a><span class="copilot-usps" data-address="${esc}" title="USPS Lookup"> ✉️</span></span>`;
     }
 
+    function renderCopy(text) {
+        if (!text) return '<span style="color:#aaa">-</span>';
+        const esc = escapeHtml(text);
+        return `<span class="copilot-copy" data-copy="${esc}">${esc}</span>`;
+    }
+
     function buildAddress(obj) {
         if (!obj) return '';
 
@@ -352,10 +358,10 @@
             html += `
             <div class="white-box" style="margin-bottom:10px">
                 <div class="box-title">🏢</div>
-                <div><b>${company.name || '<span style="color:#aaa">-</span>'}</b></div>
+                <div><b>${renderCopy(company.name)}</b></div>
                 <div>${company.state || '<span style="color:#aaa">-</span>'}</div>
                 <div>${company.status || '<span style="color:#aaa">-</span>'}</div>
-                <div>${company.purpose || '<span style="color:#aaa">-</span>'}</div>
+                <div>${renderCopy(company.purpose)}</div>
                 <div>${renderAddress(company.address)}</div>
             </div>`;
         }
@@ -364,7 +370,7 @@
             html += `
             <div class="white-box" style="margin-bottom:10px">
                 <div class="box-title">🕵️</div>
-                <div><b>${agent.name || '<span style="color:#aaa">-</span>'}</b></div>
+                <div><b>${renderCopy(agent.name)}</b></div>
                 <div>${renderAddress(agent.address)}</div>
                 <div>${agent.status || '<span style="color:#aaa">-</span>'}</div>
             </div>`;
@@ -376,10 +382,9 @@
             <div class="white-box" style="margin-bottom:10px">
                 <div class="box-title">👥 ${directorsTitle}</div>
                 ${directors.map(d => `
-                    <div><b>${d.name || '<span style="color:#aaa">-</span>'}</b></div>
+                    <div><b>${renderCopy(d.name)}</b></div>
                     <div>${renderAddress(d.address)}</div>
-                    <hr style="border:none; border-top:1px solid #eee; margin:6px 0"/>
-                `).join('')}
+                `).join('<hr style="border:none; border-top:1px solid #eee; margin:6px 0"/>')}
             </div>`;
         }
         // SHAREHOLDERS
@@ -388,11 +393,10 @@
             <div class="white-box" style="margin-bottom:10px">
                 <div class="box-title">💰 SHAREHOLDERS</div>
                 ${shareholders.map(s => `
-                    <div><b>${s.name || '<span style="color:#aaa">-</span>'}</b></div>
+                    <div><b>${renderCopy(s.name)}</b></div>
                     <div>${renderAddress(s.address)}</div>
-                    <div>${s.shares || '<span style="color:#aaa">-</span>'}</div>
-                    <hr style="border:none; border-top:1px solid #eee; margin:6px 0"/>
-                `).join('')}
+                    <div>${renderCopy(s.shares)}</div>
+                `).join('<hr style="border:none; border-top:1px solid #eee; margin:6px 0"/>')}
             </div>`;
         }
         // OFFICERS
@@ -401,11 +405,10 @@
             <div class="white-box" style="margin-bottom:10px">
                 <div class="box-title">👮 OFFICERS</div>
                 ${officers.map(o => `
-                    <div><b>${o.name || '<span style="color:#aaa">-</span>'}</b></div>
+                    <div><b>${renderCopy(o.name)}</b></div>
                     <div>${renderAddress(o.address)}</div>
-                    <div>${o.position || '<span style="color:#aaa">-</span>'}</div>
-                    <hr style="border:none; border-top:1px solid #eee; margin:6px 0"/>
-                `).join('')}
+                    <div>${renderCopy(o.position)}</div>
+                `).join('<hr style="border:none; border-top:1px solid #eee; margin:6px 0"/>')}
             </div>`;
         }
 
@@ -432,6 +435,13 @@
                     if (!addr) return;
                     const url = 'https://tools.usps.com/zip-code-lookup.htm?byaddress&fennec_addr=' + encodeURIComponent(addr);
                     window.open(url, '_blank');
+                });
+            });
+            body.querySelectorAll('.copilot-copy').forEach(el => {
+                el.addEventListener('click', e => {
+                    const text = el.dataset.copy;
+                    if (!text) return;
+                    navigator.clipboard.writeText(text).catch(err => console.warn('[Copilot] Clipboard', err));
                 });
             });
         }
