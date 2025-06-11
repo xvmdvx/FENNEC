@@ -98,6 +98,47 @@
         return rows[0] || null;
     }
 
+    // Extrae miembros (o directores) agrupando por contenedores m-b-10
+    function extractMembers(sectionSel, fields) {
+        const root = document.querySelector(sectionSel);
+        if (!root) return [];
+        const blocks = Array.from(root.querySelectorAll('.row.m-b-10'));
+        if (!blocks.length) return extractRows(sectionSel, fields);
+        return blocks.map(block => {
+            const obj = {};
+            const rows = Array.from(block.querySelectorAll('.row'));
+            rows.forEach(row => {
+                fields.forEach(field => {
+                    let label = Array.from(row.querySelectorAll('label')).find(l =>
+                        l.innerText.trim().toLowerCase().includes(field.label.toLowerCase())
+                    );
+                    if (label) {
+                        let valDiv = label.nextElementSibling;
+                        const parent = label.closest('div');
+                        if ((!valDiv || !valDiv.innerText.trim()) && parent) {
+                            if (parent.nextElementSibling && parent.nextElementSibling.innerText.trim()) {
+                                valDiv = parent.nextElementSibling;
+                            } else {
+                                const siblings = Array.from(parent.parentElement.children);
+                                const idx = siblings.indexOf(parent);
+                                for (let i = idx + 1; i < siblings.length; i++) {
+                                    if (siblings[i].innerText.trim()) {
+                                        valDiv = siblings[i];
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                        if (valDiv) {
+                            obj[field.name] = valDiv.innerText.trim();
+                        }
+                    }
+                });
+            });
+            return Object.values(obj).some(x => x) ? obj : null;
+        }).filter(Boolean);
+    }
+
     // Obtiene el estatus de subscripción del Registered Agent desde la pestaña
     // de suscripciones. Busca la fila correspondiente y retorna el valor de la
     // columna de estatus (p.ej. "Active" o "Inactive").
@@ -150,8 +191,13 @@
             agent.status = agentSub;
         }
 
+        // Detectar tipo de entidad para nombrar apropiadamente
+        const entTypeEl = document.getElementById('entityType');
+        const entityType = entTypeEl ? entTypeEl.innerText.trim().toLowerCase() : '';
+        const isLLC = entityType.includes('llc');
+
         // 3. DIRECTORS/MEMBERS
-        const directorsRaw = extractRows('#vmembers .form-body', [
+        const directorsRaw = extractMembers('#vmembers .form-body', [
             {name: 'name', label: 'name'},
             {name: 'address', label: 'address'},
             {name: 'street', label: 'street'},
@@ -228,11 +274,12 @@
                 <div><strong>Subscription:</strong> ${agent.status || '<span style="color:#aaa">-</span>'}</div>
             </div>`;
         }
-        // DIRECTORS
+        // DIRECTORS / MEMBERS
         if (directors.length) {
+            const directorsTitle = isLLC ? 'MEMBERS' : 'DIRECTORS';
             html += `
             <div class="white-box" style="margin-bottom:14px">
-                <div class="box-title">👥 DIRECTORS</div>
+                <div class="box-title">👥 ${directorsTitle}</div>
                 ${directors.map(d => `
                     <div><strong>Name:</strong> ${d.name || '<span style="color:#aaa">-</span>'}</div>
                     <div><strong>Address:</strong> ${renderAddress(d.address)}</div>
