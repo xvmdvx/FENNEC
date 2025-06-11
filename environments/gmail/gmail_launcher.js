@@ -1,4 +1,9 @@
 (function persistentSidebar() {
+    chrome.runtime.onMessage.addListener((msg) => {
+        if (msg.action === 'fennecToggle') {
+            window.location.reload();
+        }
+    });
     chrome.storage.local.get({ extensionEnabled: true }, ({ extensionEnabled }) => {
         if (!extensionEnabled) {
             console.log('[FENNEC] Extension disabled, skipping Gmail launcher.');
