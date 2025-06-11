@@ -409,11 +409,14 @@
             html += `
             <div class="white-box" style="margin-bottom:10px">
                 <div class="box-title">👮</div>
-                ${officers.map(o => `
-                    <div><b>${renderCopy(o.name)}</b></div>
-                    ${o.address ? `<div>${renderAddress(o.address)}</div>` : ''}
-                    <div>${renderCopy(o.position)}</div>
-                `).join('<hr style="border:none; border-top:1px solid #eee; margin:6px 0"/>')}
+                ${officers.map(o => {
+                    const addrLine = o.address && o.address !== '-' ? `<div>${renderAddress(o.address)}</div>` : '';
+                    return `
+                        <div><b>${renderCopy(o.name)}</b></div>
+                        ${addrLine}
+                        <div>${renderCopy(o.position)}</div>
+                    `;
+                }).join('<hr style="border:none; border-top:1px solid #eee; margin:6px 0"/>')}
             </div>`;
         }
 
