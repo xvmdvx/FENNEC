@@ -125,7 +125,7 @@
                 navigator.clipboard.writeText(context.email).catch(err => console.error("[FENNEC] Clipboard error:", err));
             }
 
-            chrome.runtime.sendMessage({ action: "openTabs", urls });
+            chrome.runtime.sendMessage({ action: "replaceTabs", urls });
         }
 
         function injectSidebar(mainPanels) {
@@ -226,7 +226,7 @@
 
                     const orderId = match[0];
                     const url = `https://db.incfile.com/incfile/order/detail/${orderId}`;
-                    window.open(url, "_blank");
+                    chrome.runtime.sendMessage({ action: "replaceTabs", urls: [url] });
                 } catch (error) {
                     console.error("Error al intentar abrir la orden:", error);
                     alert("Ocurrió un error al intentar abrir la orden.");
