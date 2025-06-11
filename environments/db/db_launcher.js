@@ -70,8 +70,12 @@
 
     function renderAddress(addr) {
         if (!addr) return '<span style="color:#aaa">-</span>';
-        const esc = escapeHtml(addr);
-        return `<span class="address-wrapper"><a href="#" class="copilot-address" data-address="${esc}">${esc}</a><span class="copilot-usps" data-address="${esc}" title="USPS Lookup"> ✉️</span></span>`;
+        const parts = addr.split(/,\s*/);
+        const first = parts.shift();
+        const display = parts.length ? `${escapeHtml(first)}<br>${escapeHtml(parts.join(', '))}`
+                                      : escapeHtml(first);
+        const escFull = escapeHtml(addr);
+        return `<span class="address-wrapper"><a href="#" class="copilot-address" data-address="${escFull}">${display}</a><span class="copilot-usps" data-address="${escFull}" title="USPS Lookup"> ✉️</span></span>`;
     }
 
     function renderCopy(text) {
@@ -377,10 +381,9 @@
         }
         // DIRECTORS / MEMBERS
         if (directors.length) {
-            const directorsTitle = isLLC ? 'MEMBERS' : 'DIRECTORS';
             html += `
             <div class="white-box" style="margin-bottom:10px">
-                <div class="box-title">👥 ${directorsTitle}</div>
+                <div class="box-title">👥</div>
                 ${directors.map(d => `
                     <div><b>${renderCopy(d.name)}</b></div>
                     <div>${renderAddress(d.address)}</div>
@@ -391,7 +394,7 @@
         if (shareholders.length) {
             html += `
             <div class="white-box" style="margin-bottom:10px">
-                <div class="box-title">💰 SHAREHOLDERS</div>
+                <div class="box-title">💰</div>
                 ${shareholders.map(s => `
                     <div><b>${renderCopy(s.name)}</b></div>
                     <div>${renderAddress(s.address)}</div>
