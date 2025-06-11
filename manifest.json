@@ -11,7 +11,8 @@
   ],
   "host_permissions": [
     "https://mail.google.com/*",
-    "https://db.incfile.com/incfile/order/detail/*"
+    "https://db.incfile.com/incfile/order/detail/*",
+    "https://tools.usps.com/*"
   ],
   "content_scripts": [
     {
@@ -34,6 +35,14 @@
       ],
       "css": [
         "styles/sidebar.css"
+      ]
+    },
+    {
+      "matches": [
+        "https://tools.usps.com/zip-code-lookup.htm*"
+      ],
+      "js": [
+        "environments/usps/usps_launcher.js"
       ]
     }
   ],
