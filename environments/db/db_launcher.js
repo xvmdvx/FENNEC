@@ -43,8 +43,11 @@
     function extractRows(sectionSel, fields) {
         const root = document.querySelector(sectionSel);
         if (!root) return [];
-        const rows = Array.from(root.querySelectorAll('.row'));
-        return rows.map(row => {
+        let groups = Array.from(root.children).filter(el => el.classList.contains('row'));
+        if (!groups.length) {
+            groups = Array.from(root.querySelectorAll('.row'));
+        }
+        return groups.map(row => {
             let obj = {};
             fields.forEach(field => {
                 let label = Array.from(row.querySelectorAll('label')).find(l =>
@@ -85,41 +88,102 @@
 
     function extractAndShowData() {
         // 1. COMPANY
-        const company = extractSingle('#vcomp .form-body', [
+        const companyRaw = extractSingle('#vcomp .form-body', [
             {name: 'name', label: 'company name'},
             {name: 'originalName', label: 'original name'},
             {name: 'state', label: 'state of formation'},
             {name: 'purpose', label: 'purpose'},
+            {name: 'street', label: 'street'},
+            {name: 'street1', label: 'street 1'},
+            {name: 'cityStateZip', label: 'city, state, zip'},
             {name: 'address', label: 'address'}
         ]);
+        const company = companyRaw ? {
+            name: companyRaw.name,
+            originalName: companyRaw.originalName,
+            state: companyRaw.state,
+            purpose: companyRaw.purpose,
+            address: [
+                companyRaw.address || companyRaw.street || companyRaw.street1,
+                companyRaw.cityStateZip
+            ].filter(Boolean).join(', ')
+        } : null;
 
         // 2. AGENT
-        const agent = extractSingle('#vagent .form-body', [
+        const agentRaw = extractSingle('#vagent .form-body', [
             {name: 'name', label: 'name'},
             {name: 'address', label: 'address'},
+            {name: 'street', label: 'street'},
+            {name: 'street1', label: 'street 1'},
+            {name: 'cityStateZip', label: 'city, state, zip'},
             {name: 'status', label: 'subscription'}
         ]);
+        const agent = agentRaw ? {
+            name: agentRaw.name,
+            address: [
+                agentRaw.address || agentRaw.street || agentRaw.street1,
+                agentRaw.cityStateZip
+            ].filter(Boolean).join(', '),
+            status: agentRaw.status
+        } : null;
 
         // 3. DIRECTORS/MEMBERS
-        const directors = extractRows('#vmembers .form-body', [
+        const directorsTitleEl = document.querySelector('#vmembers .box-title');
+        const directorsLabel = directorsTitleEl && /member/i.test(directorsTitleEl.innerText)
+            ? 'MEMBERS'
+            : 'DIRECTORS';
+        const directorsRaw = extractRows('#vmembers .form-body', [
             {name: 'name', label: 'name'},
             {name: 'address', label: 'address'},
+            {name: 'street', label: 'street'},
+            {name: 'street1', label: 'street 1'},
+            {name: 'cityStateZip', label: 'city, state, zip'},
             {name: 'position', label: 'position'}
         ]);
+        const directors = directorsRaw.map(d => ({
+            name: d.name,
+            address: [
+                d.address || d.street || d.street1,
+                d.cityStateZip
+            ].filter(Boolean).join(', '),
+            position: d.position
+        }));
 
         // 4. SHAREHOLDERS
-        const shareholders = extractRows('#vshareholders .form-body', [
+        const shareholdersRaw = extractRows('#vshareholders .form-body', [
             {name: 'name', label: 'name'},
             {name: 'address', label: 'address'},
+            {name: 'street', label: 'street'},
+            {name: 'street1', label: 'street 1'},
+            {name: 'cityStateZip', label: 'city, state, zip'},
             {name: 'shares', label: 'share'}
         ]);
+        const shareholders = shareholdersRaw.map(s => ({
+            name: s.name,
+            address: [
+                s.address || s.street || s.street1,
+                s.cityStateZip
+            ].filter(Boolean).join(', '),
+            shares: s.shares
+        }));
 
         // 5. OFFICERS
-        const officers = extractRows('#vofficers .form-body', [
+        const officersRaw = extractRows('#vofficers .form-body', [
             {name: 'name', label: 'name'},
             {name: 'address', label: 'address'},
+            {name: 'street', label: 'street'},
+            {name: 'street1', label: 'street 1'},
+            {name: 'cityStateZip', label: 'city, state, zip'},
             {name: 'position', label: 'position'}
         ]);
+        const officers = officersRaw.map(o => ({
+            name: o.name,
+            address: [
+                o.address || o.street || o.street1,
+                o.cityStateZip
+            ].filter(Boolean).join(', '),
+            position: o.position
+        }));
 
         // Render del HTML
         let html = '';
@@ -146,11 +210,11 @@
                 <div><strong>Subscription:</strong> ${agent.status || '<span style="color:#aaa">-</span>'}</div>
             </div>`;
         }
-        // DIRECTORS
+        // DIRECTORS/MEMBERS
         if (directors.length) {
             html += `
             <div class="white-box" style="margin-bottom:14px">
-                <div class="box-title">DIRECTORS</div>
+                <div class="box-title">${directorsLabel}</div>
                 ${directors.map(d => `
                     <div><strong>Name:</strong> ${d.name || '<span style="color:#aaa">-</span>'}</div>
                     <div><strong>Address:</strong> ${d.address || '<span style="color:#aaa">-</span>'}</div>
