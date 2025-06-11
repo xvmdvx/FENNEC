@@ -114,10 +114,42 @@
         }).filter(Boolean);
     }
 
-    // Extrae un solo objeto (como para Company o Agent)
+    // Extrae todos los campos de una sección (Company o Agent) en un solo objeto
     function extractSingle(sectionSel, fields) {
-        let rows = extractRows(sectionSel, fields);
-        return rows[0] || null;
+        const root = document.querySelector(sectionSel);
+        if (!root) return null;
+        const rows = Array.from(root.querySelectorAll('.row'));
+        const obj = {};
+        rows.forEach(row => {
+            fields.forEach(field => {
+                if (obj[field.name]) return;
+                let label = Array.from(row.querySelectorAll('label')).find(l =>
+                    l.innerText.trim().toLowerCase().includes(field.label.toLowerCase())
+                );
+                if (label) {
+                    let valDiv = label.nextElementSibling;
+                    const parent = label.closest('div');
+                    if ((!valDiv || !valDiv.innerText.trim()) && parent) {
+                        if (parent.nextElementSibling && parent.nextElementSibling.innerText.trim()) {
+                            valDiv = parent.nextElementSibling;
+                        } else {
+                            const siblings = Array.from(parent.parentElement.children);
+                            const idx = siblings.indexOf(parent);
+                            for (let i = idx + 1; i < siblings.length; i++) {
+                                if (siblings[i].innerText.trim()) {
+                                    valDiv = siblings[i];
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    if (valDiv) {
+                        obj[field.name] = valDiv.innerText.trim();
+                    }
+                }
+            });
+        });
+        return Object.values(obj).some(v => v) ? obj : null;
     }
 
     // Extrae miembros (o directores) agrupando por contenedores m-b-10
