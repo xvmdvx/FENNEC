@@ -52,6 +52,12 @@
                 );
                 if (label) {
                     let valDiv = label.nextElementSibling;
+                    if (!valDiv || !valDiv.innerText.trim()) {
+                        const parent = label.closest('div');
+                        if (parent && parent.nextElementSibling) {
+                            valDiv = parent.nextElementSibling;
+                        }
+                    }
                     if (valDiv) {
                         obj[field.name] = valDiv.innerText.trim();
                     }
