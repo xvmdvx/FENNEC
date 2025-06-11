@@ -108,11 +108,12 @@
 .order-summary-box {
     background-color: #2e2e2e;
     color: #f1f1f1;
-    padding: 12px;
+    padding: 8px;
     margin-top: 12px;
     border-radius: 8px;
     font-size: 13px;
     line-height: 1.4em;
+    text-align: center;
 }
 
 /* Ensure DB sidebar sections remain readable */
@@ -122,6 +123,8 @@
     border-radius: 8px;
     font-size: 12px;
     margin-bottom: 10px;
+    padding: 8px;
+    text-align: center;
 }
 
 #copilot-sidebar .box-title {
@@ -133,4 +136,11 @@
 /* inherit text color for nested elements */
 #copilot-sidebar .white-box * {
     color: inherit !important;
+}
+
+.copilot-copy {
+    cursor: pointer;
+}
+.copilot-copy:hover {
+    text-decoration: underline;
 }

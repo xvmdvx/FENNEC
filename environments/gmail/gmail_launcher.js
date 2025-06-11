@@ -78,9 +78,10 @@
         function fillOrderSummaryBox(context) {
             const summaryBox = document.getElementById('order-summary-content');
             if (!summaryBox) return;
+            const email = context?.email ? context.email.toLowerCase() : "Not found";
             summaryBox.innerHTML = `
                 <div><strong>Order:</strong> ${context?.orderNumber || "Not found"}</div>
-                <div><strong>Email:</strong> ${context?.email || "Not found"}</div>
+                <div><strong>Email:</strong> ${email}</div>
                 <div><strong>Name:</strong> ${context?.name || "Not found"}</div>
             `;
             console.log("[FENNEC] Order Summary rellenado:", context);
