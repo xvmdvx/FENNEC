@@ -54,6 +54,23 @@
         return `<a href="#" class="copilot-address" data-address="${esc}">${esc}</a>`;
     }
 
+    function buildAddress(obj) {
+        if (!obj) return '';
+        const parts = [];
+        const line1 = obj.address || obj.street || obj.street1;
+        if (line1) parts.push(line1);
+        if (obj.street2) parts.push(obj.street2);
+        if (obj.cityStateZipCountry) {
+            parts.push(obj.cityStateZipCountry);
+        } else {
+            if (obj.cityStateZip) parts.push(obj.cityStateZip);
+            if (obj.country && (!obj.cityStateZip || !obj.cityStateZip.includes(obj.country))) {
+                parts.push(obj.country);
+            }
+        }
+        return parts.filter(Boolean).join(', ');
+    }
+
     // Scrapea los .row de una sección dada y devuelve array de objetos campo:valor
     function extractRows(sectionSel, fields) {
         const root = document.querySelector(sectionSel);
@@ -92,10 +109,42 @@
         }).filter(Boolean);
     }
 
-    // Extrae un solo objeto (como para Company o Agent)
+    // Extrae todos los campos de una sección (Company o Agent) en un solo objeto
     function extractSingle(sectionSel, fields) {
-        let rows = extractRows(sectionSel, fields);
-        return rows[0] || null;
+        const root = document.querySelector(sectionSel);
+        if (!root) return null;
+        const rows = Array.from(root.querySelectorAll('.row'));
+        const obj = {};
+        rows.forEach(row => {
+            fields.forEach(field => {
+                if (obj[field.name]) return;
+                let label = Array.from(row.querySelectorAll('label')).find(l =>
+                    l.innerText.trim().toLowerCase().includes(field.label.toLowerCase())
+                );
+                if (label) {
+                    let valDiv = label.nextElementSibling;
+                    const parent = label.closest('div');
+                    if ((!valDiv || !valDiv.innerText.trim()) && parent) {
+                        if (parent.nextElementSibling && parent.nextElementSibling.innerText.trim()) {
+                            valDiv = parent.nextElementSibling;
+                        } else {
+                            const siblings = Array.from(parent.parentElement.children);
+                            const idx = siblings.indexOf(parent);
+                            for (let i = idx + 1; i < siblings.length; i++) {
+                                if (siblings[i].innerText.trim()) {
+                                    valDiv = siblings[i];
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    if (valDiv) {
+                        obj[field.name] = valDiv.innerText.trim();
+                    }
+                }
+            });
+        });
+        return Object.values(obj).some(v => v) ? obj : null;
     }
 
     // Extrae miembros (o directores) agrupando por contenedores m-b-10
@@ -165,7 +214,10 @@
             {name: 'purpose', label: 'purpose'},
             {name: 'street', label: 'street'},
             {name: 'street1', label: 'street 1'},
+            {name: 'street2', label: 'street 2'},
+            {name: 'cityStateZipCountry', label: 'city, state, zip, country'},
             {name: 'cityStateZip', label: 'city, state, zip'},
+            {name: 'country', label: 'country'},
             {name: 'address', label: 'address'}
         ]);
 
@@ -176,18 +228,26 @@
             state: companyRaw.state,
             status: companyRaw.status || headerStatus,
             purpose: companyRaw.purpose,
-            address: [
-                companyRaw.address || companyRaw.street || companyRaw.street1,
-                companyRaw.cityStateZip
-            ].filter(Boolean).join(', ')
+            address: buildAddress(companyRaw)
         } : (headerStatus ? { status: headerStatus } : null);
 
         // 2. AGENT
-        const agent = extractSingle('#vagent .form-body', [
+        const agentRaw = extractSingle('#vagent .form-body', [
             {name: 'name', label: 'name'},
             {name: 'address', label: 'address'},
+            {name: 'street', label: 'street'},
+            {name: 'street1', label: 'street 1'},
+            {name: 'street2', label: 'street 2'},
+            {name: 'cityStateZipCountry', label: 'city, state, zip, country'},
+            {name: 'cityStateZip', label: 'city, state, zip'},
+            {name: 'country', label: 'country'},
             {name: 'status', label: 'subscription'}
-        ]) || {};
+        ]);
+        const agent = agentRaw ? {
+            name: agentRaw.name,
+            status: agentRaw.status,
+            address: buildAddress(agentRaw)
+        } : {};
 
         // Detectar el estatus de suscripción del Registered Agent desde la
         // pestaña de Subscriptions.
@@ -207,15 +267,15 @@
             {name: 'address', label: 'address'},
             {name: 'street', label: 'street'},
             {name: 'street1', label: 'street 1'},
+            {name: 'street2', label: 'street 2'},
+            {name: 'cityStateZipCountry', label: 'city, state, zip, country'},
             {name: 'cityStateZip', label: 'city, state, zip'},
+            {name: 'country', label: 'country'},
             {name: 'position', label: 'position'}
         ]);
         const directors = directorsRaw.map(d => ({
             name: d.name,
-            address: [
-                d.address || d.street || d.street1,
-                d.cityStateZip
-            ].filter(Boolean).join(', '),
+            address: buildAddress(d),
             position: d.position
         }));
 
@@ -225,15 +285,15 @@
             {name: 'address', label: 'address'},
             {name: 'street', label: 'street'},
             {name: 'street1', label: 'street 1'},
+            {name: 'street2', label: 'street 2'},
+            {name: 'cityStateZipCountry', label: 'city, state, zip, country'},
             {name: 'cityStateZip', label: 'city, state, zip'},
+            {name: 'country', label: 'country'},
             {name: 'shares', label: 'share'}
         ]);
         const shareholders = shareholdersRaw.map(s => ({
             name: s.name,
-            address: [
-                s.address || s.street || s.street1,
-                s.cityStateZip
-            ].filter(Boolean).join(', '),
+            address: buildAddress(s),
             shares: s.shares
         }));
 
@@ -243,15 +303,15 @@
             {name: 'address', label: 'address'},
             {name: 'street', label: 'street'},
             {name: 'street1', label: 'street 1'},
+            {name: 'street2', label: 'street 2'},
+            {name: 'cityStateZipCountry', label: 'city, state, zip, country'},
             {name: 'cityStateZip', label: 'city, state, zip'},
+            {name: 'country', label: 'country'},
             {name: 'position', label: 'position'}
         ]);
         const officers = officersRaw.map(o => ({
             name: o.name,
-            address: [
-                o.address || o.street || o.street1,
-                o.cityStateZip
-            ].filter(Boolean).join(', '),
+            address: buildAddress(o),
             position: o.position
         }));
 
