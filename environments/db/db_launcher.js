@@ -120,21 +120,26 @@
         const companyRaw = extractSingle('#vcomp .form-body', [
             {name: 'name', label: 'company name'},
             {name: 'state', label: 'state of formation'},
+            {name: 'status', label: 'state status'},
             {name: 'purpose', label: 'purpose'},
             {name: 'street', label: 'street'},
             {name: 'street1', label: 'street 1'},
             {name: 'cityStateZip', label: 'city, state, zip'},
             {name: 'address', label: 'address'}
         ]);
+
+        const headerStatus = document.querySelector('.btn-status-text')?.innerText?.trim() || null;
+
         const company = companyRaw ? {
             name: companyRaw.name,
             state: companyRaw.state,
+            status: companyRaw.status || headerStatus,
             purpose: companyRaw.purpose,
             address: [
                 companyRaw.address || companyRaw.street || companyRaw.street1,
                 companyRaw.cityStateZip
             ].filter(Boolean).join(', ')
-        } : null;
+        } : (headerStatus ? { status: headerStatus } : null);
 
         // 2. AGENT
         const agent = extractSingle('#vagent .form-body', [
@@ -214,6 +219,7 @@
                 <div class="box-title">🏢 COMPANY</div>
                 <div><strong>Name:</strong> ${company.name || '<span style="color:#aaa">-</span>'}</div>
                 <div><strong>State:</strong> ${company.state || '<span style="color:#aaa">-</span>'}</div>
+                <div><strong>Status:</strong> ${company.status || '<span style="color:#aaa">-</span>'}</div>
                 <div><strong>Purpose:</strong> ${company.purpose || '<span style="color:#aaa">-</span>'}</div>
                 <div><strong>Address:</strong> ${renderAddress(company.address)}</div>
             </div>`;
