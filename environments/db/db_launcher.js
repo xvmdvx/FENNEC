@@ -226,6 +226,22 @@
         }).filter(Boolean);
     }
 
+    // Extrae oficiales listados como "President: Name" dentro de .form-group
+    function extractOfficers(sectionSel) {
+        const root = document.querySelector(sectionSel);
+        if (!root) return [];
+        const groups = Array.from(root.querySelectorAll('.form-group'));
+        return groups.map(g => {
+            const label = g.querySelector('label');
+            const val = g.querySelector('.form-control-static, p');
+            if (!label || !val || !val.innerText.trim()) return null;
+            return {
+                name: val.innerText.trim(),
+                position: label.innerText.replace(/:/g, '').trim()
+            };
+        }).filter(Boolean);
+    }
+
     // Obtiene el estatus de subscripción del Registered Agent desde la pestaña
     // de suscripciones. Busca la fila correspondiente y retorna el valor de la
     // columna de estatus (p.ej. "Active" o "Inactive").
@@ -337,22 +353,7 @@
         }));
 
         // 5. OFFICERS
-        const officersRaw = extractRows('#vofficers .form-body', [
-            {name: 'name', label: 'name'},
-            {name: 'address', label: 'address'},
-            {name: 'street', label: 'street'},
-            {name: 'street1', label: 'street 1'},
-            {name: 'street2', label: 'street 2'},
-            {name: 'cityStateZipCountry', label: 'city, state, zip, country'},
-            {name: 'cityStateZip', label: 'city, state, zip'},
-            {name: 'country', label: 'country'},
-            {name: 'position', label: 'position'}
-        ]);
-        const officers = officersRaw.map(o => ({
-            name: o.name,
-            address: buildAddress(o),
-            position: o.position
-        }));
+        const officers = extractOfficers('#vofficers .form-body');
 
         // Render del HTML
         let html = '';
