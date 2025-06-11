@@ -1,0 +1,11 @@
+# Chrome extension build artifacts
+*.crx
+*.pem
+dist/
+
+# System temporary files
+*.log
+*.tmp
+*.temp
+*~
+*.swp
