@@ -97,6 +97,13 @@
 .copilot-address:hover {
     text-decoration: underline;
 }
+.copilot-usps {
+    cursor: pointer;
+    margin-left: 4px;
+}
+.copilot-usps:hover {
+    text-decoration: underline;
+}
 
 .order-summary-box {
     background-color: #2e2e2e;

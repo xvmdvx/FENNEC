@@ -58,7 +58,7 @@
     function renderAddress(addr) {
         if (!addr) return '<span style="color:#aaa">-</span>';
         const esc = escapeHtml(addr);
-        return `<a href="#" class="copilot-address" data-address="${esc}">${esc}</a>`;
+        return `<span class="address-wrapper"><a href="#" class="copilot-address" data-address="${esc}">${esc}</a><span class="copilot-usps" data-address="${esc}" title="USPS Lookup"> ✉️</span></span>`;
     }
 
     function buildAddress(obj) {
@@ -410,6 +410,15 @@
                     if (!addr) return;
                     navigator.clipboard.writeText(addr).catch(err => console.warn('[Copilot] Clipboard', err));
                     window.open('https://www.google.com/search?q=' + encodeURIComponent(addr), '_blank');
+                });
+            });
+            body.querySelectorAll('.copilot-usps').forEach(el => {
+                el.addEventListener('click', e => {
+                    e.preventDefault();
+                    const addr = el.dataset.address;
+                    if (!addr) return;
+                    const url = 'https://tools.usps.com/zip-code-lookup.htm?byaddress&fennec_addr=' + encodeURIComponent(addr);
+                    window.open(url, '_blank');
                 });
             });
         }
