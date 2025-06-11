@@ -81,9 +81,18 @@
     function renderAddress(addr) {
         if (!addr) return '<span style="color:#aaa">-</span>';
         const parts = addr.split(/,\s*/);
-        const first = parts.shift();
-        const display = parts.length ? `${escapeHtml(first)}<br>${escapeHtml(parts.join(', '))}`
-                                      : escapeHtml(first);
+
+        let firstLine = parts.shift() || '';
+        let secondLine = parts.join(', ');
+
+        if (parts.length > 2) {
+            const extra = parts.shift();
+            firstLine = `${firstLine}, ${extra}`;
+            secondLine = parts.join(', ');
+        }
+
+        const display = secondLine ? `${escapeHtml(firstLine)}<br>${escapeHtml(secondLine)}`
+                                    : escapeHtml(firstLine);
         const escFull = escapeHtml(addr);
         return `<span class="address-wrapper"><a href="#" class="copilot-address" data-address="${escFull}">${display}</a><span class="copilot-usps" data-address="${escFull}" title="USPS Lookup"> ✉️</span></span>`;
     }
