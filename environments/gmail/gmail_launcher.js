@@ -1,3 +1,14 @@
+function updateOrderSummary(context) {
+    const box = document.querySelector(".order-summary-box");
+    if (!box || !context) return;
+    box.innerHTML = `
+        <strong>ORDER SUMMARY</strong><br>
+        ORDER: ${context.orderNumber || "N/A"}<br>
+        EMAIL: ${context.email || "N/A"}<br>
+        NAME: ${context.name || "N/A"}
+    `;
+}
+
 (function persistentSidebar() {
     try {
         const SIDEBAR_WIDTH = 340;
@@ -52,6 +63,7 @@
                 </div>
             `;
             document.body.appendChild(sidebar);
+            updateOrderSummary(extractOrderContextFromEmail());
             console.log("[Copilot] Sidebar INYECTADO en Gmail.");
 
             document.getElementById('copilot-close').onclick = () => {
@@ -140,6 +152,8 @@ function handleEmailSearchClick() {
         alert("No se pudo detectar orden y email del cliente.");
         return;
     }
+
+    updateOrderSummary(context);
 
     // Generar búsqueda con OR
     const queryParts = [];
