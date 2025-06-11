@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "Copilot Sidebar",
+  "name": "FENNEC (Prototype)",
   "description": "Barra lateral tipo copilot para Gmail y DB",
   "version": "1.0.3",
   "permissions": [
@@ -49,7 +49,7 @@
   "web_accessible_resources": [
     {
       "resources": [
-        "icons/copilot_icon.png"
+        "FENNEC ICON.png"
       ],
       "matches": [
         "<all_urls>"
@@ -57,16 +57,16 @@
     }
   ],
   "icons": {
-    "16": "icons/copilot_icon.png",
-    "48": "icons/copilot_icon.png",
-    "128": "icons/copilot_icon.png"
+    "16": "FENNEC ICON.png",
+    "48": "FENNEC ICON.png",
+    "128": "FENNEC ICON.png"
   },
   "action": {
     "default_popup": "popup.html",
     "default_icon": {
-      "16": "icons/copilot_icon.png",
-      "48": "icons/copilot_icon.png",
-      "128": "icons/copilot_icon.png"
+      "16": "FENNEC ICON.png",
+      "48": "FENNEC ICON.png",
+      "128": "FENNEC ICON.png"
     }
   },
   "background": {
