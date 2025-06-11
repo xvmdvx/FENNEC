@@ -287,7 +287,10 @@
         }));
 
         // 4. SHAREHOLDERS
-        const shareholdersRaw = extractRows('#vshareholders .form-body', [
+        // Usamos extractMembers en lugar de extractRows porque cada
+        // accionista se encuentra agrupado dentro de bloques `.row.m-b-10`.
+        // De lo contrario se generaban objetos incompletos y duplicados.
+        const shareholdersRaw = extractMembers('#vshareholders .form-body', [
             {name: 'name', label: 'name'},
             {name: 'address', label: 'address'},
             {name: 'street', label: 'street'},
