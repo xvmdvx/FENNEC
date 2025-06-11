@@ -39,6 +39,21 @@
 
     // ----------- FUNCIONES DE EXTRACCIÓN Y RENDER ------------
 
+    function escapeHtml(text) {
+        return text
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/\"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+    }
+
+    function renderAddress(addr) {
+        if (!addr) return '<span style="color:#aaa">-</span>';
+        const esc = escapeHtml(addr);
+        return `<a href="#" class="copilot-address" data-address="${esc}">${esc}</a>`;
+    }
+
     // Scrapea los .row de una sección dada y devuelve array de objetos campo:valor
     function extractRows(sectionSel, fields) {
         const root = document.querySelector(sectionSel);
@@ -86,11 +101,27 @@
         return rows[0] || null;
     }
 
+    // Obtiene el estatus de subscripción del Registered Agent desde la pestaña
+    // de suscripciones. Busca la fila correspondiente y retorna el valor de la
+    // columna de estatus (p.ej. "Active" o "Inactive").
+    function getAgentSubscriptionStatus() {
+        const rows = document.querySelectorAll('#vsubscriptions .table-list-of-subs tbody tr');
+        for (const row of rows) {
+            const cells = row.querySelectorAll('td');
+            if (cells.length >= 3) {
+                const planName = cells[1].innerText || '';
+                if (/registered agent/i.test(planName)) {
+                    return cells[2].innerText.trim();
+                }
+            }
+        }
+        return null;
+    }
+
     function extractAndShowData() {
         // 1. COMPANY
         const companyRaw = extractSingle('#vcomp .form-body', [
             {name: 'name', label: 'company name'},
-            {name: 'originalName', label: 'original name'},
             {name: 'state', label: 'state of formation'},
             {name: 'purpose', label: 'purpose'},
             {name: 'street', label: 'street'},
@@ -100,7 +131,6 @@
         ]);
         const company = companyRaw ? {
             name: companyRaw.name,
-            originalName: companyRaw.originalName,
             state: companyRaw.state,
             purpose: companyRaw.purpose,
             address: [
@@ -117,21 +147,27 @@
             {name: 'street1', label: 'street 1'},
             {name: 'cityStateZip', label: 'city, state, zip'},
             {name: 'status', label: 'subscription'}
-        ]);
+        ]) || {};
         const agent = agentRaw ? {
             name: agentRaw.name,
             address: [
                 agentRaw.address || agentRaw.street || agentRaw.street1,
                 agentRaw.cityStateZip
-            ].filter(Boolean).join(', '),
+            ].filter(Boolean).join(", "),
             status: agentRaw.status
-        } : null;
+        } : {};
+
+        // Detectar el estatus de suscripción del Registered Agent desde la
+        // pestaña de Subscriptions.
+        const agentSub = getAgentSubscriptionStatus();
+        if (agentSub) {
+            agent.status = agentSub;
+        }
 
         // 3. DIRECTORS/MEMBERS
-        const directorsTitleEl = document.querySelector('#vmembers .box-title');
-        const directorsLabel = directorsTitleEl && /member/i.test(directorsTitleEl.innerText)
-            ? 'MEMBERS'
-            : 'DIRECTORS';
+        const directorsTitleEl = document.querySelector("#vmembers .box-title");
+        const directorsLabel = directorsTitleEl && /member/i.test(directorsTitleEl.innerText) ? "MEMBERS" : "DIRECTORS";
+
         const directorsRaw = extractRows('#vmembers .form-body', [
             {name: 'name', label: 'name'},
             {name: 'address', label: 'address'},
@@ -192,21 +228,20 @@
         if (company) {
             html += `
             <div class="white-box" style="margin-bottom:14px">
-                <div class="box-title">COMPANY</div>
+                <div class="box-title">🏢 COMPANY</div>
                 <div><strong>Name:</strong> ${company.name || '<span style="color:#aaa">-</span>'}</div>
-                <div><strong>Original Name:</strong> ${company.originalName || '<span style="color:#aaa">-</span>'}</div>
                 <div><strong>State:</strong> ${company.state || '<span style="color:#aaa">-</span>'}</div>
                 <div><strong>Purpose:</strong> ${company.purpose || '<span style="color:#aaa">-</span>'}</div>
-                <div><strong>Address:</strong> ${company.address || '<span style="color:#aaa">-</span>'}</div>
+                <div><strong>Address:</strong> ${renderAddress(company.address)}</div>
             </div>`;
         }
         // AGENT
-        if (agent) {
+        if (agent && Object.values(agent).some(v => v)) {
             html += `
             <div class="white-box" style="margin-bottom:14px">
-                <div class="box-title">AGENT</div>
+                <div class="box-title">🕵️ AGENT</div>
                 <div><strong>Name:</strong> ${agent.name || '<span style="color:#aaa">-</span>'}</div>
-                <div><strong>Address:</strong> ${agent.address || '<span style="color:#aaa">-</span>'}</div>
+                <div><strong>Address:</strong> ${renderAddress(agent.address)}</div>
                 <div><strong>Subscription:</strong> ${agent.status || '<span style="color:#aaa">-</span>'}</div>
             </div>`;
         }
@@ -214,10 +249,10 @@
         if (directors.length) {
             html += `
             <div class="white-box" style="margin-bottom:14px">
-                <div class="box-title">${directorsLabel}</div>
+<div class="box-title">${directorsLabel}</div>
                 ${directors.map(d => `
                     <div><strong>Name:</strong> ${d.name || '<span style="color:#aaa">-</span>'}</div>
-                    <div><strong>Address:</strong> ${d.address || '<span style="color:#aaa">-</span>'}</div>
+                    <div><strong>Address:</strong> ${renderAddress(d.address)}</div>
                     <div><strong>Position:</strong> ${d.position || '<span style="color:#aaa">-</span>'}</div>
                     <hr style="border:none; border-top:1px solid #eee; margin:6px 0"/>
                 `).join('')}
@@ -227,10 +262,10 @@
         if (shareholders.length) {
             html += `
             <div class="white-box" style="margin-bottom:14px">
-                <div class="box-title">SHAREHOLDERS</div>
+                <div class="box-title">💰 SHAREHOLDERS</div>
                 ${shareholders.map(s => `
                     <div><strong>Name:</strong> ${s.name || '<span style="color:#aaa">-</span>'}</div>
-                    <div><strong>Address:</strong> ${s.address || '<span style="color:#aaa">-</span>'}</div>
+                    <div><strong>Address:</strong> ${renderAddress(s.address)}</div>
                     <div><strong>Shares:</strong> ${s.shares || '<span style="color:#aaa">-</span>'}</div>
                     <hr style="border:none; border-top:1px solid #eee; margin:6px 0"/>
                 `).join('')}
@@ -240,10 +275,10 @@
         if (officers.length) {
             html += `
             <div class="white-box" style="margin-bottom:14px">
-                <div class="box-title">OFFICERS</div>
+                <div class="box-title">👮 OFFICERS</div>
                 ${officers.map(o => `
                     <div><strong>Name:</strong> ${o.name || '<span style="color:#aaa">-</span>'}</div>
-                    <div><strong>Address:</strong> ${o.address || '<span style="color:#aaa">-</span>'}</div>
+                    <div><strong>Address:</strong> ${renderAddress(o.address)}</div>
                     <div><strong>Position:</strong> ${o.position || '<span style="color:#aaa">-</span>'}</div>
                     <hr style="border:none; border-top:1px solid #eee; margin:6px 0"/>
                 `).join('')}
@@ -257,6 +292,15 @@
         const body = document.getElementById('copilot-body-content');
         if (body) {
             body.innerHTML = html;
+            body.querySelectorAll('.copilot-address').forEach(el => {
+                el.addEventListener('click', e => {
+                    e.preventDefault();
+                    const addr = el.dataset.address;
+                    if (!addr) return;
+                    navigator.clipboard.writeText(addr).catch(err => console.warn('[Copilot] Clipboard', err));
+                    window.open('https://www.google.com/search?q=' + encodeURIComponent(addr), '_blank');
+                });
+            });
         }
     }
 })();
