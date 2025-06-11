@@ -83,6 +83,23 @@
         return rows[0] || null;
     }
 
+    // Obtiene el estatus de subscripción del Registered Agent desde la pestaña
+    // de suscripciones. Busca la fila correspondiente y retorna el valor de la
+    // columna de estatus (p.ej. "Active" o "Inactive").
+    function getAgentSubscriptionStatus() {
+        const rows = document.querySelectorAll('#vsubscriptions .table-list-of-subs tbody tr');
+        for (const row of rows) {
+            const cells = row.querySelectorAll('td');
+            if (cells.length >= 3) {
+                const planName = cells[1].innerText || '';
+                if (/registered agent/i.test(planName)) {
+                    return cells[2].innerText.trim();
+                }
+            }
+        }
+        return null;
+    }
+
     function extractAndShowData() {
         // 1. COMPANY
         const company = extractSingle('#vcomp .form-body', [
@@ -97,8 +114,18 @@
         const agent = extractSingle('#vagent .form-body', [
             {name: 'name', label: 'name'},
             {name: 'address', label: 'address'},
-            {name: 'status', label: 'subscription'}
-        ]);
+            // El campo de status se muestra bajo la etiqueta "Registered Agent Service"
+            {name: 'status', label: 'registered agent service'}
+        ]) || {};
+
+        // Si no se obtuvo el status desde la sección Agent, consultarlo
+        // en la pestaña de Subscriptions como respaldo.
+        if (!agent.status) {
+            const agentSub = getAgentSubscriptionStatus();
+            if (agentSub) {
+                agent.status = agentSub;
+            }
+        }
 
         // 3. DIRECTORS/MEMBERS
         const directors = extractRows('#vmembers .form-body', [
@@ -137,7 +164,7 @@
             </div>`;
         }
         // AGENT
-        if (agent) {
+        if (agent && Object.values(agent).some(v => v)) {
             html += `
             <div class="white-box" style="margin-bottom:14px">
                 <div class="box-title">AGENT</div>
