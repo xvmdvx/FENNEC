@@ -138,8 +138,8 @@
             sidebar.id = 'copilot-sidebar';
             sidebar.innerHTML = `
                 <div class="copilot-header">
-                    <img src="${chrome.runtime.getURL('icons/copilot_icon.png')}" class="copilot-icon" alt="Copilot" />
-                    <span>FENNEC</span>
+                    <img src="${chrome.runtime.getURL('FENNEC ICON.png')}" class="copilot-icon" alt="FENNEC (Prototype)" />
+                    <span>FENNEC (Prototype)</span>
                     <button id="copilot-close">✕</button>
                 </div>
                 <div class="copilot-body">

@@ -1,4 +1,4 @@
-# FENNEC
+# FENNEC (Prototype)
 
 FENNEC is a small Chrome extension that injects a "copilot" style sidebar into
 Gmail and the internal DB interface. It helps open related tabs and shows order
