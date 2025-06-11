@@ -67,8 +67,10 @@
         const isValid = val => val && val.trim() && val.trim().toLowerCase() !== 'n/a';
 
         const parts = [];
-        const line1 = obj.address || obj.street || obj.street1;
-        if (isValid(line1)) parts.push(line1.trim());
+        const line1Candidates = [obj.address, obj.street, obj.street1];
+        for (const cand of line1Candidates) {
+            if (isValid(cand)) { parts.push(cand.trim()); break; }
+        }
         if (isValid(obj.street2)) parts.push(obj.street2.trim());
 
         if (obj.cityStateZipCountry && isValid(obj.cityStateZipCountry)) {
