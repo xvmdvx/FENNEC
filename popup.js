@@ -8,7 +8,27 @@ function loadState() {
 }
 
 function saveState() {
-  chrome.storage.local.set({ extensionEnabled: toggle.checked });
+  chrome.storage.local.set({ extensionEnabled: toggle.checked }, () => {
+    const urls = [
+      'https://mail.google.com/*',
+      'https://db.incfile.com/incfile/order/detail/*',
+      'https://tools.usps.com/*'
+    ];
+
+    chrome.tabs.query({ url: urls }, tabs => {
+      tabs.forEach(tab => {
+        chrome.tabs.sendMessage(
+          tab.id,
+          { action: 'fennecToggle', enabled: toggle.checked },
+          () => {
+            if (chrome.runtime.lastError) {
+              chrome.tabs.reload(tab.id);
+            }
+          }
+        );
+      });
+    });
+  });
 }
 
 document.addEventListener('DOMContentLoaded', () => {
