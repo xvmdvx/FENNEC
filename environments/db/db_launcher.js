@@ -1,6 +1,6 @@
 (function main() {
     try {
-        setTimeout(() => {
+        function initSidebar() {
             if (!document.getElementById('copilot-sidebar')) {
                 console.log("[Copilot] Sidebar no encontrado, inyectando en DB...");
 
@@ -31,8 +31,13 @@
                     extractAndShowData();
                 })();
             }
-        }, 400);
-        console.log("[Copilot] Timeout de chequeo de sidebar lanzado (DB).");
+        }
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initSidebar);
+        } else {
+            initSidebar();
+        }
     } catch (e) {
         console.error("[Copilot] ERROR en DB Launcher:", e);
     }
