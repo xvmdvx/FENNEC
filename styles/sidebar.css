@@ -118,7 +118,8 @@
 
 /* Ensure DB sidebar sections remain readable */
 #copilot-sidebar .white-box {
-    background-color: #dcdcdc;
+    /* Slightly darker background for readability */
+    background-color: #c6c6c6;
     color: #000 !important;
     border-radius: 8px;
     font-size: 12px;
