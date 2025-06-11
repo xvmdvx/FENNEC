@@ -23,7 +23,14 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if (message.action === "replaceTabs" && Array.isArray(message.urls) && sender.tab) {
         console.log("[Copilot] Reemplazando pestañas en la ventana:", message.urls);
         chrome.tabs.query({ windowId: sender.tab.windowId }, (tabs) => {
-            const toClose = tabs.filter(t => t.id !== sender.tab.id).map(t => t.id);
+            const isDbOrGmail = (tab) =>
+                tab.url &&
+                (tab.url.includes('mail.google.com') || tab.url.includes('db.incfile.com'));
+
+            const toClose = tabs
+                .filter(t => t.id !== sender.tab.id && isDbOrGmail(t))
+                .map(t => t.id);
+
             if (toClose.length) {
                 chrome.tabs.remove(toClose, () => {
                     if (chrome.runtime.lastError) {
