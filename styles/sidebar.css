@@ -99,3 +99,14 @@
     font-size: 13px;
     line-height: 1.4em;
 }
+
+/* Ensure DB sidebar sections remain readable */
+#copilot-sidebar .white-box {
+    background-color: #fff;
+    color: #000 !important;
+}
+
+/* inherit text color for nested elements */
+#copilot-sidebar .white-box * {
+    color: inherit !important;
+}
