@@ -9,6 +9,10 @@
                 ...Array.from(document.body.querySelectorAll('.Bk'))
             ];
 
+            // También ajustamos la barra superior de Gmail
+            const gmailBar = document.getElementById('gb');
+            if (gmailBar) candidates.push(gmailBar);
+
             const mainPanels = candidates.filter(el => {
                 const rect = el.getBoundingClientRect();
                 return rect.width > (window.innerWidth * 0.6);
