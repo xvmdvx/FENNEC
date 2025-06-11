@@ -1,6 +1,7 @@
 (function main() {
     try {
         function initSidebar() {
+            if (sessionStorage.getItem('copilotSidebarClosed') === 'true') return;
             if (!document.getElementById('copilot-sidebar')) {
                 console.log("[Copilot] Sidebar no encontrado, inyectando en DB...");
 
@@ -26,6 +27,7 @@
                     document.getElementById('copilot-close').onclick = () => {
                         sidebar.remove();
                         document.body.style.marginRight = '';
+                        sessionStorage.setItem('copilotSidebarClosed', 'true');
                         console.log("[Copilot] Sidebar cerrado manualmente en DB.");
                     };
                     extractAndShowData();
