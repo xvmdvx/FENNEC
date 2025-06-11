@@ -63,19 +63,24 @@
 
     function buildAddress(obj) {
         if (!obj) return '';
+
+        const isValid = val => val && val.trim() && val.trim().toLowerCase() !== 'n/a';
+
         const parts = [];
         const line1 = obj.address || obj.street || obj.street1;
-        if (line1) parts.push(line1);
-        if (obj.street2) parts.push(obj.street2);
-        if (obj.cityStateZipCountry) {
-            parts.push(obj.cityStateZipCountry);
+        if (isValid(line1)) parts.push(line1.trim());
+        if (isValid(obj.street2)) parts.push(obj.street2.trim());
+
+        if (obj.cityStateZipCountry && isValid(obj.cityStateZipCountry)) {
+            parts.push(obj.cityStateZipCountry.trim());
         } else {
-            if (obj.cityStateZip) parts.push(obj.cityStateZip);
-            if (obj.country && (!obj.cityStateZip || !obj.cityStateZip.includes(obj.country))) {
-                parts.push(obj.country);
+            if (isValid(obj.cityStateZip)) parts.push(obj.cityStateZip.trim());
+            if (isValid(obj.country) && (!obj.cityStateZip || !obj.cityStateZip.includes(obj.country))) {
+                parts.push(obj.country.trim());
             }
         }
-        return parts.filter(Boolean).join(', ');
+
+        return parts.join(', ');
     }
 
     // Scrapea los .row de una sección dada y devuelve array de objetos campo:valor
@@ -277,13 +282,11 @@
             {name: 'street2', label: 'street 2'},
             {name: 'cityStateZipCountry', label: 'city, state, zip, country'},
             {name: 'cityStateZip', label: 'city, state, zip'},
-            {name: 'country', label: 'country'},
-            {name: 'position', label: 'position'}
+            {name: 'country', label: 'country'}
         ]);
         const directors = directorsRaw.map(d => ({
             name: d.name,
-            address: buildAddress(d),
-            position: d.position
+            address: buildAddress(d)
         }));
 
         // 4. SHAREHOLDERS
@@ -356,7 +359,6 @@
                 ${directors.map(d => `
                     <div><strong>Name:</strong> ${d.name || '<span style="color:#aaa">-</span>'}</div>
                     <div><strong>Address:</strong> ${renderAddress(d.address)}</div>
-                    <div><strong>Position:</strong> ${d.position || '<span style="color:#aaa">-</span>'}</div>
                     <hr style="border:none; border-top:1px solid #eee; margin:6px 0"/>
                 `).join('')}
             </div>`;
