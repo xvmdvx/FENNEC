@@ -350,9 +350,9 @@
         // COMPANY
         if (company) {
             html += `
-            <div class="white-box" style="margin-bottom:14px">
-                <div class="box-title">🏢 COMPANY</div>
-                <div>${company.name || '<span style="color:#aaa">-</span>'}</div>
+            <div class="white-box" style="margin-bottom:10px">
+                <div class="box-title">🏢</div>
+                <div><b>${company.name || '<span style="color:#aaa">-</span>'}</b></div>
                 <div>${company.state || '<span style="color:#aaa">-</span>'}</div>
                 <div>${company.status || '<span style="color:#aaa">-</span>'}</div>
                 <div>${company.purpose || '<span style="color:#aaa">-</span>'}</div>
@@ -362,9 +362,9 @@
         // AGENT
         if (agent && Object.values(agent).some(v => v)) {
             html += `
-            <div class="white-box" style="margin-bottom:14px">
-                <div class="box-title">🕵️ AGENT</div>
-                <div>${agent.name || '<span style="color:#aaa">-</span>'}</div>
+            <div class="white-box" style="margin-bottom:10px">
+                <div class="box-title">🕵️</div>
+                <div><b>${agent.name || '<span style="color:#aaa">-</span>'}</b></div>
                 <div>${renderAddress(agent.address)}</div>
                 <div>${agent.status || '<span style="color:#aaa">-</span>'}</div>
             </div>`;
@@ -373,10 +373,10 @@
         if (directors.length) {
             const directorsTitle = isLLC ? 'MEMBERS' : 'DIRECTORS';
             html += `
-            <div class="white-box" style="margin-bottom:14px">
+            <div class="white-box" style="margin-bottom:10px">
                 <div class="box-title">👥 ${directorsTitle}</div>
                 ${directors.map(d => `
-                    <div>${d.name || '<span style="color:#aaa">-</span>'}</div>
+                    <div><b>${d.name || '<span style="color:#aaa">-</span>'}</b></div>
                     <div>${renderAddress(d.address)}</div>
                     <hr style="border:none; border-top:1px solid #eee; margin:6px 0"/>
                 `).join('')}
@@ -385,10 +385,10 @@
         // SHAREHOLDERS
         if (shareholders.length) {
             html += `
-            <div class="white-box" style="margin-bottom:14px">
+            <div class="white-box" style="margin-bottom:10px">
                 <div class="box-title">💰 SHAREHOLDERS</div>
                 ${shareholders.map(s => `
-                    <div>${s.name || '<span style="color:#aaa">-</span>'}</div>
+                    <div><b>${s.name || '<span style="color:#aaa">-</span>'}</b></div>
                     <div>${renderAddress(s.address)}</div>
                     <div>${s.shares || '<span style="color:#aaa">-</span>'}</div>
                     <hr style="border:none; border-top:1px solid #eee; margin:6px 0"/>
@@ -398,10 +398,10 @@
         // OFFICERS
         if (officers.length) {
             html += `
-            <div class="white-box" style="margin-bottom:14px">
+            <div class="white-box" style="margin-bottom:10px">
                 <div class="box-title">👮 OFFICERS</div>
                 ${officers.map(o => `
-                    <div>${o.name || '<span style="color:#aaa">-</span>'}</div>
+                    <div><b>${o.name || '<span style="color:#aaa">-</span>'}</b></div>
                     <div>${renderAddress(o.address)}</div>
                     <div>${o.position || '<span style="color:#aaa">-</span>'}</div>
                     <hr style="border:none; border-top:1px solid #eee; margin:6px 0"/>
