@@ -339,11 +339,11 @@
             html += `
             <div class="white-box" style="margin-bottom:14px">
                 <div class="box-title">🏢 COMPANY</div>
-                <div><strong>Name:</strong> ${company.name || '<span style="color:#aaa">-</span>'}</div>
-                <div><strong>State:</strong> ${company.state || '<span style="color:#aaa">-</span>'}</div>
-                <div><strong>Status:</strong> ${company.status || '<span style="color:#aaa">-</span>'}</div>
-                <div><strong>Purpose:</strong> ${company.purpose || '<span style="color:#aaa">-</span>'}</div>
-                <div><strong>Address:</strong> ${renderAddress(company.address)}</div>
+                <div>${company.name || '<span style="color:#aaa">-</span>'}</div>
+                <div>${company.state || '<span style="color:#aaa">-</span>'}</div>
+                <div>${company.status || '<span style="color:#aaa">-</span>'}</div>
+                <div>${company.purpose || '<span style="color:#aaa">-</span>'}</div>
+                <div>${renderAddress(company.address)}</div>
             </div>`;
         }
         // AGENT
@@ -351,9 +351,9 @@
             html += `
             <div class="white-box" style="margin-bottom:14px">
                 <div class="box-title">🕵️ AGENT</div>
-                <div><strong>Name:</strong> ${agent.name || '<span style="color:#aaa">-</span>'}</div>
-                <div><strong>Address:</strong> ${renderAddress(agent.address)}</div>
-                <div><strong>Subscription:</strong> ${agent.status || '<span style="color:#aaa">-</span>'}</div>
+                <div>${agent.name || '<span style="color:#aaa">-</span>'}</div>
+                <div>${renderAddress(agent.address)}</div>
+                <div>${agent.status || '<span style="color:#aaa">-</span>'}</div>
             </div>`;
         }
         // DIRECTORS / MEMBERS
@@ -363,8 +363,8 @@
             <div class="white-box" style="margin-bottom:14px">
                 <div class="box-title">👥 ${directorsTitle}</div>
                 ${directors.map(d => `
-                    <div><strong>Name:</strong> ${d.name || '<span style="color:#aaa">-</span>'}</div>
-                    <div><strong>Address:</strong> ${renderAddress(d.address)}</div>
+                    <div>${d.name || '<span style="color:#aaa">-</span>'}</div>
+                    <div>${renderAddress(d.address)}</div>
                     <hr style="border:none; border-top:1px solid #eee; margin:6px 0"/>
                 `).join('')}
             </div>`;
@@ -375,9 +375,9 @@
             <div class="white-box" style="margin-bottom:14px">
                 <div class="box-title">💰 SHAREHOLDERS</div>
                 ${shareholders.map(s => `
-                    <div><strong>Name:</strong> ${s.name || '<span style="color:#aaa">-</span>'}</div>
-                    <div><strong>Address:</strong> ${renderAddress(s.address)}</div>
-                    <div><strong>Shares:</strong> ${s.shares || '<span style="color:#aaa">-</span>'}</div>
+                    <div>${s.name || '<span style="color:#aaa">-</span>'}</div>
+                    <div>${renderAddress(s.address)}</div>
+                    <div>${s.shares || '<span style="color:#aaa">-</span>'}</div>
                     <hr style="border:none; border-top:1px solid #eee; margin:6px 0"/>
                 `).join('')}
             </div>`;
@@ -388,9 +388,9 @@
             <div class="white-box" style="margin-bottom:14px">
                 <div class="box-title">👮 OFFICERS</div>
                 ${officers.map(o => `
-                    <div><strong>Name:</strong> ${o.name || '<span style="color:#aaa">-</span>'}</div>
-                    <div><strong>Address:</strong> ${renderAddress(o.address)}</div>
-                    <div><strong>Position:</strong> ${o.position || '<span style="color:#aaa">-</span>'}</div>
+                    <div>${o.name || '<span style="color:#aaa">-</span>'}</div>
+                    <div>${renderAddress(o.address)}</div>
+                    <div>${o.position || '<span style="color:#aaa">-</span>'}</div>
                     <hr style="border:none; border-top:1px solid #eee; margin:6px 0"/>
                 `).join('')}
             </div>`;
