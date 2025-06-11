@@ -9,6 +9,17 @@
                 document.body.style.transition = 'margin-right 0.2s';
                 document.body.style.marginRight = SIDEBAR_WIDTH + 'px';
 
+                // Extra padding for elements that stick to the right edge
+                if (!document.getElementById('copilot-db-padding')) {
+                    const style = document.createElement('style');
+                    style.id = 'copilot-db-padding';
+                    style.textContent = `
+                        #frm-search-order { margin-right: ${SIDEBAR_WIDTH}px !important; }
+                        .modal-fullscreen { width: calc(100% - ${SIDEBAR_WIDTH}px); }
+                    `;
+                    document.head.appendChild(style);
+                }
+
                 (function injectSidebar() {
                     if (document.getElementById('copilot-sidebar')) return;
                     const sidebar = document.createElement('div');
@@ -27,6 +38,8 @@
                     document.getElementById('copilot-close').onclick = () => {
                         sidebar.remove();
                         document.body.style.marginRight = '';
+                        const style = document.getElementById('copilot-db-padding');
+                        if (style) style.remove();
                         sessionStorage.setItem('copilotSidebarClosed', 'true');
                         console.log("[Copilot] Sidebar cerrado manualmente en DB.");
                     };
