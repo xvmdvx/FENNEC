@@ -52,10 +52,19 @@
                 );
                 if (label) {
                     let valDiv = label.nextElementSibling;
-                    if (!valDiv || !valDiv.innerText.trim()) {
-                        const parent = label.closest('div');
-                        if (parent && parent.nextElementSibling) {
+                    const parent = label.closest('div');
+                    if ((!valDiv || !valDiv.innerText.trim()) && parent) {
+                        if (parent.nextElementSibling && parent.nextElementSibling.innerText.trim()) {
                             valDiv = parent.nextElementSibling;
+                        } else {
+                            const siblings = Array.from(parent.parentElement.children);
+                            const idx = siblings.indexOf(parent);
+                            for (let i = idx + 1; i < siblings.length; i++) {
+                                if (siblings[i].innerText.trim()) {
+                                    valDiv = siblings[i];
+                                    break;
+                                }
+                            }
                         }
                     }
                     if (valDiv) {
