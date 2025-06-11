@@ -408,10 +408,10 @@
         if (officers.length) {
             html += `
             <div class="white-box" style="margin-bottom:10px">
-                <div class="box-title">👮 OFFICERS</div>
+                <div class="box-title">👮</div>
                 ${officers.map(o => `
                     <div><b>${renderCopy(o.name)}</b></div>
-                    <div>${renderAddress(o.address)}</div>
+                    ${o.address ? `<div>${renderAddress(o.address)}</div>` : ''}
                     <div>${renderCopy(o.position)}</div>
                 `).join('<hr style="border:none; border-top:1px solid #eee; margin:6px 0"/>')}
             </div>`;
