@@ -43,14 +43,23 @@
             return mainPanels;
         }
 
+        function extractOrderNumber(text) {
+            if (!text) return null;
+            const match = text.match(/[#(]?\s*(22[\d\s-]{10,})\s*[)]?/);
+            if (!match) return null;
+            const digits = match[1].replace(/\D/g, '');
+            return /^22\d{10}$/.test(digits) ? digits : null;
+        }
+
         function extractOrderContextFromEmail() {
             try {
                 const senderSpan = document.querySelector("h3.iw span[email]");
                 const senderEmail = senderSpan?.getAttribute("email") || null;
                 const senderName = senderSpan?.innerText?.trim() || null;
 
+                const subjectText = document.querySelector('h2.hP')?.innerText || "";
                 const a3sNodes = document.querySelectorAll('.a3s');
-                let fullText = "";
+                let fullText = subjectText;
                 a3sNodes.forEach(n => {
                     if (n.innerText) fullText += "\n" + n.innerText;
                 });
@@ -60,8 +69,7 @@
                     return null;
                 }
 
-                const orderMatch = fullText.match(/\b22\d{10}\b/);
-                const orderNumber = orderMatch ? orderMatch[0] : null;
+                const orderNumber = extractOrderNumber(fullText);
 
                 let fallbackName = null;
                 const helloLine = fullText.match(/Hello\s+([A-Z][a-z]+(?:\s+[A-Z][a-z]+)?)/);
@@ -220,14 +228,13 @@
                         return;
                     }
 
-                    const text = bodyNode.innerText || "";
-                    const match = text.match(/\b22\d{10}\b/);
-                    if (!match) {
+                    const subjectText = document.querySelector('h2.hP')?.innerText || "";
+                    const text = subjectText + "\n" + (bodyNode.innerText || "");
+                    const orderId = extractOrderNumber(text);
+                    if (!orderId) {
                         alert("No se encontró ningún número de orden válido en el correo.");
                         return;
                     }
-
-                    const orderId = match[0];
                     const url = `https://db.incfile.com/incfile/order/detail/${orderId}`;
                     chrome.runtime.sendMessage({ action: "replaceTabs", urls: [url] });
                 } catch (error) {
