@@ -49,7 +49,7 @@
   "web_accessible_resources": [
     {
       "resources": [
-        "FENNEC ICON.png"
+        "fennec_icon.png"
       ],
       "matches": [
         "<all_urls>"
@@ -57,16 +57,16 @@
     }
   ],
   "icons": {
-    "16": "FENNEC ICON.png",
-    "48": "FENNEC ICON.png",
-    "128": "FENNEC ICON.png"
+    "16": "fennec_icon.png",
+    "48": "fennec_icon.png",
+    "128": "fennec_icon.png"
   },
   "action": {
     "default_popup": "popup.html",
     "default_icon": {
-      "16": "FENNEC ICON.png",
-      "48": "FENNEC ICON.png",
-      "128": "FENNEC ICON.png"
+      "16": "fennec_icon.png",
+      "48": "fennec_icon.png",
+      "128": "fennec_icon.png"
     }
   },
   "background": {
