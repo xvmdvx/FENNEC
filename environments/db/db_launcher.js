@@ -1,5 +1,10 @@
 (function main() {
-    try {
+    chrome.storage.local.get({ extensionEnabled: true }, ({ extensionEnabled }) => {
+        if (!extensionEnabled) {
+            console.log('[FENNEC] Extension disabled, skipping DB launcher.');
+            return;
+        }
+        try {
         function initSidebar() {
             if (sessionStorage.getItem('copilotSidebarClosed') === 'true') return;
             if (!document.getElementById('copilot-sidebar')) {
@@ -454,4 +459,5 @@
             });
         }
     }
+    });
 })();

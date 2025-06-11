@@ -1,6 +1,11 @@
 (function persistentSidebar() {
-    try {
-        const SIDEBAR_WIDTH = 340;
+    chrome.storage.local.get({ extensionEnabled: true }, ({ extensionEnabled }) => {
+        if (!extensionEnabled) {
+            console.log('[FENNEC] Extension disabled, skipping Gmail launcher.');
+            return;
+        }
+        try {
+            const SIDEBAR_WIDTH = 340;
 
         function applyPaddingToMainPanels() {
             const candidates = [
@@ -229,4 +234,5 @@
     } catch (e) {
         console.error("[Copilot] ERROR en Gmail Launcher:", e);
     }
+    });
 })();
