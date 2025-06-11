@@ -107,7 +107,10 @@
             }
 
             const queryParts = [];
-            if (context.orderNumber) queryParts.push(context.orderNumber);
+            if (context.orderNumber) {
+                queryParts.push(context.orderNumber);
+                queryParts.push(`subject:"${context.orderNumber}"`);
+            }
             if (context.email) queryParts.push(`"${context.email}"`);
             if (context.name) queryParts.push(`"${context.name}"`);
 
