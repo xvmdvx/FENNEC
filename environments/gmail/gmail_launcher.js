@@ -90,12 +90,11 @@
             const context = extractOrderContextFromEmail();
             fillOrderSummaryBox(context);
 
-            if (!context || !context.orderNumber || !context.email) {
-                alert("No se pudo detectar orden y email del cliente.");
+            if (!context || !context.email) {
+                alert("No se pudo detectar el correo del cliente.");
                 return;
             }
 
-            // Generar búsqueda con OR
             const queryParts = [];
             if (context.orderNumber) queryParts.push(context.orderNumber);
             if (context.email) queryParts.push(`"${context.email}"`);
@@ -103,9 +102,19 @@
 
             const finalQuery = queryParts.join(" OR ");
             const gmailSearchUrl = `https://mail.google.com/mail/u/0/#search/${encodeURIComponent(finalQuery)}`;
-            const dbOrderUrl = `https://db.incfile.com/incfile/order/detail/${context.orderNumber}`;
 
-            chrome.runtime.sendMessage({ action: "openTabs", urls: [gmailSearchUrl, dbOrderUrl] });
+            const urls = [gmailSearchUrl];
+
+            if (context.orderNumber) {
+                const dbOrderUrl = `https://db.incfile.com/incfile/order/detail/${context.orderNumber}`;
+                urls.push(dbOrderUrl);
+            } else {
+                const dbSearchUrl = "https://db.incfile.com/order-tracker/orders/order-search";
+                urls.push(dbSearchUrl);
+                navigator.clipboard.writeText(context.email).catch(err => console.error("[FENNEC] Clipboard error:", err));
+            }
+
+            chrome.runtime.sendMessage({ action: "openTabs", urls });
         }
 
         function injectSidebar(mainPanels) {
