@@ -39,6 +39,21 @@
 
     // ----------- FUNCIONES DE EXTRACCIÓN Y RENDER ------------
 
+    function escapeHtml(text) {
+        return text
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/\"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+    }
+
+    function renderAddress(addr) {
+        if (!addr) return '<span style="color:#aaa">-</span>';
+        const esc = escapeHtml(addr);
+        return `<a href="#" class="copilot-address" data-address="${esc}">${esc}</a>`;
+    }
+
     // Scrapea los .row de una sección dada y devuelve array de objetos campo:valor
     function extractRows(sectionSel, fields) {
         const root = document.querySelector(sectionSel);
@@ -203,7 +218,7 @@
                 <div><strong>Original Name:</strong> ${company.originalName || '<span style="color:#aaa">-</span>'}</div>
                 <div><strong>State:</strong> ${company.state || '<span style="color:#aaa">-</span>'}</div>
                 <div><strong>Purpose:</strong> ${company.purpose || '<span style="color:#aaa">-</span>'}</div>
-                <div><strong>Address:</strong> ${company.address || '<span style="color:#aaa">-</span>'}</div>
+                <div><strong>Address:</strong> ${renderAddress(company.address)}</div>
             </div>`;
         }
         // AGENT
@@ -212,7 +227,7 @@
             <div class="white-box" style="margin-bottom:14px">
                 <div class="box-title">AGENT</div>
                 <div><strong>Name:</strong> ${agent.name || '<span style="color:#aaa">-</span>'}</div>
-                <div><strong>Address:</strong> ${agent.address || '<span style="color:#aaa">-</span>'}</div>
+                <div><strong>Address:</strong> ${renderAddress(agent.address)}</div>
                 <div><strong>Subscription:</strong> ${agent.status || '<span style="color:#aaa">-</span>'}</div>
             </div>`;
         }
@@ -223,7 +238,7 @@
                 <div class="box-title">DIRECTORS</div>
                 ${directors.map(d => `
                     <div><strong>Name:</strong> ${d.name || '<span style="color:#aaa">-</span>'}</div>
-                    <div><strong>Address:</strong> ${d.address || '<span style="color:#aaa">-</span>'}</div>
+                    <div><strong>Address:</strong> ${renderAddress(d.address)}</div>
                     <div><strong>Position:</strong> ${d.position || '<span style="color:#aaa">-</span>'}</div>
                     <hr style="border:none; border-top:1px solid #eee; margin:6px 0"/>
                 `).join('')}
@@ -236,7 +251,7 @@
                 <div class="box-title">SHAREHOLDERS</div>
                 ${shareholders.map(s => `
                     <div><strong>Name:</strong> ${s.name || '<span style="color:#aaa">-</span>'}</div>
-                    <div><strong>Address:</strong> ${s.address || '<span style="color:#aaa">-</span>'}</div>
+                    <div><strong>Address:</strong> ${renderAddress(s.address)}</div>
                     <div><strong>Shares:</strong> ${s.shares || '<span style="color:#aaa">-</span>'}</div>
                     <hr style="border:none; border-top:1px solid #eee; margin:6px 0"/>
                 `).join('')}
@@ -249,7 +264,7 @@
                 <div class="box-title">OFFICERS</div>
                 ${officers.map(o => `
                     <div><strong>Name:</strong> ${o.name || '<span style="color:#aaa">-</span>'}</div>
-                    <div><strong>Address:</strong> ${o.address || '<span style="color:#aaa">-</span>'}</div>
+                    <div><strong>Address:</strong> ${renderAddress(o.address)}</div>
                     <div><strong>Position:</strong> ${o.position || '<span style="color:#aaa">-</span>'}</div>
                     <hr style="border:none; border-top:1px solid #eee; margin:6px 0"/>
                 `).join('')}
@@ -263,6 +278,15 @@
         const body = document.getElementById('copilot-body-content');
         if (body) {
             body.innerHTML = html;
+            body.querySelectorAll('.copilot-address').forEach(el => {
+                el.addEventListener('click', e => {
+                    e.preventDefault();
+                    const addr = el.dataset.address;
+                    if (!addr) return;
+                    navigator.clipboard.writeText(addr).catch(err => console.warn('[Copilot] Clipboard', err));
+                    window.open('https://www.google.com/search?q=' + encodeURIComponent(addr), '_blank');
+                });
+            });
         }
     }
 })();
