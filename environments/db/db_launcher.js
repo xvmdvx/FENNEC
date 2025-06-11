@@ -211,7 +211,7 @@
         if (company) {
             html += `
             <div class="white-box" style="margin-bottom:14px">
-                <div class="box-title">COMPANY</div>
+                <div class="box-title">🏢 COMPANY</div>
                 <div><strong>Name:</strong> ${company.name || '<span style="color:#aaa">-</span>'}</div>
                 <div><strong>State:</strong> ${company.state || '<span style="color:#aaa">-</span>'}</div>
                 <div><strong>Purpose:</strong> ${company.purpose || '<span style="color:#aaa">-</span>'}</div>
@@ -222,7 +222,7 @@
         if (agent && Object.values(agent).some(v => v)) {
             html += `
             <div class="white-box" style="margin-bottom:14px">
-                <div class="box-title">AGENT</div>
+                <div class="box-title">🕵️ AGENT</div>
                 <div><strong>Name:</strong> ${agent.name || '<span style="color:#aaa">-</span>'}</div>
                 <div><strong>Address:</strong> ${renderAddress(agent.address)}</div>
                 <div><strong>Subscription:</strong> ${agent.status || '<span style="color:#aaa">-</span>'}</div>
@@ -232,7 +232,7 @@
         if (directors.length) {
             html += `
             <div class="white-box" style="margin-bottom:14px">
-                <div class="box-title">DIRECTORS</div>
+                <div class="box-title">👥 DIRECTORS</div>
                 ${directors.map(d => `
                     <div><strong>Name:</strong> ${d.name || '<span style="color:#aaa">-</span>'}</div>
                     <div><strong>Address:</strong> ${renderAddress(d.address)}</div>
@@ -245,7 +245,7 @@
         if (shareholders.length) {
             html += `
             <div class="white-box" style="margin-bottom:14px">
-                <div class="box-title">SHAREHOLDERS</div>
+                <div class="box-title">💰 SHAREHOLDERS</div>
                 ${shareholders.map(s => `
                     <div><strong>Name:</strong> ${s.name || '<span style="color:#aaa">-</span>'}</div>
                     <div><strong>Address:</strong> ${renderAddress(s.address)}</div>
@@ -258,7 +258,7 @@
         if (officers.length) {
             html += `
             <div class="white-box" style="margin-bottom:14px">
-                <div class="box-title">OFFICERS</div>
+                <div class="box-title">👮 OFFICERS</div>
                 ${officers.map(o => `
                     <div><strong>Name:</strong> ${o.name || '<span style="color:#aaa">-</span>'}</div>
                     <div><strong>Address:</strong> ${renderAddress(o.address)}</div>
