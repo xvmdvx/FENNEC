@@ -19,6 +19,7 @@ information scraped from the current page.
 - Extracts order number, sender email and name from the open email.
 - Displays a small order summary inside the sidebar.
 - Opens Gmail search and the DB order page in new tabs when clicking the buttons.
+- Uses `margin-right` to ensure Gmail navigation controls stay visible.
  - If you close the sidebar it will remain hidden until the tab is reloaded.
 
 ### DB

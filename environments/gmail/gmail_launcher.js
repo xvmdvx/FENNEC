@@ -20,8 +20,10 @@
             }
 
             mainPanels.forEach((el, i) => {
-                el.style.setProperty("padding-right", SIDEBAR_WIDTH + "px", "important");
-                el.style.setProperty("transition", "padding-right 0.2s", "important");
+                // Usamos margin-right para no desplazar
+                // elementos de paginación fuera de la vista
+                el.style.setProperty("margin-right", SIDEBAR_WIDTH + "px", "important");
+                el.style.setProperty("transition", "margin-right 0.2s", "important");
             });
 
             return mainPanels;
@@ -133,7 +135,8 @@
             // Botón de cierre
             document.getElementById('copilot-close').onclick = () => {
                 sidebar.remove();
-                mainPanels.forEach(el => el.style.paddingRight = '');
+                // Limpiar el margin aplicado a los paneles
+                mainPanels.forEach(el => el.style.marginRight = '');
                 sessionStorage.setItem('copilotSidebarClosed', 'true');
                 console.log("[Copilot] Sidebar cerrado manualmente en Gmail.");
             };
