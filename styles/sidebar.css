@@ -223,3 +223,16 @@
     margin-right: 4px;
     margin-top: 2px;
 }
+.copilot-tag-green {
+    background-color: #2ecc71;
+    color: #fff;
+}
+.copilot-tag-white {
+    background-color: #fff;
+    color: #555;
+    border: 1px solid #ccc;
+}
+.copilot-tag-red {
+    background-color: #8B0000;
+    color: #fff;
+}

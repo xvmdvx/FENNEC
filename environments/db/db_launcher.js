@@ -128,6 +128,14 @@
         return isNaN(parsed) ? null : new Date(parsed);
     }
 
+    function cleanFieldValue(name, text) {
+        if (!text) return text;
+        if (name === 'expiration') {
+            return text.replace(/Update Expiration Date/i, '').trim();
+        }
+        return text.trim();
+    }
+
     function buildAddress(obj) {
         if (!obj) return '';
 
@@ -181,7 +189,7 @@
                         }
                     }
                     if (valDiv) {
-                        obj[field.name] = valDiv.innerText.trim();
+                        obj[field.name] = cleanFieldValue(field.name, valDiv.innerText);
                     }
                 }
             });
@@ -218,7 +226,7 @@
                         }
                     }
                     if (valDiv) {
-                        obj[field.name] = valDiv.innerText.trim();
+                        obj[field.name] = cleanFieldValue(field.name, valDiv.innerText);
                     }
                 }
             });
@@ -257,7 +265,7 @@
                         }
                     }
                     if (valDiv) {
-                        obj[field.name] = valDiv.innerText.trim();
+                        obj[field.name] = cleanFieldValue(field.name, valDiv.innerText);
                     }
                 }
             });
@@ -307,7 +315,7 @@
                             }
                         }
                         if (valDiv) {
-                            obj[field.name] = valDiv.innerText.trim();
+                            obj[field.name] = cleanFieldValue(field.name, valDiv.innerText);
                         }
                     }
                 });
@@ -624,14 +632,24 @@
         if (agent && Object.values(agent).some(v => v)) {
             const expDate = agent.expiration ? parseDate(agent.expiration) : null;
             const expired = expDate && expDate < new Date();
-            const statusText = `${agent.status || ''}${agent.expiration ? ` (${escapeHtml(agent.expiration)})` : ''}`.trim();
-            const statusHtml = statusText ? statusText : '<span style="color:#aaa">-</span>';
+            let status = (agent.status || '').trim();
+            let statusClass = 'copilot-tag';
+            if (/^yes/i.test(status)) {
+                statusClass += ' copilot-tag-green';
+            } else if (/no service/i.test(status)) {
+                statusClass += ' copilot-tag-white';
+            } else if (/resigned|staged for resignatio/i.test(status) || expired) {
+                statusClass += ' copilot-tag-red';
+            }
+            const statusDisplay = status ? `${status}${agent.expiration ? ` (${escapeHtml(agent.expiration)})` : ''}` : '';
+            const statusHtml = statusDisplay ? `<span class="${statusClass}">${escapeHtml(statusDisplay)}</span>`
+                                              : '<span style="color:#aaa">-</span>';
             html += `
             <div class="section-label">AGENT:</div>
             <div class="white-box" style="margin-bottom:10px">
                 <div><b>${renderCopy(agent.name)}</b></div>
                 <div>${renderAddress(agent.address)}</div>
-                <div${expired ? ' class="copilot-expired"' : ''}>${statusHtml}</div>
+                <div>${statusHtml}</div>
             </div>`;
         }
         // DIRECTORS / MEMBERS
