@@ -59,13 +59,28 @@
             return /^[A-Za-z0-9'\-\.\s]+$/.test(cleaned);
         }
 
+        const IGNORED_ADDRESSES = [
+            'BIZEE.COM 17350 STATE HIGHWAY 249, SUITE 220, HOUSTON, TX 77064'
+        ];
+
         function isValidAddress(str) {
             if (!str) return false;
-            const cleaned = str.trim();
+            let cleaned = str.trim()
+                .replace(/\s+/g, ' ')
+                .replace(/\s*,\s*/g, ', ')
+                .replace(/\s*#\s*/g, ' #');
+
+            const normalized = cleaned.toUpperCase();
+            if (IGNORED_ADDRESSES.includes(normalized)) return false;
+
             if (cleaned.length < 5) return false;
             const words = cleaned.split(/\s+/);
             if (words.length < 2) return false;
             if (!/[A-Za-z]/.test(cleaned)) return false;
+
+            const stateZip = /\b[A-Z]{2}\s+\d{5}(?:-\d{4})?\b/;
+            if (!stateZip.test(cleaned)) return false;
+
             if (/\bP\.?O\.?\s+BOX\b/i.test(cleaned)) {
                 return /\b\d{1,}\b/.test(cleaned);
             }
