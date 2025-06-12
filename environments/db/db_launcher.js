@@ -440,13 +440,18 @@
         const officers = extractOfficers('#vofficers .form-body');
 
         // ---------- QUICK SUMMARY -------------
-        const names = [];
-        if (company && company.name) names.push(company.name);
-        if (agent && agent.name) names.push(agent.name);
-        directors.forEach(d => { if (d.name) names.push(d.name); });
-        shareholders.forEach(s => { if (s.name) names.push(s.name); });
-        officers.forEach(o => { if (o.name) names.push(o.name); });
-        const totalEntities = new Set(names.map(n => n.toLowerCase())).size;
+        const roleMap = {};
+        const addRole = (name, role) => {
+            if (!name) return;
+            const key = name.trim().toLowerCase();
+            if (!roleMap[key]) roleMap[key] = { display: name.trim(), roles: new Set() };
+            roleMap[key].roles.add(role);
+        };
+
+        if (agent && agent.name) addRole(agent.name, 'RA');
+        directors.forEach(d => addRole(d.name, isLLC ? 'MEMBER' : 'DIRECTOR'));
+        shareholders.forEach(s => addRole(s.name, 'SHAREHOLDER'));
+        officers.forEach(o => addRole(o.name, 'OFFICER'));
 
         const addrs = [];
         const pushAddr = (label, addr) => { if (addr) addrs.push({ label, addr }); };
@@ -480,7 +485,12 @@
         let html = '';
 
         const summaryParts = [];
-        summaryParts.push(`<div>Total entidades: ${totalEntities}</div>`);
+        const roleEntries = Object.values(roleMap)
+            .map(r => `<div style="margin-left:10px">${renderCopy(r.display)} (${Array.from(r.roles).join(', ')})</div>`);
+        if (roleEntries.length) {
+            summaryParts.push('<div><b>Involved Entities:</b></div>');
+            summaryParts.push(...roleEntries);
+        }
         summaryParts.push(`<div>Domicilios únicos: ${uniqueAddrCount}</div>`);
         if (repeatedAddrs.length) {
             summaryParts.push('<div style="margin-top:4px">Domicilios repetidos:</div>');
