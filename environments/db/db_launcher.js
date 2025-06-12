@@ -642,8 +642,8 @@
             summaryParts.push(...addrEntries);
         }
         summaryParts.push('<div style="height:4px"></div>');
-        const raClass = hasRA ? 'copilot-tag copilot-tag-green' : 'copilot-tag copilot-tag-white';
-        const vaClass = hasVA ? 'copilot-tag copilot-tag-green' : 'copilot-tag copilot-tag-white';
+        const raClass = hasRA ? 'copilot-tag copilot-tag-green' : 'copilot-tag copilot-tag-purple';
+        const vaClass = hasVA ? 'copilot-tag copilot-tag-green' : 'copilot-tag copilot-tag-purple';
         summaryParts.push(`
             <br/>
             <div>
