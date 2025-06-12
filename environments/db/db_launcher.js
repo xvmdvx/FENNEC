@@ -311,19 +311,69 @@
         }).filter(Boolean);
     }
 
-    // Extrae oficiales listados como "President: Name" dentro de .form-group
+    // Extrae oficiales listados en bloques m-b-10. Cada bloque contiene el
+    // puesto (label) y el nombre en la primera fila, seguido de varias filas de
+    // domicilio. Se agrupan las columnas para soportar múltiples oficiales por
+    // fila.
     function extractOfficers(sectionSel) {
         const root = document.querySelector(sectionSel);
         if (!root) return [];
-        const groups = Array.from(root.querySelectorAll('.form-group'));
-        return groups.map(g => {
-            const label = g.querySelector('label');
-            const val = g.querySelector('.form-control-static, p');
-            if (!label || !val || !val.innerText.trim()) return null;
-            return {
-                name: val.innerText.trim(),
-                position: label.innerText.replace(/:/g, '').trim()
-            };
+
+        let blocks = Array.from(root.querySelectorAll('.row.m-b-10'));
+        if (!blocks.length) {
+            // Fallback a la lógica antigua si no existen bloques m-b-10
+            const groups = Array.from(root.querySelectorAll('.form-group'));
+            return groups.map(g => {
+                const label = g.querySelector('label');
+                const val = g.querySelector('.form-control-static, p');
+                if (!label || !val || !val.innerText.trim()) return null;
+                return {
+                    name: val.innerText.trim(),
+                    position: label.innerText.replace(/:/g, '').trim()
+                };
+            }).filter(Boolean);
+        }
+
+        // Separar columnas dentro del bloque para procesar cada oficial por
+        // separado.
+        blocks = [].concat(...blocks.map(b => {
+            const cols = Array.from(b.querySelectorAll('.col-sm-6'))
+                .filter(c => c.parentElement === b);
+            return cols.length > 1 ? cols : [b];
+        }));
+
+        return blocks.map(block => {
+            // Nombre y puesto se encuentran en la primera form-group que no sea
+            // de dirección.
+            let name = null;
+            let position = null;
+            const groups = Array.from(block.querySelectorAll('.form-group'));
+            for (const g of groups) {
+                const label = g.querySelector('label');
+                const val = g.querySelector('.form-control-static, p');
+                if (!label || !val || !val.innerText.trim()) continue;
+                const text = label.innerText.trim().toLowerCase();
+                if (text.includes('street') || text.includes('city') ||
+                    text.includes('zip') || text.includes('address')) {
+                    continue;
+                }
+                name = val.innerText.trim();
+                position = label.innerText.replace(/:/g, '').trim();
+                break;
+            }
+
+            const addrRaw = extractSingleElement(block, [
+                {name: 'street', label: 'street'},
+                {name: 'street1', label: 'street 1'},
+                {name: 'street2', label: 'street 2'},
+                {name: 'cityStateZipCountry', label: 'city, state, zip, country'},
+                {name: 'cityStateZip', label: 'city, state, zip'},
+                {name: 'country', label: 'country'},
+                {name: 'address', label: 'address'}
+            ]);
+
+            const address = buildAddress(addrRaw);
+            return name ? { name, position, address } : null;
         }).filter(Boolean);
     }
 
