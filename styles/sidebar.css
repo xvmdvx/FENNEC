@@ -173,6 +173,12 @@
     color: #8B0000 !important;
 }
 
+#copilot-sidebar .section-label {
+    text-align: left;
+    font-weight: normal;
+    margin: 8px 0 4px 0;
+}
+
 #copilot-sidebar .company-purpose {
     line-height: 1.6em;
     margin-top: 4px;
