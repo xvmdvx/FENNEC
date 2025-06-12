@@ -673,18 +673,14 @@
             const expired = expDate && expDate < new Date();
             let status = (agent.status || '').trim();
             let statusClass = 'copilot-tag';
+            let statusDisplay = '';
             if (/^yes/i.test(status)) {
                 statusClass += ' copilot-tag-green';
-            } else if (/no service/i.test(status)) {
-                statusClass += ' copilot-tag-white';
+                statusDisplay = `Active${agent.expiration ? ` (${escapeHtml(agent.expiration)})` : ''}`;
             } else if (/resigned|staged for resignatio/i.test(status) || expired) {
                 statusClass += ' copilot-tag-red';
-            }
-
-            let statusDisplay = '';
-            if (/no service/i.test(status)) {
-                statusDisplay = 'No Service';
-            } else if (status) {
+                statusDisplay = `Resigned${agent.expiration ? ` (${escapeHtml(agent.expiration)})` : ''}`;
+            } else if (status && !/no service/i.test(status)) {
                 statusDisplay = `${status}${agent.expiration ? ` (${escapeHtml(agent.expiration)})` : ''}`;
             }
             const statusHtml = statusDisplay ? `<span class="${statusClass}">${escapeHtml(statusDisplay)}</span>`
