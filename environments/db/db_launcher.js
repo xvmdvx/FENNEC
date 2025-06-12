@@ -115,7 +115,7 @@
                                     : escapeHtml(firstLine);
         const escFull = escapeHtml(addr);
         const extra = isVA
-            ? `<span class="copilot-tag copilot-tag-green">VA</span>`
+            ? ` <span class="copilot-tag copilot-tag-green">VA</span>`
             : `<span class="copilot-usps" data-address="${escFull}" title="USPS Lookup"> ✉️</span>`;
         return `<span class="address-wrapper"><a href="#" class="copilot-address" data-address="${escFull}">${display}</a>${extra}</span>`;
     }
@@ -654,7 +654,13 @@
             } else if (/resigned|staged for resignatio/i.test(status) || expired) {
                 statusClass += ' copilot-tag-red';
             }
-            const statusDisplay = status ? `${status}${agent.expiration ? ` (${escapeHtml(agent.expiration)})` : ''}` : '';
+
+            let statusDisplay = '';
+            if (/no service/i.test(status)) {
+                statusDisplay = 'No Service';
+            } else if (status) {
+                statusDisplay = `${status}${agent.expiration ? ` (${escapeHtml(agent.expiration)})` : ''}`;
+            }
             const statusHtml = statusDisplay ? `<span class="${statusClass}">${escapeHtml(statusDisplay)}</span>`
                                               : '<span style="color:#aaa">-</span>';
             html += `
