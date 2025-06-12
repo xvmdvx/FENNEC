@@ -68,6 +68,29 @@
             return /[A-Za-z]/.test(cleaned);
         }
 
+        function extractCompanyNames(text) {
+            if (!text) return [];
+            const designators = [
+                'LLC', 'L\\.L\\.C\\.?',
+                'INC', 'INC\\.?', 'CORP', 'CORP\\.?', 'CORPORATION',
+                'COMPANY', 'CO', 'CO\\.?', 'LTD', 'LTD\\.?', 'LIMITED',
+                'LLP', 'L\\.L\\.P\\.?', 'LP', 'L\\.P\\.?',
+                'PLC', 'P\\.L\\.C\\.?', 'PC', 'P\\.C\\.?', 'PA', 'P\\.A\\.?'
+            ];
+            const pattern = `\\b([A-Z][A-Za-z0-9&'\\-]{2,}(?:\\s+[A-Z][A-Za-z0-9&'\\-]{2,})*\\s+(?:${designators.join('|')}))(?![A-Za-z])`;
+            const regex = new RegExp(pattern, 'gi');
+            const results = new Set();
+            let m;
+            while ((m = regex.exec(text)) !== null) {
+                const name = m[1].replace(/\s+/g, ' ').trim();
+                const words = name.split(/\s+/);
+                if (words.length > 1 && words[0].length > 1 && words.length <= 8) {
+                    if (!/^THE$/i.test(words[0])) results.add(name);
+                }
+            }
+            return Array.from(results);
+        }
+
         function escapeHtml(text) {
             return text
                 .replace(/&/g, "&amp;")
@@ -154,6 +177,7 @@
 
                 const orderNumber = extractOrderNumber(fullText);
                 const details = parseOrderDetails(fullText);
+                const companies = extractCompanyNames(fullText);
 
                 let fallbackName = null;
                 const helloLine = fullText.match(/Hello\s+([A-Z][a-z]+(?:\s+[A-Z][a-z]+)?)/);
@@ -170,7 +194,8 @@
                     orderNumber,
                     email: senderEmail,
                     name: finalName,
-                    details
+                    details,
+                    companies
                 };
             } catch (err) {
                 console.warn("[Copilot] Error extrayendo contexto:", err);
@@ -218,6 +243,10 @@
 
             addAddr(details.companyAddress);
             addAddr(details.raAddress);
+
+            if (Array.isArray(context?.companies)) {
+                context.companies.forEach(addName);
+            }
 
             const nameHtml = Array.from(namesSet).map(n => `<div>${renderCopy(n)}</div>`).join('');
             const addrHtml = Array.from(addrSet).map(a => `<div>${renderAddress(a)}</div>`).join('');
