@@ -98,7 +98,7 @@
             .replace(/'/g, "&#039;");
     }
 
-    function renderAddress(addr) {
+    function renderAddress(addr, isVA = false) {
         if (!addr) return '<span style="color:#aaa">-</span>';
         const parts = addr.split(/,\s*/);
 
@@ -114,7 +114,10 @@
         const display = secondLine ? `${escapeHtml(firstLine)}<br>${escapeHtml(secondLine)}`
                                     : escapeHtml(firstLine);
         const escFull = escapeHtml(addr);
-        return `<span class="address-wrapper"><a href="#" class="copilot-address" data-address="${escFull}">${display}</a><span class="copilot-usps" data-address="${escFull}" title="USPS Lookup"> ✉️</span></span>`;
+        const extra = isVA
+            ? `<span class="copilot-tag copilot-tag-green">VA</span>`
+            : `<span class="copilot-usps" data-address="${escFull}" title="USPS Lookup"> ✉️</span>`;
+        return `<span class="address-wrapper"><a href="#" class="copilot-address" data-address="${escFull}">${display}</a>${extra}</span>`;
     }
 
     function renderCopy(text) {
@@ -581,12 +584,13 @@
             addrMap[key].labels.push(label);
         });
         const addrEntries = Object.values(addrMap)
-            .map(a => `<div style="margin-left:10px"><b>${renderAddress(a.addr)}</b><br>${a.labels.map(l => `<span class="copilot-tag">${escapeHtml(l)}</span>`).join(' ')}</div>`);
+            .map(a => `<div style="margin-left:10px"><b>${renderAddress(a.addr, isVAAddress(a.addr))}</b><br>${a.labels.map(l => `<span class="copilot-tag">${escapeHtml(l)}</span>`).join(' ')}</div>`);
 
         const orderItems = Array.from(document.querySelectorAll('.order-items li'))
             .map(li => li.innerText.trim().toLowerCase());
         const hasRA = orderItems.some(t => t.includes('registered agent'));
         const hasVA = orderItems.some(t => t.includes('virtual address'));
+        const isVAAddress = addr => hasVA && /#\s*\d{3,}/.test(addr);
 
         // Render del HTML
         let html = '';
@@ -619,13 +623,13 @@
         if (company) {
             let addrHtml = '';
             if (company.physicalAddress) {
-                addrHtml += `<div><b>Physical:</b> ${renderAddress(company.physicalAddress)}</div>`;
+                addrHtml += `<div><b>Physical:</b> ${renderAddress(company.physicalAddress, isVAAddress(company.physicalAddress))}</div>`;
             }
             if (company.mailingAddress) {
-                addrHtml += `<div><b>Mailing:</b> ${renderAddress(company.mailingAddress)}</div>`;
+                addrHtml += `<div><b>Mailing:</b> ${renderAddress(company.mailingAddress, isVAAddress(company.mailingAddress))}</div>`;
             }
             if (!addrHtml) {
-                addrHtml = `<div>${renderAddress(company.address)}</div>`;
+                addrHtml = `<div>${renderAddress(company.address, isVAAddress(company.address))}</div>`;
             }
             html += `
             <div class="section-label">COMPANY:</div>
@@ -656,7 +660,7 @@
             <div class="section-label">AGENT:</div>
             <div class="white-box" style="margin-bottom:10px">
                 <div><b>${renderCopy(agent.name)}</b></div>
-                <div>${renderAddress(agent.address)}</div>
+                <div>${renderAddress(agent.address, isVAAddress(agent.address))}</div>
                 <div>${statusHtml}</div>
             </div>`;
         }
@@ -667,7 +671,7 @@
             <div class="white-box" style="margin-bottom:10px">
                 ${directors.map(d => `
                     <div><b>${renderCopy(d.name)}</b></div>
-                    <div>${renderAddress(d.address)}</div>
+                    <div>${renderAddress(d.address, isVAAddress(d.address))}</div>
                 `).join('<hr style="border:none; border-top:1px solid #eee; margin:6px 0"/>')}
             </div>`;
         }
@@ -678,7 +682,7 @@
             <div class="white-box" style="margin-bottom:10px">
                 ${shareholders.map(s => `
                     <div><b>${renderCopy(s.name)}</b></div>
-                    <div>${renderAddress(s.address)}</div>
+                    <div>${renderAddress(s.address, isVAAddress(s.address))}</div>
                     <div>${renderCopy(s.shares)}</div>
                 `).join('<hr style="border:none; border-top:1px solid #eee; margin:6px 0"/>')}
             </div>`;
@@ -689,7 +693,7 @@
             <div class="section-label">OFFICERS:</div>
             <div class="white-box" style="margin-bottom:10px">
                 ${officers.map(o => {
-                    const addrLine = o.address && o.address !== '-' ? `<div>${renderAddress(o.address)}</div>` : '';
+                    const addrLine = o.address && o.address !== '-' ? `<div>${renderAddress(o.address, isVAAddress(o.address))}</div>` : '';
                     return `
                         <div><b>${renderCopy(o.name)}</b></div>
                         ${addrLine}
