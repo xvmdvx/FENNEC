@@ -142,16 +142,16 @@
     border-radius: 8px;
     font-size: 13px;
     line-height: 1.4em;
-    margin-bottom: 10px;
-    padding: 8px;
+    margin-bottom: 14px;
+    padding: 12px;
     text-align: center;
     position: relative;
 }
 
 #copilot-sidebar .box-title {
     position: absolute;
-    top: 4px;
-    right: 6px;
+    top: 6px;
+    right: 10px;
     font-size: 18px;
 }
 
@@ -174,4 +174,16 @@
 #copilot-sidebar .company-purpose {
     line-height: 1.6em;
     margin-top: 4px;
+}
+
+/* Order summary heading */
+#copilot-sidebar .order-summary-header {
+    font-weight: bold;
+    text-align: center;
+    margin: 10px 0;
+}
+
+/* Slightly larger names in each section */
+#copilot-sidebar .white-box b {
+    font-size: 14px;
 }
