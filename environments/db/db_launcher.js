@@ -583,14 +583,15 @@
             if (!addrMap[key]) addrMap[key] = { addr, labels: [] };
             addrMap[key].labels.push(label);
         });
-        const addrEntries = Object.values(addrMap)
-            .map(a => `<div style="margin-left:10px"><b>${renderAddress(a.addr, isVAAddress(a.addr))}</b><br>${a.labels.map(l => `<span class="copilot-tag">${escapeHtml(l)}</span>`).join(' ')}</div>`);
 
         const orderItems = Array.from(document.querySelectorAll('.order-items li'))
             .map(li => li.innerText.trim().toLowerCase());
         const hasRA = orderItems.some(t => t.includes('registered agent'));
         const hasVA = orderItems.some(t => t.includes('virtual address'));
         const isVAAddress = addr => hasVA && /#\s*\d{3,}/.test(addr);
+
+        const addrEntries = Object.values(addrMap)
+            .map(a => `<div style="margin-left:10px"><b>${renderAddress(a.addr, isVAAddress(a.addr))}</b><br>${a.labels.map(l => `<span class="copilot-tag">${escapeHtml(l)}</span>`).join(' ')}</div>`);
 
         // Render del HTML
         let html = '';
