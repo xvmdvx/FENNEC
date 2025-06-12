@@ -65,6 +65,7 @@
             if (cleaned.length < 5) return false;
             const words = cleaned.split(/\s+/);
             if (words.length < 2) return false;
+            if (!/[0-9]/.test(cleaned)) return false;
             return /[A-Za-z]/.test(cleaned);
         }
 
