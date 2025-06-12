@@ -659,11 +659,18 @@
         // COMPANY
         if (company) {
             let addrHtml = '';
-            if (company.physicalAddress) {
-                addrHtml += `<div><b>Physical:</b> ${renderAddress(company.physicalAddress, isVAAddress(company.physicalAddress))}</div>`;
-            }
-            if (company.mailingAddress) {
-                addrHtml += `<div><b>Mailing:</b> ${renderAddress(company.mailingAddress, isVAAddress(company.mailingAddress))}</div>`;
+            const phys = company.physicalAddress;
+            const mail = company.mailingAddress;
+            if (phys && mail && normalizeAddr(phys) === normalizeAddr(mail)) {
+                addrHtml += `<div>${renderAddress(phys, isVAAddress(phys))}<br>` +
+                            `<span class="copilot-tag">Physical</span> <span class="copilot-tag">Mailing</span></div>`;
+            } else {
+                if (phys) {
+                    addrHtml += `<div><b>Physical:</b> ${renderAddress(phys, isVAAddress(phys))}</div>`;
+                }
+                if (mail) {
+                    addrHtml += `<div><b>Mailing:</b> ${renderAddress(mail, isVAAddress(mail))}</div>`;
+                }
             }
             if (!addrHtml) {
                 addrHtml = `<div>${renderAddress(company.address, isVAAddress(company.address))}</div>`;
