@@ -764,6 +764,13 @@
                     navigator.clipboard.writeText(text).catch(err => console.warn('[Copilot] Clipboard', err));
                 });
             });
+            body.querySelectorAll('.company-purpose .copilot-copy').forEach(el => {
+                el.addEventListener('click', e => {
+                    const text = el.dataset.copy;
+                    if (!text) return;
+                    window.open('https://www.google.com/search?q=' + encodeURIComponent(text), '_blank');
+                });
+            });
         }
     }
     });
