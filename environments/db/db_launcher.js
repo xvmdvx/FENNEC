@@ -210,8 +210,18 @@
     function extractMembers(sectionSel, fields) {
         const root = document.querySelector(sectionSel);
         if (!root) return [];
-        const blocks = Array.from(root.querySelectorAll('.row.m-b-10'));
+        let blocks = Array.from(root.querySelectorAll('.row.m-b-10'));
         if (!blocks.length) return extractRows(sectionSel, fields);
+
+        // Algunos contenedores de miembros agrupan dos columnas (.col-sm-6)
+        // dentro de una sola fila .row.m-b-10. Dividimos dichos contenedores
+        // para procesar cada columna como un miembro independiente.
+        blocks = [].concat(...blocks.map(b => {
+            const cols = Array.from(b.querySelectorAll('.col-sm-6'))
+                .filter(c => c.parentElement === b);
+            return cols.length > 1 ? cols : [b];
+        }));
+
         return blocks.map(block => {
             const obj = {};
             const rows = Array.from(block.querySelectorAll('.row'));
