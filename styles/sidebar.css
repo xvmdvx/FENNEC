@@ -242,6 +242,10 @@
     opacity: 1;
     border: 1px solid #ccc;
 }
+.copilot-tag-purple {
+    background-color: #800080;
+    color: #fff;
+}
 .copilot-tag-red {
     background-color: #8B0000;
     color: #fff;
