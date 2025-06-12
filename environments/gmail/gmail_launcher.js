@@ -68,6 +68,16 @@
             return /[A-Za-z]/.test(cleaned);
         }
 
+        function isLikelyCompany(name) {
+            if (!name) return false;
+            const designators = [
+                'LLC', 'L.L.C', 'INC', 'CORP', 'CORPORATION', 'COMPANY', 'CO',
+                'LTD', 'LIMITED', 'LLP', 'LP', 'PLC', 'PC', 'PA'
+            ];
+            const regex = new RegExp('\\b(' + designators.join('|') + ')\\.?\\b', 'i');
+            return regex.test(name);
+        }
+
         function extractCompanyNames(text) {
             if (!text) return [];
 
@@ -163,23 +173,23 @@
         function parseOrderDetails(text) {
             const details = {};
 
-            const compName = text.match(/Company Name[:\s]*([^\n]+)/i);
+            const compName = text.match(/Company Name\s*(?:[:\-]|\n)\s*([^\n]+)/i);
             if (compName && isValidName(compName[1])) details.companyName = compName[1].trim();
 
-            const purpose = text.match(/Purpose[:\s]*([^\n]+)/i);
+            const purpose = text.match(/Purpose\s*(?:[:\-]|\n)\s*([^\n]+)/i);
             if (purpose) details.purpose = purpose[1].trim();
 
-            const compAddr = text.match(/(?:Company\s*)?Address[:\s]*([^\n]+)/i);
+            const compAddr = text.match(/(?:Company\s*)?Address\s*(?:[:\-]|\n)\s*([^\n]+)/i);
             if (compAddr && isValidAddress(compAddr[1])) details.companyAddress = compAddr[1].trim();
 
-            const raName = text.match(/(?:RA|Registered Agent) Name[:\s]*([^\n]+)/i);
+            const raName = text.match(/(?:RA|Registered Agent) Name\s*(?:[:\-]|\n)\s*([^\n]+)/i);
             if (raName && isValidName(raName[1])) details.raName = raName[1].trim();
 
-            const raAddr = text.match(/(?:RA|Registered Agent) Address[:\s]*([^\n]+)/i);
+            const raAddr = text.match(/(?:RA|Registered Agent) Address\s*(?:[:\-]|\n)\s*([^\n]+)/i);
             if (raAddr && isValidAddress(raAddr[1])) details.raAddress = raAddr[1].trim();
 
             const people = [];
-            const memberRegex = /(Member|Director|Officer|Shareholder)\s*Name[:\s]*([^\n]+)\n(?:.*?(?:Address)[:\s]*([^\n]+))?/gi;
+            const memberRegex = /(Member|Director|Officer|Shareholder)\s*Name\s*(?:[:\-]|\n)\s*([^\n]+)\n(?:.*?(?:Address)\s*(?:[:\-]|\n)\s*([^\n]+))?/gi;
             let m;
             while ((m = memberRegex.exec(text)) !== null) {
                 const entry = { role: m[1], name: m[2].trim() };
@@ -259,22 +269,36 @@
             if (!intelBox) return;
 
             const details = context?.details || {};
-            const namesMap = new Map();
+            const companyMap = new Map();
+            const peopleMap = new Map();
             const addrSet = new Set();
 
-            const addName = n => {
+            const addCompany = n => {
                 if (!n || n === context?.name) return;
                 const key = n.trim().toUpperCase();
-                if (!namesMap.has(key)) namesMap.set(key, n.trim());
+                if (!companyMap.has(key)) companyMap.set(key, n.trim());
+            };
+            const addPerson = n => {
+                if (!n || n === context?.name) return;
+                const key = n.trim().toUpperCase();
+                if (!peopleMap.has(key)) peopleMap.set(key, n.trim());
             };
             const addAddr = a => {
                 if (a && !addrSet.has(a)) addrSet.add(a);
             };
 
-            addName(details.companyName);
-            addName(details.raName);
+            if (details.companyName) {
+                if (isLikelyCompany(details.companyName)) addCompany(details.companyName);
+                else addPerson(details.companyName);
+            }
+
+            if (details.raName) {
+                if (isLikelyCompany(details.raName)) addCompany(details.raName);
+                else addPerson(details.raName);
+            }
+
             if (details.people) details.people.forEach(p => {
-                addName(p.name);
+                if (isLikelyCompany(p.name)) addCompany(p.name); else addPerson(p.name);
                 if (p.address) addAddr(p.address);
             });
 
@@ -282,19 +306,24 @@
             addAddr(details.raAddress);
 
             if (Array.isArray(context?.companies)) {
-                context.companies.forEach(addName);
+                context.companies.forEach(addCompany);
             }
 
-            const nameHtml = Array.from(namesMap.values()).map(n => `<div>${renderCopy(n)}</div>`).join('');
+            const compHtml = Array.from(companyMap.values()).map(n => `<div>${renderCopy(n)}</div>`).join('');
+            const peopleHtml = Array.from(peopleMap.values()).map(n => `<div>${renderCopy(n)}</div>`).join('');
             const addrHtml = Array.from(addrSet).map(a => `<div>${renderAddress(a)}</div>`).join('');
 
-            if (!nameHtml && !addrHtml) {
+            if (!compHtml && !peopleHtml && !addrHtml) {
                 intelBox.innerHTML = '<span style="color:#ccc">No intel found.</span>';
             } else {
                 let html = '';
-                if (nameHtml) html += `<div><u>Names</u></div>${nameHtml}`;
+                if (compHtml) html += `<div><u>Company Names</u></div>${compHtml}`;
+                if (peopleHtml) {
+                    if (compHtml) html += '<hr style="border:none;border-top:1px solid #555;margin:6px 0"/>';
+                    html += `<div><u>Individual Names</u></div>${peopleHtml}`;
+                }
                 if (addrHtml) {
-                    if (nameHtml) html += '<hr style="border:none;border-top:1px solid #555;margin:6px 0"/>';
+                    if (compHtml || peopleHtml) html += '<hr style="border:none;border-top:1px solid #555;margin:6px 0"/>';
                     html += `<div><u>Addresses</u></div>${addrHtml}`;
                 }
                 intelBox.innerHTML = html;
