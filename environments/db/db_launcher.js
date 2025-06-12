@@ -552,7 +552,7 @@
             addrMap[key].labels.push(label);
         });
         const addrEntries = Object.values(addrMap)
-            .map(a => `<div style="margin-left:10px"><b>${renderAddress(a.addr)}</b><br>(${a.labels.join(', ')})</div>`);
+            .map(a => `<div style="margin-left:10px"><b>${renderAddress(a.addr)}</b><br>${a.labels.map(l => `<span class="copilot-tag">${escapeHtml(l)}</span>`).join(' ')}</div>`);
 
         const orderItems = Array.from(document.querySelectorAll('.order-items li'))
             .map(li => li.innerText.trim().toLowerCase());
