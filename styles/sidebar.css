@@ -183,6 +183,17 @@
     margin: 10px 0;
 }
 
+#copilot-sidebar .quick-summary-toggle {
+    cursor: pointer;
+    margin-left: 6px;
+}
+
+#copilot-sidebar #quick-summary {
+    overflow: hidden;
+    max-height: 0;
+    transition: max-height 0.3s ease;
+}
+
 /* Slightly larger names in each section */
 #copilot-sidebar .white-box b {
     font-size: 14px;
