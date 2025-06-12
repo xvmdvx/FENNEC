@@ -786,6 +786,25 @@
     });
 
     function getActiveIssueText() {
+        // Newer DB layout uses a table inside the "issue-history" section.
+        const tableRows = Array.from(document.querySelectorAll('.issue-history table tbody tr'));
+        for (const row of tableRows) {
+            const cells = row.querySelectorAll('td');
+            if (cells.length >= 5) {
+                const resolution = cells[4].innerText.trim();
+                // If the resolution cell contains a "Mark Resolved" button, this
+                // row represents the currently open issue.
+                if (/mark resolved/i.test(resolution)) {
+                    return cells[2].innerText.trim();
+                }
+                // Skip rows that have already been resolved.
+                if (/resolved/i.test(resolution)) {
+                    continue;
+                }
+            }
+        }
+
+        // Fallback to the older timeline-based layout.
         const history = document.querySelector('.issue-history .steamline');
         if (!history) return null;
         const items = Array.from(history.querySelectorAll('.sl-item'));
