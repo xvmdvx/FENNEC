@@ -606,14 +606,20 @@
                         .join(' ')}
                 </div>`);
         if (roleEntries.length) {
-            summaryParts.push('<div>Involved Entities:</div>');
             summaryParts.push(...roleEntries);
         }
         if (addrEntries.length) {
-            summaryParts.push('<div><b>Domicilios:</b></div>');
+            if (summaryParts.length) summaryParts.push('<div style="height:4px"></div>');
             summaryParts.push(...addrEntries);
         }
-        summaryParts.push(`<div>RA: ${hasRA ? 'Sí' : 'No'} | VA: ${hasVA ? 'Sí' : 'No'}</div>`);
+        summaryParts.push('<div style="height:4px"></div>');
+        const raClass = hasRA ? 'copilot-tag copilot-tag-green' : 'copilot-tag copilot-tag-white';
+        const vaClass = hasVA ? 'copilot-tag copilot-tag-green' : 'copilot-tag copilot-tag-white';
+        summaryParts.push(`
+            <div>
+                <span class="${raClass}">RA: ${hasRA ? 'Sí' : 'No'}</span>
+                <span class="${vaClass}">VA: ${hasVA ? 'Sí' : 'No'}</span>
+            </div>`);
         html += `
             <div class="white-box quick-summary-content" id="quick-summary" style="margin-bottom:10px">
                 ${summaryParts.join('')}
