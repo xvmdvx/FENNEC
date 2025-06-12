@@ -636,6 +636,7 @@
         const raClass = hasRA ? 'copilot-tag copilot-tag-green' : 'copilot-tag copilot-tag-white';
         const vaClass = hasVA ? 'copilot-tag copilot-tag-green' : 'copilot-tag copilot-tag-white';
         summaryParts.push(`
+            <br/>
             <div>
                 <span class="${raClass}">RA: ${hasRA ? 'Sí' : 'No'}</span>
                 <span class="${vaClass}">VA: ${hasVA ? 'Sí' : 'No'}</span>
