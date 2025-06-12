@@ -65,8 +65,34 @@
             if (cleaned.length < 5) return false;
             const words = cleaned.split(/\s+/);
             if (words.length < 2) return false;
-            if (!/[0-9]/.test(cleaned)) return false;
-            return /[A-Za-z]/.test(cleaned);
+            if (!/[A-Za-z]/.test(cleaned)) return false;
+            if (/\bP\.?O\.?\s+BOX\b/i.test(cleaned)) {
+                return /\b\d{1,}\b/.test(cleaned);
+            }
+            return /\d/.test(cleaned);
+        }
+
+        function cleanAddress(str) {
+            return str
+                .replace(/\s+/g, ' ')
+                .replace(/\s*,\s*/g, ', ')
+                .replace(/\s*#\s*/g, ' #')
+                .trim();
+        }
+
+        function extractPotentialAddresses(text) {
+            if (!text) return [];
+            const addrs = [];
+            const lines = text.split(/\n+/);
+            const keyword = /\b(?:st(?:reet)?|ave(?:nue)?|road|rd|dr|boulevard|blvd|lane|ln|hwy|p\.?o\.?\s*box|suite|ste|apt|apartment)\b/i;
+            lines.forEach(line => {
+                const cleaned = cleanAddress(line);
+                if (cleaned.length < 8) return;
+                if (!isValidAddress(cleaned)) return;
+                if (!(keyword.test(cleaned) || /\b\d{5}(?:-\d{4})?\b/.test(cleaned))) return;
+                if (!addrs.includes(cleaned)) addrs.push(cleaned);
+            });
+            return addrs;
         }
 
         function isLikelyCompany(name) {
@@ -148,6 +174,7 @@
 
         function renderAddress(addr) {
             if (!addr) return '<span style="color:#aaa">-</span>';
+            addr = cleanAddress(addr);
             const parts = addr.split(/,\s*/);
 
             let firstLine = parts.shift() || '';
@@ -181,13 +208,13 @@
             if (purpose) details.purpose = purpose[1].trim();
 
             const compAddr = text.match(/(?:Company\s*)?Address\s*(?:[:\-]|\n)\s*([^\n]+)/i);
-            if (compAddr && isValidAddress(compAddr[1])) details.companyAddress = compAddr[1].trim();
+            if (compAddr && isValidAddress(compAddr[1])) details.companyAddress = cleanAddress(compAddr[1]);
 
             const raName = text.match(/(?:RA|Registered Agent) Name\s*(?:[:\-]|\n)\s*([^\n]+)/i);
             if (raName && isValidName(raName[1])) details.raName = raName[1].trim();
 
             const raAddr = text.match(/(?:RA|Registered Agent) Address\s*(?:[:\-]|\n)\s*([^\n]+)/i);
-            if (raAddr && isValidAddress(raAddr[1])) details.raAddress = raAddr[1].trim();
+            if (raAddr && isValidAddress(raAddr[1])) details.raAddress = cleanAddress(raAddr[1]);
 
             const people = [];
             const memberRegex = /(Member|Director|Officer|Shareholder)\s*Name\s*(?:[:\-]|\n)\s*([^\n]+)\n(?:.*?(?:Address)\s*(?:[:\-]|\n)\s*([^\n]+))?/gi;
@@ -195,7 +222,7 @@
             while ((m = memberRegex.exec(text)) !== null) {
                 const entry = { role: m[1], name: m[2].trim() };
                 if (!isValidName(entry.name)) continue;
-                if (m[3] && isValidAddress(m[3])) entry.address = m[3].trim();
+                if (m[3] && isValidAddress(m[3])) entry.address = cleanAddress(m[3]);
                 people.push(entry);
             }
             if (people.length) details.people = people;
@@ -241,7 +268,8 @@
                     email: senderEmail,
                     name: finalName,
                     details,
-                    companies
+                    companies,
+                    rawText: fullText
                 };
             } catch (err) {
                 console.warn("[Copilot] Error extrayendo contexto:", err);
@@ -285,7 +313,9 @@
                 if (!peopleMap.has(key)) peopleMap.set(key, n.trim());
             };
             const addAddr = a => {
-                if (a && !addrSet.has(a)) addrSet.add(a);
+                if (!a) return;
+                const cleaned = cleanAddress(a);
+                if (cleaned && !addrSet.has(cleaned)) addrSet.add(cleaned);
             };
 
             if (details.companyName) {
@@ -305,6 +335,10 @@
 
             addAddr(details.companyAddress);
             addAddr(details.raAddress);
+
+            if (context?.rawText) {
+                extractPotentialAddresses(context.rawText).forEach(addAddr);
+            }
 
             if (Array.isArray(context?.companies)) {
                 context.companies.forEach(addCompany);
