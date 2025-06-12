@@ -629,7 +629,7 @@
             summaryParts.push(...roleEntries);
         }
         if (addrEntries.length) {
-            if (summaryParts.length) summaryParts.push('<div style="height:4px"></div>');
+            if (summaryParts.length) summaryParts.push('<hr style="border:none;border-top:1px solid #eee;margin:6px 0"/>');
             summaryParts.push(...addrEntries);
         }
         summaryParts.push('<div style="height:4px"></div>');
