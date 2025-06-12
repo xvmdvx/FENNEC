@@ -42,6 +42,7 @@
                             </div>
                             <button id="copilot-close">✕</button>
                         </div>
+                        <div class="order-summary-header">ORDER SUMMARY</div>
                         <div class="copilot-body" id="copilot-body-content">
                             <div style="text-align:center; color:#888; margin-top:20px;">Cargando resumen...</div>
                         </div>
