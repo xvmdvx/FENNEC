@@ -51,6 +51,90 @@
             return /^22\d{10}$/.test(digits) ? digits : null;
         }
 
+        function escapeHtml(text) {
+            return text
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/\"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+
+        function renderCopy(text) {
+            if (!text) return '<span style="color:#aaa">-</span>';
+            const esc = escapeHtml(text);
+            return `<span class="copilot-copy" data-copy="${esc}">${esc}</span>`;
+        }
+
+        function renderAddress(addr) {
+            if (!addr) return '<span style="color:#aaa">-</span>';
+            const parts = addr.split(/,\s*/);
+
+            let firstLine = parts.shift() || '';
+            let secondLine = parts.join(', ');
+
+            if (parts.length > 2) {
+                const extra = parts.shift();
+                firstLine = `${firstLine}, ${extra}`;
+                secondLine = parts.join(', ');
+            }
+
+            const display = secondLine
+                ? `${escapeHtml(firstLine)}<br>${escapeHtml(secondLine)}`
+                : escapeHtml(firstLine);
+            const escFull = escapeHtml(addr);
+            return `<span class="address-wrapper"><a href="#" class="copilot-address" data-address="${escFull}">${display}</a><span class="copilot-usps" data-address="${escFull}" title="USPS Lookup"> ✉️</span></span>`;
+        }
+
+        function isValidName(str) {
+            if (!str) return false;
+            const cleaned = str.trim();
+            if (cleaned.length < 3) return false;
+            if (!/[A-Za-z]/.test(cleaned)) return false;
+            return /^[A-Za-z0-9'\-\.\s]+$/.test(cleaned);
+        }
+
+        function isValidAddress(str) {
+            if (!str) return false;
+            const cleaned = str.trim();
+            if (cleaned.length < 5) return false;
+            const words = cleaned.split(/\s+/);
+            if (words.length < 2) return false;
+            return /[A-Za-z]/.test(cleaned);
+        }
+
+        function parseOrderDetails(text) {
+            const details = {};
+
+            const compName = text.match(/Company Name[:\s]*([^\n]+)/i);
+            if (compName && isValidName(compName[1])) details.companyName = compName[1].trim();
+
+            const purpose = text.match(/Purpose[:\s]*([^\n]+)/i);
+            if (purpose) details.purpose = purpose[1].trim();
+
+            const compAddr = text.match(/(?:Company\s*)?Address[:\s]*([^\n]+)/i);
+            if (compAddr && isValidAddress(compAddr[1])) details.companyAddress = compAddr[1].trim();
+
+            const raName = text.match(/(?:RA|Registered Agent) Name[:\s]*([^\n]+)/i);
+            if (raName && isValidName(raName[1])) details.raName = raName[1].trim();
+
+            const raAddr = text.match(/(?:RA|Registered Agent) Address[:\s]*([^\n]+)/i);
+            if (raAddr && isValidAddress(raAddr[1])) details.raAddress = raAddr[1].trim();
+
+            const people = [];
+            const memberRegex = /(Member|Director|Officer|Shareholder)\s*Name[:\s]*([^\n]+)\n(?:.*?(?:Address)[:\s]*([^\n]+))?/gi;
+            let m;
+            while ((m = memberRegex.exec(text)) !== null) {
+                const entry = { role: m[1], name: m[2].trim() };
+                if (!isValidName(entry.name)) continue;
+                if (m[3] && isValidAddress(m[3])) entry.address = m[3].trim();
+                people.push(entry);
+            }
+            if (people.length) details.people = people;
+
+            return details;
+        }
+
         function extractOrderContextFromEmail() {
             try {
                 const senderSpan = document.querySelector("h3.iw span[email]");
@@ -70,6 +154,7 @@
                 }
 
                 const orderNumber = extractOrderNumber(fullText);
+                const details = parseOrderDetails(fullText);
 
                 let fallbackName = null;
                 const helloLine = fullText.match(/Hello\s+([A-Z][a-z]+(?:\s+[A-Z][a-z]+)?)/);
@@ -85,7 +170,8 @@
                 return {
                     orderNumber,
                     email: senderEmail,
-                    name: finalName
+                    name: finalName,
+                    details
                 };
             } catch (err) {
                 console.warn("[Copilot] Error extrayendo contexto:", err);
@@ -93,21 +179,80 @@
             }
         }
 
+        function attachInteractiveHandlers(root) {
+            if (!root) return;
+            root.querySelectorAll('.copilot-address').forEach(el => {
+                el.addEventListener('click', e => {
+                    e.preventDefault();
+                    const addr = el.dataset.address;
+                    if (!addr) return;
+                    navigator.clipboard.writeText(addr).catch(err => console.warn('[Copilot] Clipboard', err));
+                    window.open('https://www.google.com/search?q=' + encodeURIComponent(addr), '_blank');
+                });
+            });
+            root.querySelectorAll('.copilot-usps').forEach(el => {
+                el.addEventListener('click', e => {
+                    e.preventDefault();
+                    const addr = el.dataset.address;
+                    if (!addr) return;
+                    const url = 'https://tools.usps.com/zip-code-lookup.htm?byaddress&fennec_addr=' + encodeURIComponent(addr);
+                    window.open(url, '_blank');
+                });
+            });
+            root.querySelectorAll('.copilot-copy').forEach(el => {
+                el.addEventListener('click', e => {
+                    const text = el.dataset.copy;
+                    if (!text) return;
+                    navigator.clipboard.writeText(text).catch(err => console.warn('[Copilot] Clipboard', err));
+                });
+            });
+        }
+
         function fillOrderSummaryBox(context) {
             const summaryBox = document.getElementById('order-summary-content');
             if (!summaryBox) return;
-            const email = context?.email ? context.email.toLowerCase() : "Not found";
+            const email = context?.email ? context.email.toLowerCase() : null;
             summaryBox.innerHTML = `
-                <div><strong>Order:</strong> ${context?.orderNumber || "Not found"}</div>
-                <div><strong>Email:</strong> ${email}</div>
-                <div><strong>Name:</strong> ${context?.name || "Not found"}</div>
+                <div><strong>Order:</strong> ${context?.orderNumber ? renderCopy(context.orderNumber) : 'Not found'}</div>
+                <div><strong>Email:</strong> ${email ? renderCopy(email) : 'Not found'}</div>
+                <div><strong>Name:</strong> ${context?.name ? renderCopy(context.name) : 'Not found'}</div>
             `;
+            attachInteractiveHandlers(summaryBox);
             console.log("[FENNEC] Order Summary rellenado:", context);
+            if (context?.details) {
+                console.log("[FENNEC] Detalles de la orden:", context.details);
+            }
+        }
+
+        function fillPotentialIntelBox(details) {
+            const intelBox = document.getElementById('intel-summary-content');
+            if (!intelBox) return;
+            if (!details || Object.keys(details).length === 0) {
+                intelBox.innerHTML = '<div style="color:#888">No data detected.</div>';
+                return;
+            }
+            const lines = [];
+            if (details.companyName) lines.push(`<div><b>${renderCopy(details.companyName)}</b></div>`);
+            if (details.purpose) lines.push(`<div>${renderCopy(details.purpose)}</div>`);
+            if (details.companyAddress) lines.push(`<div>${renderAddress(details.companyAddress)}</div>`);
+            if (details.raName) lines.push(`<div><b>RA:</b> ${renderCopy(details.raName)}</div>`);
+            if (details.raAddress) lines.push(`<div>${renderAddress(details.raAddress)}</div>`);
+            if (Array.isArray(details.people) && details.people.length) {
+                lines.push('<hr style="border:none; border-top:1px solid #555; margin:4px 0"/>');
+                details.people.forEach(p => {
+                    const header = p.role ? `<b>${escapeHtml(p.role)}:</b> ` : '';
+                    lines.push(`<div>${header}${renderCopy(p.name)}</div>`);
+                    if (p.address) lines.push(`<div>${renderAddress(p.address)}</div>`);
+                });
+            }
+            intelBox.innerHTML = lines.join('\n');
+            attachInteractiveHandlers(intelBox);
         }
 
         function handleEmailSearchClick() {
             const context = extractOrderContextFromEmail();
             fillOrderSummaryBox(context);
+            fillPotentialIntelBox(context?.details);
 
             if (!context || !context.email) {
                 alert("No se pudo detectar el correo del cliente.");
@@ -162,6 +307,12 @@
                         <strong>ORDER SUMMARY</strong><br>
                         <div id="order-summary-content" style="color:#ccc; font-size:13px;">
                             No order data yet.
+                        </div>
+                    </div>
+                    <div class="order-summary-box">
+                        <strong>POTENTIAL INTEL</strong><br>
+                        <div id="intel-summary-content" style="color:#ccc; font-size:13px;">
+                            No intel yet.
                         </div>
                     </div>
                 </div>
