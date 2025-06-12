@@ -337,9 +337,11 @@
 
         // Detectar el estatus de suscripción del Registered Agent desde la
         // pestaña de Subscriptions.
-        const agentSub = getAgentSubscriptionStatus();
-        if (agentSub) {
-            agent.status = agentSub;
+        if (!agent.status) {
+            const agentSub = getAgentSubscriptionStatus();
+            if (agentSub) {
+                agent.status = agentSub;
+            }
         }
 
         // Detectar tipo de entidad para nombrar apropiadamente
@@ -397,7 +399,6 @@
                 <div class="box-title">🏢</div>
                 <div><b>${renderCopy(company.name)}</b></div>
                 <div>${company.state || '<span style="color:#aaa">-</span>'}</div>
-                <div>${company.status || '<span style="color:#aaa">-</span>'}</div>
                 <div>${renderCopy(company.purpose)}</div>
                 <div>${renderAddress(company.address)}</div>
             </div>`;
