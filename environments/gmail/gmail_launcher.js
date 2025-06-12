@@ -395,6 +395,43 @@
             });
         }
 
+        function fillIssueBox(text) {
+            const box = document.getElementById('issue-summary-box');
+            const content = document.getElementById('issue-summary-content');
+            if (!box || !content) return;
+            if (text) {
+                content.innerText = text;
+                box.style.display = 'block';
+            } else {
+                content.innerText = '';
+                box.style.display = 'none';
+            }
+        }
+
+        function checkActiveIssue(orderId, attempts = 10) {
+            if (!orderId) return;
+            const query = { url: `https://db.incfile.com/incfile/order/detail/${orderId}` };
+            const tryFetch = () => {
+                chrome.tabs.query(query, tabs => {
+                    const tab = tabs && tabs[0];
+                    if (!tab) {
+                        if (attempts > 0) setTimeout(() => { attempts--; tryFetch(); }, 1000);
+                        return;
+                    }
+                    chrome.tabs.sendMessage(tab.id, { action: 'getActiveIssue' }, resp => {
+                        if (chrome.runtime.lastError) {
+                            if (attempts > 0) setTimeout(() => { attempts--; tryFetch(); }, 1000);
+                            return;
+                        }
+                        if (resp && resp.issueText) {
+                            fillIssueBox(resp.issueText);
+                        }
+                    });
+                });
+            };
+            tryFetch();
+        }
+
         function handleEmailSearchClick() {
             const context = extractOrderContextFromEmail();
             fillOrderSummaryBox(context);
@@ -428,6 +465,9 @@
             }
 
             chrome.runtime.sendMessage({ action: "replaceTabs", urls });
+            if (context.orderNumber) {
+                checkActiveIssue(context.orderNumber);
+            }
         }
 
         function injectSidebar(mainPanels) {
@@ -460,6 +500,10 @@
                         <div id="intel-summary-content" style="color:#ccc; font-size:13px;">
                             No intel yet.
                         </div>
+                    </div>
+                    <div class="issue-summary-box" id="issue-summary-box" style="display:none; margin-top:10px;">
+                        <strong>ACTIVE ISSUE</strong><br>
+                        <div id="issue-summary-content" style="color:#ccc; font-size:13px;"></div>
                     </div>
                 </div>
             `;
@@ -540,6 +584,7 @@
                     }
                     const url = `https://db.incfile.com/incfile/order/detail/${orderId}`;
                     chrome.runtime.sendMessage({ action: "replaceTabs", urls: [url] });
+                    checkActiveIssue(orderId);
                 } catch (error) {
                     console.error("Error al intentar abrir la orden:", error);
                     alert("Ocurrió un error al intentar abrir la orden.");
