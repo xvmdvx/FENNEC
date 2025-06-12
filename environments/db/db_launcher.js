@@ -42,7 +42,7 @@
                             </div>
                             <button id="copilot-close">✕</button>
                         </div>
-                        <div class="order-summary-header">ORDER SUMMARY</div>
+                        <div class="order-summary-header">ORDER SUMMARY <span id="qs-toggle" class="quick-summary-toggle">⚡</span></div>
                         <div class="copilot-body" id="copilot-body-content">
                             <div style="text-align:center; color:#888; margin-top:20px;">Cargando resumen...</div>
                         </div>
@@ -57,6 +57,18 @@
                         console.log("[Copilot] Sidebar cerrado manualmente en DB.");
                     };
                     extractAndShowData();
+                    const qsToggle = sidebar.querySelector('#qs-toggle');
+                    const qsBox = sidebar.querySelector('#quick-summary');
+                    if (qsBox) qsBox.style.maxHeight = '0';
+                    if (qsToggle && qsBox) {
+                        qsToggle.addEventListener('click', () => {
+                            if (qsBox.style.maxHeight && qsBox.style.maxHeight !== '0px') {
+                                qsBox.style.maxHeight = '0';
+                            } else {
+                                qsBox.style.maxHeight = qsBox.scrollHeight + 'px';
+                            }
+                        });
+                    }
                 })();
             }
         }
@@ -485,7 +497,7 @@
             addrMap[key].labels.push(label);
         });
         const addrEntries = Object.values(addrMap)
-            .map(a => `<div style="margin-left:10px">${renderAddress(a.addr)} (${a.labels.join(', ')})</div>`);
+            .map(a => `<div style="margin-left:10px"><b>${renderAddress(a.addr)}</b><br>(${a.labels.join(', ')})</div>`);
 
         const orderItems = Array.from(document.querySelectorAll('.order-items li'))
             .map(li => li.innerText.trim().toLowerCase());
@@ -497,9 +509,9 @@
 
         const summaryParts = [];
         const roleEntries = Object.values(roleMap)
-            .map(r => `<div style="margin-left:10px">${renderCopy(r.display)} (${Array.from(r.roles).join(', ')})</div>`);
+            .map(r => `<div style="margin-left:10px"><b>${renderCopy(r.display)}</b> (${Array.from(r.roles).join(', ')})</div>`);
         if (roleEntries.length) {
-            summaryParts.push('<div><b>Involved Entities:</b></div>');
+            summaryParts.push('<div>Involved Entities:</div>');
             summaryParts.push(...roleEntries);
         }
         if (addrEntries.length) {
@@ -508,9 +520,7 @@
         }
         summaryParts.push(`<div>RA: ${hasRA ? 'Sí' : 'No'} | VA: ${hasVA ? 'Sí' : 'No'}</div>`);
         html += `
-            <div class="white-box" style="margin-bottom:10px">
-                <div class="box-title">⚡</div>
-                <div><b>QUICK SUMMARY</b></div>
+            <div class="white-box quick-summary-content" id="quick-summary" style="margin-bottom:10px">
                 ${summaryParts.join('')}
             </div>
         `;
