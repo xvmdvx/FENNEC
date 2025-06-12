@@ -59,13 +59,18 @@
                     extractAndShowData();
                     const qsToggle = sidebar.querySelector('#qs-toggle');
                     const qsBox = sidebar.querySelector('#quick-summary');
-                    if (qsBox) qsBox.style.maxHeight = '0';
+                    if (qsBox) {
+                        qsBox.style.maxHeight = '0';
+                        qsBox.classList.add('quick-summary-collapsed');
+                    }
                     if (qsToggle && qsBox) {
                         qsToggle.addEventListener('click', () => {
                             if (qsBox.style.maxHeight && qsBox.style.maxHeight !== '0px') {
                                 qsBox.style.maxHeight = '0';
+                                qsBox.classList.add('quick-summary-collapsed');
                             } else {
                                 qsBox.style.maxHeight = qsBox.scrollHeight + 'px';
+                                qsBox.classList.remove('quick-summary-collapsed');
                             }
                         });
                     }
