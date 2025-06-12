@@ -612,8 +612,8 @@
                 addrHtml = `<div>${renderAddress(company.address)}</div>`;
             }
             html += `
+            <div class="section-label">COMPANY:</div>
             <div class="white-box" style="margin-bottom:10px">
-                <div class="box-title">🏢</div>
                 <div><b>${renderCopy(company.name)}</b></div>
                 <div>${company.state || '<span style="color:#aaa">-</span>'}</div>
                 ${addrHtml}
@@ -627,8 +627,8 @@
             const statusText = `${agent.status || ''}${agent.expiration ? ` (${escapeHtml(agent.expiration)})` : ''}`.trim();
             const statusHtml = statusText ? statusText : '<span style="color:#aaa">-</span>';
             html += `
+            <div class="section-label">AGENT:</div>
             <div class="white-box" style="margin-bottom:10px">
-                <div class="box-title">🕵️</div>
                 <div><b>${renderCopy(agent.name)}</b></div>
                 <div>${renderAddress(agent.address)}</div>
                 <div${expired ? ' class="copilot-expired"' : ''}>${statusHtml}</div>
@@ -637,8 +637,8 @@
         // DIRECTORS / MEMBERS
         if (directors.length) {
             html += `
+            <div class="section-label">${isLLC ? 'MEMBERS:' : 'DIRECTORS:'}</div>
             <div class="white-box" style="margin-bottom:10px">
-                <div class="box-title">👥</div>
                 ${directors.map(d => `
                     <div><b>${renderCopy(d.name)}</b></div>
                     <div>${renderAddress(d.address)}</div>
@@ -648,8 +648,8 @@
         // SHAREHOLDERS
         if (shareholders.length) {
             html += `
+            <div class="section-label">SHAREHOLDERS:</div>
             <div class="white-box" style="margin-bottom:10px">
-                <div class="box-title">💰</div>
                 ${shareholders.map(s => `
                     <div><b>${renderCopy(s.name)}</b></div>
                     <div>${renderAddress(s.address)}</div>
@@ -660,8 +660,8 @@
         // OFFICERS
         if (officers.length) {
             html += `
+            <div class="section-label">OFFICERS:</div>
             <div class="white-box" style="margin-bottom:10px">
-                <div class="box-title">👮</div>
                 ${officers.map(o => {
                     const addrLine = o.address && o.address !== '-' ? `<div>${renderAddress(o.address)}</div>` : '';
                     return `
