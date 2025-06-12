@@ -68,6 +68,40 @@
             return /[A-Za-z]/.test(cleaned);
         }
 
+        function escapeHtml(text) {
+            return text
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/\"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+
+        function renderAddress(addr) {
+            if (!addr) return '<span style="color:#aaa">-</span>';
+            const parts = addr.split(/,\s*/);
+
+            let firstLine = parts.shift() || '';
+            let secondLine = parts.join(', ');
+
+            if (parts.length > 2) {
+                const extra = parts.shift();
+                firstLine = `${firstLine}, ${extra}`;
+                secondLine = parts.join(', ');
+            }
+
+            const display = secondLine ? `${escapeHtml(firstLine)}<br>${escapeHtml(secondLine)}`
+                                        : escapeHtml(firstLine);
+            const escFull = escapeHtml(addr);
+            return `<span class="address-wrapper"><a href="#" class="copilot-address" data-address="${escFull}">${display}</a><span class="copilot-usps" data-address="${escFull}" title="USPS Lookup"> ✉️</span></span>`;
+        }
+
+        function renderCopy(text) {
+            if (!text) return '<span style="color:#aaa">-</span>';
+            const esc = escapeHtml(text);
+            return `<span class="copilot-copy" data-copy="${esc}">${esc}</span>`;
+        }
+
         function parseOrderDetails(text) {
             const details = {};
 
@@ -147,21 +181,94 @@
         function fillOrderSummaryBox(context) {
             const summaryBox = document.getElementById('order-summary-content');
             if (!summaryBox) return;
-            const email = context?.email ? context.email.toLowerCase() : "Not found";
+            const email = context?.email ? context.email.toLowerCase() : null;
             summaryBox.innerHTML = `
-                <div><strong>Order:</strong> ${context?.orderNumber || "Not found"}</div>
-                <div><strong>Email:</strong> ${email}</div>
-                <div><strong>Name:</strong> ${context?.name || "Not found"}</div>
+                <div><strong>Order:</strong> ${renderCopy(context?.orderNumber)}</div>
+                <div><strong>Email:</strong> ${renderCopy(email)}</div>
+                <div><strong>Name:</strong> ${renderCopy(context?.name)}</div>
             `;
+            attachCommonListeners(summaryBox);
             console.log("[FENNEC] Order Summary rellenado:", context);
             if (context?.details) {
                 console.log("[FENNEC] Detalles de la orden:", context.details);
             }
         }
 
+        function fillIntelBox(context) {
+            const intelBox = document.getElementById('intel-summary-content');
+            if (!intelBox) return;
+
+            const details = context?.details || {};
+            const namesSet = new Set();
+            const addrSet = new Set();
+
+            const addName = n => {
+                if (n && n !== context?.name && !namesSet.has(n)) namesSet.add(n);
+            };
+            const addAddr = a => {
+                if (a && !addrSet.has(a)) addrSet.add(a);
+            };
+
+            addName(details.companyName);
+            addName(details.raName);
+            if (details.people) details.people.forEach(p => {
+                addName(p.name);
+                if (p.address) addAddr(p.address);
+            });
+
+            addAddr(details.companyAddress);
+            addAddr(details.raAddress);
+
+            const nameHtml = Array.from(namesSet).map(n => `<div>${renderCopy(n)}</div>`).join('');
+            const addrHtml = Array.from(addrSet).map(a => `<div>${renderAddress(a)}</div>`).join('');
+
+            if (!nameHtml && !addrHtml) {
+                intelBox.innerHTML = '<span style="color:#ccc">No intel found.</span>';
+            } else {
+                let html = '';
+                if (nameHtml) html += `<div><u>Names</u></div>${nameHtml}`;
+                if (addrHtml) {
+                    if (nameHtml) html += '<hr style="border:none;border-top:1px solid #555;margin:6px 0"/>';
+                    html += `<div><u>Addresses</u></div>${addrHtml}`;
+                }
+                intelBox.innerHTML = html;
+            }
+            attachCommonListeners(intelBox);
+        }
+
+        function attachCommonListeners(rootEl) {
+            if (!rootEl) return;
+            rootEl.querySelectorAll('.copilot-address').forEach(el => {
+                el.addEventListener('click', e => {
+                    e.preventDefault();
+                    const addr = el.dataset.address;
+                    if (!addr) return;
+                    navigator.clipboard.writeText(addr).catch(err => console.warn('[Copilot] Clipboard', err));
+                    window.open('https://www.google.com/search?q=' + encodeURIComponent(addr), '_blank');
+                });
+            });
+            rootEl.querySelectorAll('.copilot-usps').forEach(el => {
+                el.addEventListener('click', e => {
+                    e.preventDefault();
+                    const addr = el.dataset.address;
+                    if (!addr) return;
+                    const url = 'https://tools.usps.com/zip-code-lookup.htm?byaddress&fennec_addr=' + encodeURIComponent(addr);
+                    window.open(url, '_blank');
+                });
+            });
+            rootEl.querySelectorAll('.copilot-copy').forEach(el => {
+                el.addEventListener('click', () => {
+                    const text = el.dataset.copy;
+                    if (!text) return;
+                    navigator.clipboard.writeText(text).catch(err => console.warn('[Copilot] Clipboard', err));
+                });
+            });
+        }
+
         function handleEmailSearchClick() {
             const context = extractOrderContextFromEmail();
             fillOrderSummaryBox(context);
+            fillIntelBox(context);
 
             if (!context || !context.email) {
                 alert("No se pudo detectar el correo del cliente.");
@@ -218,10 +325,20 @@
                             No order data yet.
                         </div>
                     </div>
+                    <div class="intel-summary-box">
+                        <strong>POTENTIAL INTEL</strong><br>
+                        <div id="intel-summary-content" style="color:#ccc; font-size:13px;">
+                            No intel yet.
+                        </div>
+                    </div>
                 </div>
             `;
             document.body.appendChild(sidebar);
             console.log("[Copilot] Sidebar INYECTADO en Gmail.");
+
+            const ctx = extractOrderContextFromEmail();
+            fillOrderSummaryBox(ctx);
+            fillIntelBox(ctx);
 
             // Botón de cierre
             document.getElementById('copilot-close').onclick = () => {

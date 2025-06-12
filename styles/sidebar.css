@@ -124,6 +124,17 @@
     text-align: center;
 }
 
+.intel-summary-box {
+    background-color: #2e2e2e;
+    color: #f1f1f1;
+    padding: 8px;
+    margin-top: 12px;
+    border-radius: 8px;
+    font-size: 13px;
+    line-height: 1.4em;
+    text-align: center;
+}
+
 /* Ensure DB sidebar sections remain readable */
 #copilot-sidebar .white-box {
     /* Slightly darker background for readability */
