@@ -572,7 +572,7 @@
             pushAddr('Company Mailing', company.mailingAddress, company.name);
         }
         if (agent && agent.address) pushAddr('Agent', agent.address, agent.name);
-        directors.forEach((d, i) => pushAddr(`Director ${i+1}`, d.address, d.name));
+        directors.forEach((d, i) => pushAddr(`${isLLC ? 'Member' : 'Director'} ${i+1}`, d.address, d.name));
         shareholders.forEach((s, i) => pushAddr(`Shareholder ${i+1}`, s.address, s.name));
         officers.forEach((o, i) => pushAddr(`Officer ${i+1}`, o.address, o.name));
 
