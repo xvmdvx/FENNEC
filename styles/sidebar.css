@@ -153,3 +153,7 @@
 .copilot-copy:hover {
     text-decoration: underline;
 }
+
+.copilot-expired {
+    color: #8B0000 !important;
+}

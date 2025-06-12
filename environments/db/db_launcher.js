@@ -105,6 +105,11 @@
         return `<span class="copilot-copy" data-copy="${esc}">${esc}</span>`;
     }
 
+    function parseDate(text) {
+        const parsed = Date.parse(text);
+        return isNaN(parsed) ? null : new Date(parsed);
+    }
+
     function buildAddress(obj) {
         if (!obj) return '';
 
@@ -309,22 +314,6 @@
         }).filter(Boolean);
     }
 
-    // Obtiene el estatus de subscripción del Registered Agent desde la pestaña
-    // de suscripciones. Busca la fila correspondiente y retorna el valor de la
-    // columna de estatus (p.ej. "Active" o "Inactive").
-    function getAgentSubscriptionStatus() {
-        const rows = document.querySelectorAll('#vsubscriptions .table-list-of-subs tbody tr');
-        for (const row of rows) {
-            const cells = row.querySelectorAll('td');
-            if (cells.length >= 3) {
-                const planName = cells[1].innerText || '';
-                if (/registered agent/i.test(planName)) {
-                    return cells[2].innerText.trim();
-                }
-            }
-        }
-        return null;
-    }
 
     function extractAndShowData() {
         // 1. COMPANY
@@ -391,23 +380,18 @@
             {name: 'cityStateZipCountry', label: 'city, state, zip, country'},
             {name: 'cityStateZip', label: 'city, state, zip'},
             {name: 'country', label: 'country'},
+            {name: 'status', label: 'registered agent service'},
             {name: 'status', label: 'subscription'},
-            {name: 'status', label: 'registered agent service'}
+            {name: 'expiration', label: 'expiration date'}
         ]);
         const agent = agentRaw ? {
             name: agentRaw.name,
             status: agentRaw.status,
+            expiration: agentRaw.expiration,
             address: buildAddress(agentRaw)
         } : {};
 
-        // Detectar el estatus de suscripción del Registered Agent desde la
-        // pestaña de Subscriptions.
-        if (!agent.status) {
-            const agentSub = getAgentSubscriptionStatus();
-            if (agentSub) {
-                agent.status = agentSub;
-            }
-        }
+
 
         // Detectar tipo de entidad para nombrar apropiadamente
         const entTypeEl = document.getElementById('entityType');
@@ -480,12 +464,16 @@
         }
         // AGENT
         if (agent && Object.values(agent).some(v => v)) {
+            const expDate = agent.expiration ? parseDate(agent.expiration) : null;
+            const expired = expDate && expDate < new Date();
+            const statusText = `${agent.status || ''}${agent.expiration ? ` (${escapeHtml(agent.expiration)})` : ''}`.trim();
+            const statusHtml = statusText ? statusText : '<span style="color:#aaa">-</span>';
             html += `
             <div class="white-box" style="margin-bottom:10px">
                 <div class="box-title">🕵️</div>
                 <div><b>${renderCopy(agent.name)}</b></div>
                 <div>${renderAddress(agent.address)}</div>
-                <div>${agent.status || '<span style="color:#aaa">-</span>'}</div>
+                <div${expired ? ' class="copilot-expired"' : ''}>${statusHtml}</div>
             </div>`;
         }
         // DIRECTORS / MEMBERS
