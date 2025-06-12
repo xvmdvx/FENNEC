@@ -458,8 +458,8 @@
                 <div class="box-title">🏢</div>
                 <div><b>${renderCopy(company.name)}</b></div>
                 <div>${company.state || '<span style="color:#aaa">-</span>'}</div>
-                <div>${renderCopy(company.purpose)}</div>
                 ${addrHtml}
+                <div class="company-purpose">${renderCopy(company.purpose)}</div>
             </div>`;
         }
         // AGENT
