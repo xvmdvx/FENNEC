@@ -1,7 +1,16 @@
 (function main() {
-    chrome.runtime.onMessage.addListener((msg) => {
+    chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
         if (msg.action === 'fennecToggle') {
             window.location.reload();
+        }
+        if (msg.action === 'getActiveIssue') {
+            try {
+                const text = getActiveIssueText();
+                sendResponse({ issueText: text });
+            } catch (err) {
+                console.warn('[FENNEC] Error extracting issue text:', err);
+                sendResponse({ issueText: null });
+            }
         }
     });
     chrome.storage.local.get({ extensionEnabled: true }, ({ extensionEnabled }) => {
@@ -774,4 +783,17 @@
         }
     }
     });
+
+    function getActiveIssueText() {
+        const history = document.querySelector('.issue-history .steamline');
+        if (!history) return null;
+        const items = Array.from(history.querySelectorAll('.sl-item'));
+        for (const it of items) {
+            const txt = it.innerText.trim();
+            if (!txt) continue;
+            if (/Resolved/i.test(txt)) continue;
+            return txt;
+        }
+        return null;
+    }
 })();
