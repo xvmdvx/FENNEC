@@ -556,7 +556,15 @@
         shareholders.forEach((s, i) => pushAddr(`Shareholder ${i+1}`, s.address, s.name));
         officers.forEach((o, i) => pushAddr(`Officer ${i+1}`, o.address, o.name));
 
-        const normalizeAddr = a => a.toLowerCase().replace(/\s+/g, ' ').trim();
+        const normalizeAddr = a => {
+            if (!a) return '';
+            return a
+                .toLowerCase()
+                .replace(/[.,]/g, '')
+                .replace(/\s+/g, ' ')
+                .replace(/\s+(?:us|usa|united states(?: of america)?)$/, '')
+                .trim();
+        };
         const addrMap = {};
         addrs.forEach(({ label, addr }) => {
             const key = normalizeAddr(addr);
