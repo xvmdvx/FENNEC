@@ -439,8 +439,63 @@
         // 5. OFFICERS
         const officers = extractOfficers('#vofficers .form-body');
 
+        // ---------- QUICK SUMMARY -------------
+        const names = [];
+        if (company && company.name) names.push(company.name);
+        if (agent && agent.name) names.push(agent.name);
+        directors.forEach(d => { if (d.name) names.push(d.name); });
+        shareholders.forEach(s => { if (s.name) names.push(s.name); });
+        officers.forEach(o => { if (o.name) names.push(o.name); });
+        const totalEntities = new Set(names.map(n => n.toLowerCase())).size;
+
+        const addrs = [];
+        const pushAddr = (label, addr) => { if (addr) addrs.push({ label, addr }); };
+        if (company) {
+            pushAddr('Company', company.address);
+            pushAddr('Company Physical', company.physicalAddress);
+            pushAddr('Company Mailing', company.mailingAddress);
+        }
+        if (agent && agent.address) pushAddr('Agent', agent.address);
+        directors.forEach((d, i) => pushAddr(`Director ${i+1}`, d.address));
+        shareholders.forEach((s, i) => pushAddr(`Shareholder ${i+1}`, s.address));
+        officers.forEach((o, i) => pushAddr(`Officer ${i+1}`, o.address));
+
+        const normalizeAddr = a => a.toLowerCase().replace(/\s+/g, ' ').trim();
+        const addrMap = {};
+        addrs.forEach(({ label, addr }) => {
+            const key = normalizeAddr(addr);
+            if (!key) return;
+            if (!addrMap[key]) addrMap[key] = { addr, labels: [] };
+            addrMap[key].labels.push(label);
+        });
+        const uniqueAddrCount = Object.keys(addrMap).length;
+        const repeatedAddrs = Object.values(addrMap).filter(v => v.labels.length > 1);
+
+        const orderItems = Array.from(document.querySelectorAll('.order-items li'))
+            .map(li => li.innerText.trim().toLowerCase());
+        const hasRA = orderItems.some(t => t.includes('registered agent'));
+        const hasVA = orderItems.some(t => t.includes('virtual address'));
+
         // Render del HTML
         let html = '';
+
+        const summaryParts = [];
+        summaryParts.push(`<div>Total entidades: ${totalEntities}</div>`);
+        summaryParts.push(`<div>Domicilios únicos: ${uniqueAddrCount}</div>`);
+        if (repeatedAddrs.length) {
+            summaryParts.push('<div style="margin-top:4px">Domicilios repetidos:</div>');
+            repeatedAddrs.forEach(r => {
+                summaryParts.push(`<div style="margin-left:10px">${renderAddress(r.addr)}<br><span style="font-size:90%">${r.labels.join(', ')}</span></div>`);
+            });
+        }
+        summaryParts.push(`<div>RA: ${hasRA ? 'Sí' : 'No'} | VA: ${hasVA ? 'Sí' : 'No'}</div>`);
+        html += `
+            <div class="white-box" style="margin-bottom:10px">
+                <div class="box-title">⚡</div>
+                <div><b>QUICK SUMMARY</b></div>
+                ${summaryParts.join('')}
+            </div>
+        `;
 
         // COMPANY
         if (company) {
