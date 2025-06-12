@@ -504,7 +504,20 @@
         }));
 
         // 5. OFFICERS
-        const officers = extractOfficers('#vofficers .form-body');
+        let officers = extractOfficers('#vofficers .form-body');
+        // Deduplicate officers that share the same name by merging their positions
+        const officerMap = {};
+        officers.forEach(o => {
+            const key = o.name ? o.name.trim().toLowerCase() : '';
+            if (!key) return;
+            if (!officerMap[key]) {
+                officerMap[key] = { name: o.name.trim(), address: o.address, positions: new Set() };
+            }
+            if (o.position) officerMap[key].positions.add(o.position.trim());
+            if (!officerMap[key].address && o.address) officerMap[key].address = o.address;
+        });
+        const dedupedOfficers = Object.values(officerMap).map(o => ({ name: o.name, address: o.address, position: Array.from(o.positions).join(', ') }));
+        officers = dedupedOfficers;
 
         // ---------- QUICK SUMMARY -------------
         const INTERNAL_NAME_PATTERNS = [/incfile/i, /republic registered agent/i];
