@@ -440,30 +440,41 @@
         const officers = extractOfficers('#vofficers .form-body');
 
         // ---------- QUICK SUMMARY -------------
+        const INTERNAL_NAME_PATTERNS = [/incfile/i, /republic registered agent/i];
+        const INTERNAL_ADDR_PATTERNS = [/17350 state hwy 249/i];
+        const isInternal = (name, addr) => {
+            const text = (name || '') + ' ' + (addr || '');
+            return INTERNAL_NAME_PATTERNS.some(re => re.test(text)) ||
+                   INTERNAL_ADDR_PATTERNS.some(re => re.test(text));
+        };
+
         const roleMap = {};
-        const addRole = (name, role) => {
-            if (!name) return;
+        const addRole = (name, role, addr) => {
+            if (!name || isInternal(name, addr)) return;
             const key = name.trim().toLowerCase();
             if (!roleMap[key]) roleMap[key] = { display: name.trim(), roles: new Set() };
             roleMap[key].roles.add(role);
         };
 
-        if (agent && agent.name) addRole(agent.name, 'RA');
-        directors.forEach(d => addRole(d.name, isLLC ? 'MEMBER' : 'DIRECTOR'));
-        shareholders.forEach(s => addRole(s.name, 'SHAREHOLDER'));
-        officers.forEach(o => addRole(o.name, 'OFFICER'));
+        if (agent && agent.name) addRole(agent.name, 'RA', agent.address);
+        directors.forEach(d => addRole(d.name, isLLC ? 'MEMBER' : 'DIRECTOR', d.address));
+        shareholders.forEach(s => addRole(s.name, 'SHAREHOLDER', s.address));
+        officers.forEach(o => addRole(o.name, 'OFFICER', o.address));
 
         const addrs = [];
-        const pushAddr = (label, addr) => { if (addr) addrs.push({ label, addr }); };
+        const pushAddr = (label, addr, name) => {
+            if (!addr || isInternal(name, addr)) return;
+            addrs.push({ label, addr });
+        };
         if (company) {
-            pushAddr('Company', company.address);
-            pushAddr('Company Physical', company.physicalAddress);
-            pushAddr('Company Mailing', company.mailingAddress);
+            pushAddr('Company', company.address, company.name);
+            pushAddr('Company Physical', company.physicalAddress, company.name);
+            pushAddr('Company Mailing', company.mailingAddress, company.name);
         }
-        if (agent && agent.address) pushAddr('Agent', agent.address);
-        directors.forEach((d, i) => pushAddr(`Director ${i+1}`, d.address));
-        shareholders.forEach((s, i) => pushAddr(`Shareholder ${i+1}`, s.address));
-        officers.forEach((o, i) => pushAddr(`Officer ${i+1}`, o.address));
+        if (agent && agent.address) pushAddr('Agent', agent.address, agent.name);
+        directors.forEach((d, i) => pushAddr(`Director ${i+1}`, d.address, d.name));
+        shareholders.forEach((s, i) => pushAddr(`Shareholder ${i+1}`, s.address, s.name));
+        officers.forEach((o, i) => pushAddr(`Officer ${i+1}`, o.address, o.name));
 
         const normalizeAddr = a => a.toLowerCase().replace(/\s+/g, ' ').trim();
         const addrMap = {};
@@ -473,8 +484,8 @@
             if (!addrMap[key]) addrMap[key] = { addr, labels: [] };
             addrMap[key].labels.push(label);
         });
-        const uniqueAddrCount = Object.keys(addrMap).length;
-        const repeatedAddrs = Object.values(addrMap).filter(v => v.labels.length > 1);
+        const addrEntries = Object.values(addrMap)
+            .map(a => `<div style="margin-left:10px">${renderAddress(a.addr)} (${a.labels.join(', ')})</div>`);
 
         const orderItems = Array.from(document.querySelectorAll('.order-items li'))
             .map(li => li.innerText.trim().toLowerCase());
@@ -491,12 +502,9 @@
             summaryParts.push('<div><b>Involved Entities:</b></div>');
             summaryParts.push(...roleEntries);
         }
-        summaryParts.push(`<div>Domicilios únicos: ${uniqueAddrCount}</div>`);
-        if (repeatedAddrs.length) {
-            summaryParts.push('<div style="margin-top:4px">Domicilios repetidos:</div>');
-            repeatedAddrs.forEach(r => {
-                summaryParts.push(`<div style="margin-left:10px">${renderAddress(r.addr)}<br><span style="font-size:90%">${r.labels.join(', ')}</span></div>`);
-            });
+        if (addrEntries.length) {
+            summaryParts.push('<div><b>Domicilios:</b></div>');
+            summaryParts.push(...addrEntries);
         }
         summaryParts.push(`<div>RA: ${hasRA ? 'Sí' : 'No'} | VA: ${hasVA ? 'Sí' : 'No'}</div>`);
         html += `
