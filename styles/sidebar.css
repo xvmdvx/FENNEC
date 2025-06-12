@@ -238,7 +238,8 @@
 }
 .copilot-tag-white {
     background-color: #fff;
-    color: #111 !important;
+    color: #000 !important;
+    opacity: 1;
     border: 1px solid #ccc;
 }
 .copilot-tag-red {
