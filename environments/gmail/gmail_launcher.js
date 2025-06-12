@@ -51,6 +51,55 @@
             return /^22\d{10}$/.test(digits) ? digits : null;
         }
 
+        function isValidName(str) {
+            if (!str) return false;
+            const cleaned = str.trim();
+            if (cleaned.length < 3) return false;
+            if (!/[A-Za-z]/.test(cleaned)) return false;
+            return /^[A-Za-z0-9'\-\.\s]+$/.test(cleaned);
+        }
+
+        function isValidAddress(str) {
+            if (!str) return false;
+            const cleaned = str.trim();
+            if (cleaned.length < 5) return false;
+            const words = cleaned.split(/\s+/);
+            if (words.length < 2) return false;
+            return /[A-Za-z]/.test(cleaned);
+        }
+
+        function parseOrderDetails(text) {
+            const details = {};
+
+            const compName = text.match(/Company Name[:\s]*([^\n]+)/i);
+            if (compName && isValidName(compName[1])) details.companyName = compName[1].trim();
+
+            const purpose = text.match(/Purpose[:\s]*([^\n]+)/i);
+            if (purpose) details.purpose = purpose[1].trim();
+
+            const compAddr = text.match(/(?:Company\s*)?Address[:\s]*([^\n]+)/i);
+            if (compAddr && isValidAddress(compAddr[1])) details.companyAddress = compAddr[1].trim();
+
+            const raName = text.match(/(?:RA|Registered Agent) Name[:\s]*([^\n]+)/i);
+            if (raName && isValidName(raName[1])) details.raName = raName[1].trim();
+
+            const raAddr = text.match(/(?:RA|Registered Agent) Address[:\s]*([^\n]+)/i);
+            if (raAddr && isValidAddress(raAddr[1])) details.raAddress = raAddr[1].trim();
+
+            const people = [];
+            const memberRegex = /(Member|Director|Officer|Shareholder)\s*Name[:\s]*([^\n]+)\n(?:.*?(?:Address)[:\s]*([^\n]+))?/gi;
+            let m;
+            while ((m = memberRegex.exec(text)) !== null) {
+                const entry = { role: m[1], name: m[2].trim() };
+                if (!isValidName(entry.name)) continue;
+                if (m[3] && isValidAddress(m[3])) entry.address = m[3].trim();
+                people.push(entry);
+            }
+            if (people.length) details.people = people;
+
+            return details;
+        }
+
         function extractOrderContextFromEmail() {
             try {
                 const senderSpan = document.querySelector("h3.iw span[email]");
@@ -70,6 +119,7 @@
                 }
 
                 const orderNumber = extractOrderNumber(fullText);
+                const details = parseOrderDetails(fullText);
 
                 let fallbackName = null;
                 const helloLine = fullText.match(/Hello\s+([A-Z][a-z]+(?:\s+[A-Z][a-z]+)?)/);
@@ -85,7 +135,8 @@
                 return {
                     orderNumber,
                     email: senderEmail,
-                    name: finalName
+                    name: finalName,
+                    details
                 };
             } catch (err) {
                 console.warn("[Copilot] Error extrayendo contexto:", err);
@@ -103,6 +154,9 @@
                 <div><strong>Name:</strong> ${context?.name || "Not found"}</div>
             `;
             console.log("[FENNEC] Order Summary rellenado:", context);
+            if (context?.details) {
+                console.log("[FENNEC] Detalles de la orden:", context.details);
+            }
         }
 
         function handleEmailSearchClick() {
