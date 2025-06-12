@@ -69,8 +69,8 @@
                                 qsBox.style.maxHeight = '0';
                                 qsBox.classList.add('quick-summary-collapsed');
                             } else {
-                                qsBox.style.maxHeight = qsBox.scrollHeight + 'px';
                                 qsBox.classList.remove('quick-summary-collapsed');
+                                qsBox.style.maxHeight = qsBox.scrollHeight + 'px';
                             }
                         });
                     }
@@ -564,7 +564,13 @@
 
         const summaryParts = [];
         const roleEntries = Object.values(roleMap)
-            .map(r => `<div style="margin-left:10px"><b>${renderCopy(r.display)}</b> (${Array.from(r.roles).join(', ')})</div>`);
+            .map(r => `
+                <div style="margin-left:10px">
+                    <b>${renderCopy(r.display)}</b><br>
+                    ${Array.from(r.roles)
+                        .map(role => `<span class="copilot-tag">${escapeHtml(role)}</span>`)
+                        .join(' ')}
+                </div>`);
         if (roleEntries.length) {
             summaryParts.push('<div>Involved Entities:</div>');
             summaryParts.push(...roleEntries);
