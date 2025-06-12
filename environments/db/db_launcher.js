@@ -586,8 +586,28 @@
 
         const orderItems = Array.from(document.querySelectorAll('.order-items li'))
             .map(li => li.innerText.trim().toLowerCase());
-        const hasRA = orderItems.some(t => t.includes('registered agent'));
-        const hasVA = orderItems.some(t => t.includes('virtual address'));
+
+        // Registered Agent subscription status from #vagent section
+        const hasRA = /^yes/i.test(agent.status || '');
+
+        // Virtual Address status from #vvirtual-address section or fallback button
+        let hasVA = false;
+        const vaSection = document.querySelector('#vvirtual-address');
+        if (vaSection) {
+            const vaTexts = Array.from(vaSection.querySelectorAll('td, span'))
+                .map(el => el.innerText.trim().toLowerCase());
+            hasVA = vaTexts.some(t => t.includes('active'));
+            if (!hasVA && vaTexts.some(t => t.includes('inactive'))) {
+                hasVA = false;
+            }
+        } else {
+            const vaBtn = Array.from(document.querySelectorAll('button'))
+                .find(b => /virtual address/i.test(b.innerText));
+            if (vaBtn) {
+                const txt = vaBtn.innerText.toLowerCase();
+                hasVA = txt.includes('active');
+            }
+        }
         const isVAAddress = addr => hasVA && /#\s*\d{3,}/.test(addr);
 
         const addrEntries = Object.values(addrMap)
