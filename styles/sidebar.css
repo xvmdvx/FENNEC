@@ -222,6 +222,7 @@
     font-size: 11px;
     margin-right: 4px;
     margin-top: 2px;
+    opacity: 0.9;
 }
 .copilot-tag-green {
     background-color: #2ecc71;
@@ -229,7 +230,7 @@
 }
 .copilot-tag-white {
     background-color: #fff;
-    color: #555;
+    color: #333;
     border: 1px solid #ccc;
 }
 .copilot-tag-red {
