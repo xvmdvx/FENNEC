@@ -70,25 +70,60 @@
 
         function extractCompanyNames(text) {
             if (!text) return [];
+
             const designators = [
-                'LLC', 'L\\.L\\.C\\.?',
-                'INC', 'INC\\.?', 'CORP', 'CORP\\.?', 'CORPORATION',
-                'COMPANY', 'CO', 'CO\\.?', 'LTD', 'LTD\\.?', 'LIMITED',
-                'LLP', 'L\\.L\\.P\\.?', 'LP', 'L\\.P\\.?',
-                'PLC', 'P\\.L\\.C\\.?', 'PC', 'P\\.C\\.?', 'PA', 'P\\.A\\.?'
+                'LLC', 'L.L.C', 'INC', 'CORP', 'CORPORATION', 'COMPANY', 'CO',
+                'LTD', 'LIMITED', 'LLP', 'LP', 'PLC', 'PC', 'PA'
             ];
-            const pattern = `\\b([A-Z][A-Za-z0-9&'\\-]{2,}(?:\\s+[A-Z][A-Za-z0-9&'\\-]{2,})*\\s+(?:${designators.join('|')}))(?![A-Za-z])`;
-            const regex = new RegExp(pattern, 'gi');
-            const results = new Set();
-            let m;
-            while ((m = regex.exec(text)) !== null) {
-                const name = m[1].replace(/\s+/g, ' ').trim();
-                const words = name.split(/\s+/);
-                if (words.length > 1 && words[0].length > 1 && words.length <= 8) {
-                    if (!/^THE$/i.test(words[0])) results.add(name);
+            const designatorsDot = [
+                'L.L.C.', 'INC.', 'CORP.', 'CO.', 'LTD.', 'L.L.P.',
+                'L.P.', 'P.L.C.', 'P.C.', 'P.A.'
+            ];
+
+            const namesMap = new Map();
+            const lines = text.split(/\n+/);
+
+            for (const line of lines) {
+                const tokens = line.trim().split(/\s+/);
+                for (let i = 0; i < tokens.length; i++) {
+                    const raw = tokens[i];
+                    const clean = raw.replace(/^[^A-Za-z0-9&]+|[^A-Za-z0-9&.,]+$/g, '');
+                    if (!clean) continue;
+
+                    const base = clean.replace(/[.,]+$/, '');
+                    const upper = base.toUpperCase();
+
+                    if (designators.includes(upper) || designatorsDot.includes(clean.toUpperCase())) {
+                        const parts = [clean];
+                        const designatorWithDot = designatorsDot.includes(clean.toUpperCase());
+
+                        let j = i - 1, count = 0;
+                        while (j >= 0 && count < 6) {
+                            const prev = tokens[j];
+                            const prevClean = prev.replace(/^[^A-Za-z0-9&]+|[^A-Za-z0-9&.,]+$/g, '');
+                            if (!prevClean) { j--; count++; continue; }
+                            if (/^[a-z]/.test(prevClean)) break;
+                            parts.unshift(prevClean);
+                            if (prevClean.length > 2 && /[.!?]$/.test(prevClean)) break;
+                            j--; count++;
+                        }
+
+                        let candidate = parts.join(' ')      
+                            .replace(/\s+,/g, ',')
+                            .replace(/\s+&\s+/g, ' & ');
+
+                        if (!designatorWithDot) candidate = candidate.replace(/[.,]+$/, '');
+                        candidate = candidate.trim();
+
+                        const key = candidate.toUpperCase();
+                        if (candidate.split(' ').length > 1 && !namesMap.has(key)) {
+                            namesMap.set(key, candidate);
+                        }
+                    }
                 }
             }
-            return Array.from(results);
+
+            return Array.from(namesMap.values());
         }
 
         function escapeHtml(text) {
@@ -224,11 +259,13 @@
             if (!intelBox) return;
 
             const details = context?.details || {};
-            const namesSet = new Set();
+            const namesMap = new Map();
             const addrSet = new Set();
 
             const addName = n => {
-                if (n && n !== context?.name && !namesSet.has(n)) namesSet.add(n);
+                if (!n || n === context?.name) return;
+                const key = n.trim().toUpperCase();
+                if (!namesMap.has(key)) namesMap.set(key, n.trim());
             };
             const addAddr = a => {
                 if (a && !addrSet.has(a)) addrSet.add(a);
@@ -248,7 +285,7 @@
                 context.companies.forEach(addName);
             }
 
-            const nameHtml = Array.from(namesSet).map(n => `<div>${renderCopy(n)}</div>`).join('');
+            const nameHtml = Array.from(namesMap.values()).map(n => `<div>${renderCopy(n)}</div>`).join('');
             const addrHtml = Array.from(addrSet).map(a => `<div>${renderAddress(a)}</div>`).join('');
 
             if (!nameHtml && !addrHtml) {
