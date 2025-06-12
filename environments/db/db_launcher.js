@@ -130,6 +130,42 @@
         return parts.join(', ');
     }
 
+    function extractSingleElement(root, fields) {
+        if (!root) return null;
+        const rows = Array.from(root.querySelectorAll('.row'));
+        const obj = {};
+        rows.forEach(row => {
+            fields.forEach(field => {
+                if (obj[field.name]) return;
+                let label = Array.from(row.querySelectorAll('label')).find(l =>
+                    l.innerText.trim().toLowerCase().includes(field.label.toLowerCase())
+                );
+                if (label) {
+                    let valDiv = label.nextElementSibling;
+                    const parent = label.closest('div');
+                    if ((!valDiv || !valDiv.innerText.trim()) && parent) {
+                        if (parent.nextElementSibling && parent.nextElementSibling.innerText.trim()) {
+                            valDiv = parent.nextElementSibling;
+                        } else {
+                            const siblings = Array.from(parent.parentElement.children);
+                            const idx = siblings.indexOf(parent);
+                            for (let i = idx + 1; i < siblings.length; i++) {
+                                if (siblings[i].innerText.trim()) {
+                                    valDiv = siblings[i];
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    if (valDiv) {
+                        obj[field.name] = valDiv.innerText.trim();
+                    }
+                }
+            });
+        });
+        return Object.values(obj).some(v => v) ? obj : null;
+    }
+
     // Scrapea los .row de una sección dada y devuelve array de objetos campo:valor
     function extractRows(sectionSel, fields) {
         const root = document.querySelector(sectionSel);
@@ -306,6 +342,33 @@
             {name: 'address', label: 'address'}
         ]);
 
+        const physicalBox = Array.from(document.querySelectorAll('#vcomp .form-body h4, #vcomp .form-body h3'))
+            .find(h => h.innerText.toLowerCase().includes('physical'));
+        const mailingBox = Array.from(document.querySelectorAll('#vcomp .form-body h4, #vcomp .form-body h3'))
+            .find(h => h.innerText.toLowerCase().includes('mailing'));
+
+        const physicalRaw = physicalBox ?
+            extractSingleElement(physicalBox.closest('.white-box') || physicalBox.parentElement, [
+                {name: 'street', label: 'street'},
+                {name: 'street1', label: 'street 1'},
+                {name: 'street2', label: 'street 2'},
+                {name: 'cityStateZipCountry', label: 'city, state, zip, country'},
+                {name: 'cityStateZip', label: 'city, state, zip'},
+                {name: 'country', label: 'country'},
+                {name: 'address', label: 'address'}
+            ]) : null;
+
+        const mailingRaw = mailingBox ?
+            extractSingleElement(mailingBox.closest('.white-box') || mailingBox.parentElement, [
+                {name: 'street', label: 'street'},
+                {name: 'street1', label: 'street 1'},
+                {name: 'street2', label: 'street 2'},
+                {name: 'cityStateZipCountry', label: 'city, state, zip, country'},
+                {name: 'cityStateZip', label: 'city, state, zip'},
+                {name: 'country', label: 'country'},
+                {name: 'address', label: 'address'}
+            ]) : null;
+
         const headerStatus = document.querySelector('.btn-status-text')?.innerText?.trim() || null;
 
         const company = companyRaw ? {
@@ -313,7 +376,9 @@
             state: companyRaw.state,
             status: companyRaw.status || headerStatus,
             purpose: companyRaw.purpose,
-            address: buildAddress(companyRaw)
+            address: buildAddress(companyRaw),
+            physicalAddress: physicalRaw ? buildAddress(physicalRaw) : null,
+            mailingAddress: mailingRaw ? buildAddress(mailingRaw) : null
         } : (headerStatus ? { status: headerStatus } : null);
 
         // 2. AGENT
@@ -394,13 +459,23 @@
 
         // COMPANY
         if (company) {
+            let addrHtml = '';
+            if (company.physicalAddress) {
+                addrHtml += `<div><b>Physical:</b> ${renderAddress(company.physicalAddress)}</div>`;
+            }
+            if (company.mailingAddress) {
+                addrHtml += `<div><b>Mailing:</b> ${renderAddress(company.mailingAddress)}</div>`;
+            }
+            if (!addrHtml) {
+                addrHtml = `<div>${renderAddress(company.address)}</div>`;
+            }
             html += `
             <div class="white-box" style="margin-bottom:10px">
                 <div class="box-title">🏢</div>
                 <div><b>${renderCopy(company.name)}</b></div>
                 <div>${company.state || '<span style="color:#aaa">-</span>'}</div>
                 <div>${renderCopy(company.purpose)}</div>
-                <div>${renderAddress(company.address)}</div>
+                ${addrHtml}
             </div>`;
         }
         // AGENT
