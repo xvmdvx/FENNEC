@@ -4,13 +4,23 @@
             window.location.reload();
         }
         if (msg.action === 'getLastIssue') {
-            try {
-                const info = getLastIssueInfo();
-                sendResponse({ issueInfo: info });
-            } catch (err) {
-                console.warn('[FENNEC] Error extracting issue text:', err);
-                sendResponse({ issueInfo: null });
-            }
+            let attempts = 10;
+            const tryExtract = () => {
+                try {
+                    const info = getLastIssueInfo();
+                    if (info || attempts <= 0) {
+                        sendResponse({ issueInfo: info });
+                    } else {
+                        attempts--;
+                        setTimeout(tryExtract, 500);
+                    }
+                } catch (err) {
+                    console.warn('[FENNEC] Error extracting issue text:', err);
+                    sendResponse({ issueInfo: null });
+                }
+            };
+            tryExtract();
+            return true;
         }
     });
     chrome.storage.local.get({ extensionEnabled: true }, ({ extensionEnabled }) => {
