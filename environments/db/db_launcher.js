@@ -816,10 +816,12 @@
 
         const history = document.querySelector('.issue-history .steamline');
         if (history) {
-            const items = Array.from(history.querySelectorAll('.sl-item'));
-            if (items.length) {
-                const txt = items[0].textContent.trim();
-                const active = !/resolved/i.test(txt);
+            const item = history.querySelector('.sl-item');
+            if (item) {
+                const desc = item.querySelector('.desc');
+                const txt = desc ? desc.textContent.trim() : item.textContent.trim();
+                const icon = item.querySelector('.sl-left');
+                const active = icon && icon.classList.contains('bg-red') ? true : !/resolved/i.test(txt);
                 return { text: txt, active };
             }
         }
