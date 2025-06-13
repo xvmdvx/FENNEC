@@ -457,39 +457,17 @@
             }
         }
 
-        function checkLastIssue(orderId, attempts = 15, delay = 1000) {
+        function checkLastIssue(orderId) {
             if (!orderId) return;
-            // Show placeholder immediately while we try to fetch the issue
             fillIssueBox(null, orderId);
-            // Match any trailing hash or query parameters on the DB URL
-            const query = { url: `https://db.incfile.com/incfile/order/detail/${orderId}*` };
-            const tryFetch = () => {
-                chrome.tabs.query(query, tabs => {
-                    const tab = tabs && tabs[0];
-                    if (!tab || tab.status !== "complete") {
-                        if (attempts > 0) {
-                            setTimeout(() => { attempts--; delay = Math.min(delay * 1.5, 10000); tryFetch(); }, delay);
-                        } else {
-                            console.warn(`[Copilot] Issue check timed out for order ${orderId}`);
-                            fillIssueBox(null, orderId);
-                        }
-                        return;
-                    }
-                    chrome.tabs.sendMessage(tab.id, { action: "getLastIssue" }, resp => {
-                        if (chrome.runtime.lastError) {
-                            if (attempts > 0) {
-                                setTimeout(() => { attempts--; delay = Math.min(delay * 1.5, 10000); tryFetch(); }, delay);
-                            } else {
-                                console.warn(`[Copilot] Issue check timed out for order ${orderId}`);
-                                fillIssueBox(null, orderId);
-                            }
-                            return;
-                        }
-                        fillIssueBox(resp && resp.issueInfo, orderId);
-                    });
-                });
-            };
-            tryFetch();
+            chrome.runtime.sendMessage({ action: "checkLastIssue", orderId }, (resp) => {
+                if (chrome.runtime.lastError) {
+                    console.warn("[Copilot] Issue check failed:", chrome.runtime.lastError.message);
+                    fillIssueBox(null, orderId);
+                    return;
+                }
+                fillIssueBox(resp && resp.issueInfo, orderId);
+            });
         }
 
         function handleEmailSearchClick() {
