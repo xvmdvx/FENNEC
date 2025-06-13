@@ -42,6 +42,9 @@ information scraped from the current page.
 - Displays a sidebar on order detail pages.
 - Scrapes company, agent and officer data and presents it in a compact layout.
 - Addresses are clickable to open a Google search and copy the text.
+- Officer tags in the quick summary now show specific roles like
+  **PRESIDENT**, **SECRETARY**, **TREASURER** or **VP** instead of a generic
+  OFFICER label.
 
 ## Known limitations
 
