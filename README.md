@@ -29,7 +29,9 @@ information scraped from the current page.
   checks the hidden table inside the `#modalUpdateIssue` modal to support newer
   DB layouts. The issue lookup now tolerates trailing URL fragments so the link
   is shown even if the query fails. The parser now reads the issue timeline
-  description so only the message text appears in Gmail.
+  description so only the message text appears in Gmail. The sidebar now waits
+  a few seconds for the DB tab to finish loading before showing the issue,
+  improving reliability on slow connections.
 
 ### DB
 - Displays a sidebar on order detail pages.
