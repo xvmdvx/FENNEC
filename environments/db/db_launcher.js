@@ -50,6 +50,64 @@
             console.log('[FENNEC] Extension disabled, skipping DB launcher.');
             return;
         }
+
+        // ----------- FUNCIONES DE EXTRACCIÓN Y RENDER ------------
+
+        // Map of US states to their Secretary of State business search pages
+        const SOS_URLS = {
+            "Alabama": "http://sos.alabama.gov/business-entities/llcs",
+            "Alaska": "https://www.commerce.alaska.gov/web/cbpl/Corporations.aspx",
+            "Arizona": "http://ecorp.azcc.gov/",
+            "Arkansas": "http://www.sos.arkansas.gov/corps/search_all.php",
+            "California": "https://businesssearch.sos.ca.gov/",
+            "Colorado": "https://www.sos.state.co.us/biz/BusinessEntityCriteriaExt.do",
+            "Connecticut": "https://www.concord-sots.ct.gov/CONCORD/online?sn=PublicInquiry&eid=9740",
+            "Delaware": "https://icis.corp.delaware.gov/Ecorp/EntitySearch/NameSearch.aspx",
+            "District of Columbia": "https://os.dc.gov/",
+            "Florida": "http://search.sunbiz.org/Inquiry/CorporationSearch/ByName",
+            "Georgia": "http://sos.ga.gov/index.php/Corporations/creating_a_new_entity",
+            "Hawaii": "https://hbe.ehawaii.gov/documents/search.html?mobile=N&site_preference=normal",
+            "Idaho": "https://sos.idaho.gov/corp/index.html",
+            "Illinois": "http://www.cyberdriveillinois.com/departments/business_services/corp.html",
+            "Indiana": "https://inbiz.in.gov/BOS/BusinssEntity/StartMyBusiness",
+            "Iowa": "https://sos.iowa.gov/search/business/search.aspx",
+            "Kansas": "https://www.kansas.gov/bess/flow/main?execution=e2s2",
+            "Kentucky": "http://www.sos.ky.gov/",
+            "Louisiana": "https://coraweb.sos.la.gov/CommercialSearch/CommercialSearch.aspx",
+            "Maine": "http://www.maine.gov/sos/cec/corp/",
+            "Maryland": "https://egov.maryland.gov/BusinessExpress/EntitySearch",
+            "Massachusetts": "http://corp.sec.state.ma.us/corpweb/CorpSearch/CorpSearch.aspx",
+            "Michigan": "http://www.dleg.state.mi.us/bcs_corp/sr_corp.asp",
+            "Minnesota": "https://mblsportal.sos.state.mn.us/Business/Search",
+            "Mississippi": "https://corp.sos.ms.gov/corp/portal/c/page/corpBusinessIdSearch/portal.aspx?#clear=1",
+            "Missouri": "https://bsd.sos.mo.gov/businessentity/besearch.aspx?searchtype=0",
+            "Montana": "https://biz.sosmt.gov/search/business",
+            "Nebraska": "https://www.nebraska.gov/sos/corp/corpsearch.cgi?nav=search",
+            "Nevada": "https://nvsos.gov/",
+            "New Hampshire": "https://quickstart.sos.nh.gov/online/BusinessInquire",
+            "New Jersey": "http://www.nj.gov/treasury/revenue/searchfile.shtml",
+            "New Mexico": "https://portal.sos.state.nm.us/BFS/online/CorporationBusinessSearch",
+            "New York": "https://appext20.dos.ny.gov/corp_public/corpsearch.entity_search_entry",
+            "North Carolina": "https://www.sosnc.gov/search/index/corp",
+            "North Dakota": "http://sos.nd.gov/business/business-services/business-records-search/business-record-search-name-availability",
+            "Ohio": "https://www5.sos.state.oh.us:8443/ords/f?p=100:1:0:::::",
+            "Oklahoma": "https://www.sos.ok.gov/corp/corpInquiryFind.aspx",
+            "Oregon": "http://egov.sos.state.or.us/br/pkg_web_name_srch_inq.login",
+            "Pennsylvania": "https://www.corporations.pa.gov/search/CorpSearch",
+            "Rhode Island": "http://ucc.state.ri.us/CorpSearch/CorpSearchInput.asp",
+            "South Carolina": "https://businessfilings.sc.gov/BusinessFiling/Entity/Search",
+            "South Dakota": "https://sosenterprise.sd.gov/BusinessServices/Business/NameAvailability.aspx",
+            "Tennessee": "https://tnbear.tn.gov/Ecommerce/FilingSearch.aspx",
+            "Texas": "https://mycpa.cpa.state.tx.us/coa/Index.html",
+            "Utah": "https://secure.utah.gov/bes/",
+            "Vermont": "https://www.sec.state.vt.us/corporationsbusiness-services/searches-databases/business-search.aspx",
+            "Virginia": "https://sccefile.scc.virginia.gov/Find/Business",
+            "Washington": "https://www.sos.wa.gov/corps/corps_search.aspx",
+            "West Virginia": "http://apps.sos.wv.gov/business/corporations/",
+            "Wisconsin": "https://www.wdfi.org/apps/CorpSearch/Search.aspx",
+            "Wyoming": "https://wyobiz.wy.gov/Business/FilingSearch.aspx",
+        };
+
         try {
         function initSidebar() {
             if (sessionStorage.getItem('copilotSidebarClosed') === 'true') return;
@@ -180,62 +238,6 @@
         console.error("[Copilot] ERROR en DB Launcher:", e);
     }
 
-    // ----------- FUNCIONES DE EXTRACCIÓN Y RENDER ------------
-
-    // Map of US states to their Secretary of State business search pages
-    const SOS_URLS = {
-        "Alabama": "http://sos.alabama.gov/business-entities/llcs",
-        "Alaska": "https://www.commerce.alaska.gov/web/cbpl/Corporations.aspx",
-        "Arizona": "http://ecorp.azcc.gov/",
-        "Arkansas": "http://www.sos.arkansas.gov/corps/search_all.php",
-        "California": "https://businesssearch.sos.ca.gov/",
-        "Colorado": "https://www.sos.state.co.us/biz/BusinessEntityCriteriaExt.do",
-        "Connecticut": "https://www.concord-sots.ct.gov/CONCORD/online?sn=PublicInquiry&eid=9740",
-        "Delaware": "https://icis.corp.delaware.gov/Ecorp/EntitySearch/NameSearch.aspx",
-        "District of Columbia": "https://os.dc.gov/",
-        "Florida": "http://search.sunbiz.org/Inquiry/CorporationSearch/ByName",
-        "Georgia": "http://sos.ga.gov/index.php/Corporations/creating_a_new_entity",
-        "Hawaii": "https://hbe.ehawaii.gov/documents/search.html?mobile=N&site_preference=normal",
-        "Idaho": "https://sos.idaho.gov/corp/index.html",
-        "Illinois": "http://www.cyberdriveillinois.com/departments/business_services/corp.html",
-        "Indiana": "https://inbiz.in.gov/BOS/BusinssEntity/StartMyBusiness",
-        "Iowa": "https://sos.iowa.gov/search/business/search.aspx",
-        "Kansas": "https://www.kansas.gov/bess/flow/main?execution=e2s2",
-        "Kentucky": "http://www.sos.ky.gov/",
-        "Louisiana": "https://coraweb.sos.la.gov/CommercialSearch/CommercialSearch.aspx",
-        "Maine": "http://www.maine.gov/sos/cec/corp/",
-        "Maryland": "https://egov.maryland.gov/BusinessExpress/EntitySearch",
-        "Massachusetts": "http://corp.sec.state.ma.us/corpweb/CorpSearch/CorpSearch.aspx",
-        "Michigan": "http://www.dleg.state.mi.us/bcs_corp/sr_corp.asp",
-        "Minnesota": "https://mblsportal.sos.state.mn.us/Business/Search",
-        "Mississippi": "https://corp.sos.ms.gov/corp/portal/c/page/corpBusinessIdSearch/portal.aspx?#clear=1",
-        "Missouri": "https://bsd.sos.mo.gov/businessentity/besearch.aspx?searchtype=0",
-        "Montana": "https://biz.sosmt.gov/search/business",
-        "Nebraska": "https://www.nebraska.gov/sos/corp/corpsearch.cgi?nav=search",
-        "Nevada": "https://nvsos.gov/",
-        "New Hampshire": "https://quickstart.sos.nh.gov/online/BusinessInquire",
-        "New Jersey": "http://www.nj.gov/treasury/revenue/searchfile.shtml",
-        "New Mexico": "https://portal.sos.state.nm.us/BFS/online/CorporationBusinessSearch",
-        "New York": "https://appext20.dos.ny.gov/corp_public/corpsearch.entity_search_entry",
-        "North Carolina": "https://www.sosnc.gov/search/index/corp",
-        "North Dakota": "http://sos.nd.gov/business/business-services/business-records-search/business-record-search-name-availability",
-        "Ohio": "https://www5.sos.state.oh.us:8443/ords/f?p=100:1:0:::::",
-        "Oklahoma": "https://www.sos.ok.gov/corp/corpInquiryFind.aspx",
-        "Oregon": "http://egov.sos.state.or.us/br/pkg_web_name_srch_inq.login",
-        "Pennsylvania": "https://www.corporations.pa.gov/search/CorpSearch",
-        "Rhode Island": "http://ucc.state.ri.us/CorpSearch/CorpSearchInput.asp",
-        "South Carolina": "https://businessfilings.sc.gov/BusinessFiling/Entity/Search",
-        "South Dakota": "https://sosenterprise.sd.gov/BusinessServices/Business/NameAvailability.aspx",
-        "Tennessee": "https://tnbear.tn.gov/Ecommerce/FilingSearch.aspx",
-        "Texas": "https://mycpa.cpa.state.tx.us/coa/Index.html",
-        "Utah": "https://secure.utah.gov/bes/",
-        "Vermont": "https://www.sec.state.vt.us/corporationsbusiness-services/searches-databases/business-search.aspx",
-        "Virginia": "https://sccefile.scc.virginia.gov/Find/Business",
-        "Washington": "https://www.sos.wa.gov/corps/corps_search.aspx",
-        "West Virginia": "http://apps.sos.wv.gov/business/corporations/",
-        "Wisconsin": "https://www.wdfi.org/apps/CorpSearch/Search.aspx",
-        "Wyoming": "https://wyobiz.wy.gov/Business/FilingSearch.aspx",
-    };
 
     function buildSosUrl(state, query) {
         const base = SOS_URLS[state];
