@@ -58,6 +58,8 @@ information scraped from the current page.
   search page.
 - Unknown order types now fall back to the standard formation view.
 - Fixed a bug that prevented the sidebar from appearing on order pages.
+- Resolved a `ReferenceError` caused by `SOS_URLS` loading before
+  initialization.
 
 ## Known limitations
 
