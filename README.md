@@ -54,6 +54,8 @@ information scraped from the current page.
   parent order and its latest child orders. Each entry now shows order number,
   type, date and status, and clicking a number opens that order in a background
   tab.
+- The company name (or State ID on amendments) links to the state's SOS business
+  search page.
 - Unknown order types now fall back to the standard formation view.
 - Fixed a bug that prevented the sidebar from appearing on order pages.
 

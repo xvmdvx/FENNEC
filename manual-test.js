@@ -6,3 +6,4 @@ console.log("3. Select this project folder.");
 console.log("4. Visit Gmail or the DB order detail pages to check the sidebar.");
 console.log("5. Verify the sidebar is absent on other sites.");
 console.log("6. Open the browser console and confirm there are no errors.");
+console.log("7. Click the company name or State ID in the DB sidebar and ensure it opens the state's SOS search page in a new tab.");
