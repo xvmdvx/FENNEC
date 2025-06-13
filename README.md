@@ -49,8 +49,9 @@ information scraped from the current page.
 - Officer tags in the quick summary now show specific roles like
   **PRESIDENT**, **SECRETARY**, **TREASURER** or **VP** instead of a generic
   OFFICER label.
-- Amendment orders now use the same summary template as business formation
-  packages.
+- Amendment order summaries now display the State ID along with formation
+  state and include a **View Family Tree** button that shows the latest
+  child orders from the parent company.
 - Unknown order types now fall back to the standard formation view.
 - Fixed a bug that prevented the sidebar from appearing on order pages.
 

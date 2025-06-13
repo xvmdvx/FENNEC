@@ -1,5 +1,6 @@
 // Injects the FENNEC sidebar into DB pages.
 (function main() {
+    let currentOrderType = null;
     chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
         if (msg.action === 'fennecToggle') {
             window.location.reload();
@@ -21,6 +22,16 @@
                 }
             };
             tryExtract();
+            return true;
+        }
+        if (msg.action === 'getChildOrders') {
+            try {
+                const orders = getChildOrdersInfo();
+                sendResponse({ childOrders: orders });
+            } catch (err) {
+                console.warn('[FENNEC] Error extracting child orders:', err);
+                sendResponse({ childOrders: null });
+            }
             return true;
         }
     });
@@ -87,6 +98,7 @@
                         console.log("[Copilot] Sidebar cerrado manualmente en DB.");
                     };
                     const orderType = getOrderType();
+                    currentOrderType = orderType;
                     if (orderType === "amendment") {
                         extractAndShowAmendmentData();
                     } else {
@@ -474,10 +486,11 @@
     }
 
 
-    function extractAndShowFormationData() {
+    function extractAndShowFormationData(isAmendment = false) {
         // 1. COMPANY
         const companyRaw = extractSingle('#vcomp .form-body', [
             {name: 'name', label: 'company name'},
+            {name: 'stateId', label: 'state id'},
             {name: 'state', label: 'state of formation'},
             {name: 'status', label: 'state status'},
             {name: 'purpose', label: 'purpose'},
@@ -521,6 +534,7 @@
 
         const company = companyRaw ? {
             name: companyRaw.name,
+            stateId: companyRaw.stateId,
             state: companyRaw.state,
             status: companyRaw.status || headerStatus,
             purpose: companyRaw.purpose,
@@ -758,14 +772,26 @@
             if (!addrHtml) {
                 addrHtml = `<div>${renderAddress(company.address, isVAAddress(company.address))}</div>`;
             }
+            const companyLines = [];
+            companyLines.push(`<div><b>${renderCopy(company.name)}</b></div>`);
+            if (isAmendment) {
+                companyLines.push(`<div>${company.stateId || '<span style="color:#aaa">-</span>'}</div>`);
+                companyLines.push(`<div>${company.state || '<span style="color:#aaa">-</span>'}</div>`);
+            } else {
+                companyLines.push(`<div>${company.state || '<span style="color:#aaa">-</span>'}</div>`);
+            }
+            companyLines.push(addrHtml);
+            companyLines.push(`<div class="company-purpose">${renderCopy(company.purpose)}</div>`);
             html += `
             <div class="section-label">COMPANY:</div>
             <div class="white-box" style="margin-bottom:10px">
-                <div><b>${renderCopy(company.name)}</b></div>
-                <div>${company.state || '<span style="color:#aaa">-</span>'}</div>
-                ${addrHtml}
-                <div class="company-purpose">${renderCopy(company.purpose)}</div>
+                ${companyLines.join('')}
             </div>`;
+            if (isAmendment) {
+                html += `
+                <div style="text-align:center;margin-bottom:10px;"><button id="view-family-tree" class="copilot-button">VIEW FAMILY TREE</button></div>
+                <div id="family-tree-orders"></div>`;
+            }
         }
         // AGENT
         if (agent && Object.values(agent).some(v => v)) {
@@ -872,11 +898,40 @@
                     window.open('https://www.google.com/search?q=' + encodeURIComponent(text), '_blank');
                 });
             });
+            const ftBtn = body.querySelector('#view-family-tree');
+            if (ftBtn) {
+                ftBtn.addEventListener('click', () => {
+                    const parentId = getParentOrderId();
+                    if (!parentId) {
+                        alert('Parent order not found');
+                        return;
+                    }
+                    ftBtn.disabled = true;
+                    chrome.runtime.sendMessage({ action: 'fetchChildOrders', orderId: parentId }, (resp) => {
+                        ftBtn.disabled = false;
+                        if (!resp || !resp.childOrders || !resp.childOrders.length) return;
+                        const box = document.createElement('div');
+                        box.className = 'white-box';
+                        box.style.marginBottom = '10px';
+                        box.innerHTML = resp.childOrders.map(o => `
+                            <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
+                                <span><b>${renderCopy(o.orderId)}</b></span>
+                                <span>${escapeHtml(o.date)}</span>
+                                <span class="copilot-tag">${escapeHtml(o.status)}</span>
+                            </div>`).join('');
+                        const container = body.querySelector('#family-tree-orders');
+                        if (container) {
+                            container.innerHTML = '';
+                            container.appendChild(box);
+                        }
+                    });
+                });
+            }
         }
     }
 
     function extractAndShowAmendmentData() {
-        extractAndShowFormationData();
+        extractAndShowFormationData(true);
     }
 
     });
@@ -963,5 +1018,32 @@
             }
         }
         return null;
+    }
+
+    function getChildOrdersInfo() {
+        const rows = Array.from(document.querySelectorAll('.child-orders tbody tr'));
+        const parse = row => {
+            const cells = row.querySelectorAll('td');
+            if (cells.length < 5) return null;
+            const numTxt = cells[0].textContent.replace(/[^0-9]/g, '');
+            const date = cells[3].textContent.trim();
+            const status = cells[4].textContent.trim();
+            return { orderId: numTxt, date, status };
+        };
+        const info = rows.map(parse).filter(Boolean);
+        info.sort((a, b) => {
+            const da = Date.parse(a.date);
+            const db = Date.parse(b.date);
+            return (isNaN(db) ? 0 : db) - (isNaN(da) ? 0 : da);
+        });
+        return info.slice(0, 3);
+    }
+
+    function getParentOrderId() {
+        const link = Array.from(document.querySelectorAll('a[href*="/order/detail/"]'))
+            .find(a => /parent order/i.test(a.closest('li')?.innerText || a.closest('.form-group')?.innerText || ''));
+        if (!link) return null;
+        const m = link.href.match(/detail\/(\d+)/);
+        return m ? m[1] : null;
     }
 })();

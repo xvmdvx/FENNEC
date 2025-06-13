@@ -100,4 +100,50 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         tryFetch();
         return true;
     }
+
+    if (message.action === "fetchChildOrders" && message.orderId) {
+        const orderId = message.orderId;
+        const url = `https://db.incfile.com/incfile/order/detail/${orderId}`;
+        const query = { url: `${url}*` };
+        let attempts = 15;
+        let delay = 1000;
+
+        const openAndQuery = () => {
+            chrome.tabs.query(query, (tabs) => {
+                let tab = tabs && tabs[0];
+                const ensureLoaded = () => {
+                    if (!tab || tab.status !== "complete") {
+                        if (attempts > 0) {
+                            if (!tab) {
+                                chrome.tabs.create({ url, active: false }, t => {
+                                    tab = t;
+                                });
+                            }
+                            setTimeout(() => {
+                                attempts--;
+                                delay = Math.min(delay * 1.5, 10000);
+                                chrome.tabs.query(query, qs => { tab = qs && qs[0]; ensureLoaded(); });
+                            }, delay);
+                        } else {
+                            console.warn(`[Copilot] Child order fetch timed out for ${orderId}`);
+                            sendResponse({ childOrders: null });
+                        }
+                        return;
+                    }
+                    chrome.tabs.sendMessage(tab.id, { action: "getChildOrders" }, resp => {
+                        if (chrome.runtime.lastError) {
+                            console.warn("[Copilot] Child order extraction error:", chrome.runtime.lastError.message);
+                            sendResponse({ childOrders: null });
+                            return;
+                        }
+                        sendResponse(resp);
+                    });
+                };
+                ensureLoaded();
+            });
+        };
+
+        openAndQuery();
+        return true;
+    }
 });
