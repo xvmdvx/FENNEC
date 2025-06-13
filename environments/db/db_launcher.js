@@ -24,6 +24,15 @@
             return true;
         }
     });
+    function getOrderType() {
+        const el = document.getElementById("ordType");
+        if (!el) return "";
+        const txt = el.innerText.trim().toLowerCase();
+        if (/amendment/.test(txt)) return "amendment";
+        if (/silver|gold|platinum/.test(txt)) return "formation";
+        return txt;
+    }
+
     chrome.storage.local.get({ extensionEnabled: true }, ({ extensionEnabled }) => {
         if (!extensionEnabled) {
             console.log('[FENNEC] Extension disabled, skipping DB launcher.');
@@ -77,7 +86,12 @@
                         sessionStorage.setItem('copilotSidebarClosed', 'true');
                         console.log("[Copilot] Sidebar cerrado manualmente en DB.");
                     };
-                    extractAndShowData();
+                    const orderType = getOrderType();
+                    if (orderType === "amendment") {
+                        extractAndShowAmendmentData();
+                    } else {
+                        extractAndShowFormationData();
+                    }
                     const qsToggle = sidebar.querySelector('#qs-toggle');
                     const qsBox = sidebar.querySelector('#quick-summary');
                     if (qsBox) {
@@ -460,7 +474,7 @@
     }
 
 
-    function extractAndShowData() {
+    function extractAndShowFormationData() {
         // 1. COMPANY
         const companyRaw = extractSingle('#vcomp .form-body', [
             {name: 'name', label: 'company name'},
@@ -860,6 +874,12 @@
             });
         }
     }
+    }
+
+    function extractAndShowAmendmentData() {
+        extractAndShowFormationData();
+    }
+
     });
 
     function startCancelProcedure() {

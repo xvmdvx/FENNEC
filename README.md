@@ -49,6 +49,8 @@ information scraped from the current page.
 - Officer tags in the quick summary now show specific roles like
   **PRESIDENT**, **SECRETARY**, **TREASURER** or **VP** instead of a generic
   OFFICER label.
+- Amendment orders now use the same summary template as business formation
+  packages.
 
 ## Known limitations
 
