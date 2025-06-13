@@ -28,7 +28,8 @@ information scraped from the current page.
   issue is found, the box still appears with a link to the order. The script
   checks the hidden table inside the `#modalUpdateIssue` modal to support newer
   DB layouts. The issue lookup now tolerates trailing URL fragments so the link
-  is shown even if the query fails.
+  is shown even if the query fails. The parser now reads the issue timeline
+  description so only the message text appears in Gmail.
 
 ### DB
 - Displays a sidebar on order detail pages.
