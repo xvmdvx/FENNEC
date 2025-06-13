@@ -42,6 +42,7 @@ information scraped from the current page.
 - Displays a sidebar on order detail pages.
 - Scrapes company, agent and officer data and presents it in a compact layout.
 - Addresses are clickable to open a Google search and copy the text.
+- Hides the agent subscription status line when RA service is not provided by Incfile.
 
 ## Known limitations
 
