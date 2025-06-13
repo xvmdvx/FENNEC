@@ -32,6 +32,8 @@ information scraped from the current page.
   description so only the message text appears in Gmail. The sidebar now waits
   a few seconds for the DB tab to finish loading before showing the issue,
   improving reliability on slow connections.
+  Header rows in the hidden table are now skipped so issue details appear
+  even when the modal hasn't been opened.
 
 ### DB
 - Displays a sidebar on order detail pages.
