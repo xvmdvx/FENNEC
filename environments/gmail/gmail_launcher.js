@@ -76,6 +76,13 @@
             'WEST VIRGINIA','WISCONSIN','WYOMING'
         ];
 
+        const STATE_ABBRS = [
+            'AL','AK','AZ','AR','CA','CO','CT','DE','FL','GA','HI','ID','IL','IN','IA','KS',
+            'KY','LA','ME','MD','MA','MI','MN','MS','MO','MT','NE','NV','NH','NJ','NM','NY',
+            'NC','ND','OH','OK','OR','PA','RI','SC','SD','TN','TX','UT','VT','VA','WA','WV',
+            'WI','WY'
+        ];
+
         function isValidAddress(str) {
             if (!str) return false;
             let cleaned = str.trim()
@@ -87,13 +94,18 @@
             if (IGNORED_ADDRESSES.includes(normalized)) return false;
 
             if (cleaned.length < 5) return false;
-            const words = cleaned.split(/\s+/);
-            if (words.length < 2) return false;
             if (!/[A-Za-z]/.test(cleaned)) return false;
 
+            const startsWithNum = /^\d/.test(cleaned) || /\bP\.?O\.?\s+BOX\b/i.test(cleaned);
+            if (!startsWithNum) return false;
+
             const stateZip = /\b[A-Z]{2}\s+\d{5}(?:-\d{4})?(?:\s+USA?)?\b/i;
-            const stateNameRegex = new RegExp('\\b(' + STATE_NAMES.join('|') + ')\\b\\s+\\d{5}(?:-\\d{4})?(?:\\s+USA?)?\\b', 'i');
-            if (!(stateZip.test(cleaned) || stateNameRegex.test(cleaned))) return false;
+            const stateNameZip = new RegExp('\\b(' + STATE_NAMES.join('|') + ')\\b\\s+\\d{5}(?:-\\d{4})?(?:\\s+USA?)?\\b', 'i');
+            const stateOnly = new RegExp('\\b(' + STATE_ABBRS.join('|') + '|' + STATE_NAMES.join('|') + ')\\b', 'i');
+
+            if (!(stateZip.test(cleaned) || stateNameZip.test(cleaned) || stateOnly.test(cleaned))) {
+                return false;
+            }
 
             if (/\bP\.?O\.?\s+BOX\b/i.test(cleaned)) {
                 return /\b\d{1,}\b/.test(cleaned);
@@ -114,11 +126,13 @@
             const addrs = [];
             const lines = text.split(/\n+/);
             const keyword = /\b(?:st(?:reet)?|ave(?:nue)?|road|rd|dr|boulevard|blvd|lane|ln|hwy|p\.?o\.?\s*box|suite|ste|apt|apartment)\b/i;
+            const startZip = /^\s*\d+[\w\s.,#-]*\b\d{5}(?:-\d{4})?\b/i;
+            const startState = new RegExp('^\\s*\\d+[\\w\\s.,#-]*\\b(' + STATE_ABBRS.join('|') + '|' + STATE_NAMES.join('|') + ')\\b', 'i');
             lines.forEach(line => {
                 const cleaned = cleanAddress(line);
                 if (cleaned.length < 8) return;
+                if (!(startZip.test(cleaned) || startState.test(cleaned) || keyword.test(cleaned))) return;
                 if (!isValidAddress(cleaned)) return;
-                if (!(keyword.test(cleaned) || /\b\d{5}(?:-\d{4})?\b/.test(cleaned))) return;
                 if (!addrs.includes(cleaned)) addrs.push(cleaned);
             });
             return addrs;
