@@ -458,7 +458,10 @@
 
         function checkLastIssue(orderId, attempts = 10) {
             if (!orderId) return;
-            const query = { url: `https://db.incfile.com/incfile/order/detail/${orderId}` };
+            // Show placeholder immediately while we try to fetch the issue
+            fillIssueBox(null, orderId);
+            // Match any trailing hash or query parameters on the DB URL
+            const query = { url: `https://db.incfile.com/incfile/order/detail/${orderId}*` };
             const tryFetch = () => {
                 chrome.tabs.query(query, tabs => {
                     const tab = tabs && tabs[0];
