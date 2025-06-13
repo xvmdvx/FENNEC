@@ -30,7 +30,7 @@ information scraped from the current page.
   DB layouts. The issue lookup now tolerates trailing URL fragments so the link
   is shown even if the query fails. The parser now reads the issue timeline
   description so only the message text appears in Gmail. The sidebar now waits
-  a few seconds for the DB tab to finish loading before showing the issue,
+  until the DB tab reports it has finished loading before requesting the issue,
   improving reliability on slow connections.
   Header rows in the hidden table are now skipped so issue details appear
   even when the modal hasn't been opened.
