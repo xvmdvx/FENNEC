@@ -1,3 +1,4 @@
+// Injects the FENNEC sidebar into DB pages.
 (function main() {
     chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
         if (msg.action === 'fennecToggle') {

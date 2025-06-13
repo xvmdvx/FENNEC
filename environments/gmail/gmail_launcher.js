@@ -1,3 +1,4 @@
+// Injects the FENNEC sidebar into Gmail pages.
 (function persistentSidebar() {
     chrome.runtime.onMessage.addListener((msg) => {
         if (msg.action === 'fennecToggle') {

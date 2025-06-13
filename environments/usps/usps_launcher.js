@@ -1,3 +1,4 @@
+// Injects the FENNEC sidebar into USPS pages.
 (function() {
     chrome.runtime.onMessage.addListener((msg) => {
         if (msg.action === 'fennecToggle') {
