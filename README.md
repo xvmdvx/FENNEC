@@ -24,7 +24,9 @@ information scraped from the current page.
 - The top header bar shifts left along with the main panels so account menus remain accessible.
 - If you close the sidebar it will remain hidden until the tab is reloaded.
 - When opening an order, the sidebar now retries for up to 10 seconds to display any
-  **ACTIVE ISSUE** found on the DB page.
+  **ACTIVE ISSUE** found on the DB page. The script now also
+  checks the hidden table inside the `#modalUpdateIssue` modal
+  to support newer DB layouts.
 
 ### DB
 - Displays a sidebar on order detail pages.
