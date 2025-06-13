@@ -51,6 +51,8 @@ information scraped from the current page.
   OFFICER label.
 - Amendment orders now use the same summary template as business formation
   packages.
+- Unknown order types now fall back to the standard formation view.
+- Fixed a bug that prevented the sidebar from appearing on order pages.
 
 ## Known limitations
 

@@ -26,11 +26,11 @@
     });
     function getOrderType() {
         const el = document.getElementById("ordType");
-        if (!el) return "";
+        if (!el) return "formation";
         const txt = el.innerText.trim().toLowerCase();
         if (/amendment/.test(txt)) return "amendment";
         if (/silver|gold|platinum/.test(txt)) return "formation";
-        return txt;
+        return "formation";
     }
 
     chrome.storage.local.get({ extensionEnabled: true }, ({ extensionEnabled }) => {
@@ -873,7 +873,6 @@
                 });
             });
         }
-    }
     }
 
     function extractAndShowAmendmentData() {
