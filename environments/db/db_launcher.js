@@ -62,7 +62,7 @@
                             </div>
                             <button id="copilot-close">✕</button>
                         </div>
-                        <div class="order-summary-header">ORDER SUMMARY <span id="qs-toggle" class="quick-summary-toggle">⚡</span></div>
+                        <div class="order-summary-header"><span id="qa-toggle" class="quick-actions-toggle">☰</span>ORDER SUMMARY <span id="qs-toggle" class="quick-summary-toggle">⚡</span></div>
                         <div class="copilot-body" id="copilot-body-content">
                             <div style="text-align:center; color:#888; margin-top:20px;">Cargando resumen...</div>
                         </div>
@@ -92,6 +92,36 @@
                                 qsBox.classList.remove('quick-summary-collapsed');
                                 qsBox.style.maxHeight = qsBox.scrollHeight + 'px';
                             }
+                        });
+                    }
+
+                    const qaToggle = sidebar.querySelector('#qa-toggle');
+                    if (qaToggle) {
+                        const qaMenu = document.createElement('div');
+                        qaMenu.id = 'quick-actions-menu';
+                        qaMenu.style.display = 'none';
+                        qaMenu.innerHTML = '<div class="qa-title">QUICK ACTIONS</div><ul><li id="qa-cancel">Cancel</li></ul>';
+                        document.body.appendChild(qaMenu);
+
+                        qaToggle.addEventListener('click', (e) => {
+                            e.stopPropagation();
+                            qaMenu.style.display = qaMenu.style.display === 'block' ? 'none' : 'block';
+                            if (qaMenu.style.display === 'block') {
+                                const rect = qaToggle.getBoundingClientRect();
+                                qaMenu.style.top = rect.bottom + 'px';
+                                qaMenu.style.left = (rect.left - qaMenu.offsetWidth + rect.width) + 'px';
+                            }
+                        });
+
+                        document.addEventListener('click', (e) => {
+                            if (!qaMenu.contains(e.target) && e.target !== qaToggle) {
+                                qaMenu.style.display = 'none';
+                            }
+                        });
+
+                        qaMenu.querySelector('#qa-cancel').addEventListener('click', () => {
+                            qaMenu.style.display = 'none';
+                            startCancelProcedure();
                         });
                     }
                 })();
@@ -814,6 +844,52 @@
         }
     }
     });
+
+    function startCancelProcedure() {
+        console.log('[Copilot] Starting cancel procedure');
+
+        function resolveIfNeeded(next) {
+            const btn = Array.from(document.querySelectorAll('a'))
+                .find(a => /mark resolved/i.test(a.textContent));
+            if (btn) {
+                btn.click();
+                const check = setInterval(() => {
+                    if (document.readyState === 'complete') {
+                        clearInterval(check);
+                        next();
+                    }
+                }, 1000);
+            } else {
+                next();
+            }
+        }
+
+        function openCancelPopup() {
+            const statusBtn = document.querySelector('.btn-status-text');
+            if (!statusBtn) return console.warn('[Copilot] Status dropdown not found');
+            statusBtn.click();
+            setTimeout(() => {
+                const cancelLink = Array.from(document.querySelectorAll('.dropdown-menu a'))
+                    .find(a => /cancel\/?refund/i.test(a.textContent));
+                if (!cancelLink) return console.warn('[Copilot] Cancel option not found');
+                cancelLink.click();
+                selectReason();
+            }, 500);
+        }
+
+        function selectReason() {
+            const sel = document.querySelector('select');
+            if (!sel) return setTimeout(selectReason, 500);
+            const opt = Array.from(sel.options)
+                .find(o => /client.*cancell?ation/i.test(o.textContent));
+            if (opt) {
+                sel.value = opt.value;
+                sel.dispatchEvent(new Event('change', { bubbles: true }));
+            }
+        }
+
+        resolveIfNeeded(openCancelPopup);
+    }
 
     function getLastIssueInfo() {
         function parseRow(row) {
