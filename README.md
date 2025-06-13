@@ -23,6 +23,8 @@ information scraped from the current page.
 - Uses `margin-right` to ensure Gmail navigation controls stay visible.
 - The top header bar shifts left along with the main panels so account menus remain accessible.
 - If you close the sidebar it will remain hidden until the tab is reloaded.
+- The Gmail script now runs in all frames so the sidebar appears even when the
+  interface is embedded in nested iframes.
 - When opening an order, the sidebar shows the **latest issue** from the DB page.
   A label indicates whether it is **active** (red) or **resolved** (green). If no
   issue is found, the box still appears with a link to the order. The script

@@ -19,6 +19,7 @@
       "matches": [
         "https://mail.google.com/*"
       ],
+      "all_frames": true,
       "js": [
         "environments/gmail/gmail_launcher.js"
       ],
