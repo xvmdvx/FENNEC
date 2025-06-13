@@ -207,6 +207,7 @@
 #copilot-sidebar .quick-summary-toggle {
     cursor: pointer;
     margin-left: 6px;
+    vertical-align: middle;
 }
 
 #copilot-sidebar #quick-summary {
@@ -281,6 +282,7 @@
 #copilot-sidebar .quick-actions-toggle {
     cursor: pointer;
     margin-right: 6px;
+    vertical-align: middle;
 }
 
 #quick-actions-menu {
