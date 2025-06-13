@@ -27,7 +27,8 @@ information scraped from the current page.
   A label indicates whether it is **active** (red) or **resolved** (green). If no
   issue is found, the box still appears with a link to the order. The script
   checks the hidden table inside the `#modalUpdateIssue` modal to support newer
-  DB layouts.
+  DB layouts. The issue lookup now tolerates trailing URL fragments so the link
+  is shown even if the query fails.
 
 ### DB
 - Displays a sidebar on order detail pages.
