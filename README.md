@@ -37,3 +37,13 @@ information scraped from the current page.
 - The scripts rely on the browser DOM provided by Chrome. They are not meant to
   run under Node.js or outside the browser context.
 - The extension currently supports only Gmail and DB order detail URLs.
+
+## Development
+
+This repository now includes a minimal `package.json` to simplify future testing and build automation. It currently provides a placeholder test script:
+
+```bash
+npm test
+```
+
+This will output `No tests configured` until automated tests are added.
