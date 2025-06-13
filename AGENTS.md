@@ -1,14 +1,23 @@
 # AGENTS Instructions for FENNEC
 
-This repository provides a prototype Chrome extension. There are no special automated tests or complex build steps.
+This repository contains a small Chrome extension built with plain JavaScript.
+It has no automated tests or build pipeline.
 
 ## Guidelines
-- Keep code simple and readable.
-- Document new features in the README.
-- Use consistent formatting and avoid large dependencies.
+- Keep code simple and readable; prefer clarity over clever optimizations.
+- Use four spaces for indentation and double quotes in JavaScript files.
+- Document new features and behavior changes in the README.
+- Place a short comment at the top of any new script explaining its purpose.
+- Avoid large dependencies and rely on native browser APIs whenever possible.
 
 ## Testing
-Manual testing in the browser is expected. Ensure that the extension loads and the sidebar appears on supported pages.
+- Manual browser testing is required. Load the extension through
+  `chrome://extensions` in Developer mode.
+- Verify that the sidebar appears on Gmail and DB pages and that it remains
+  inactive on unsupported sites.
+- Use the browser console for debugging and confirm there are no errors.
 
 ## Contributions
-Open pull requests for proposed changes. Describe your modifications clearly in the PR message.
+- Open pull requests for proposed changes and work from the main branch.
+- Keep commit messages short and descriptive.
+- Summarize the purpose of the change in the PR description.
