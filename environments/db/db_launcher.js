@@ -60,9 +60,10 @@
                                 <img src="${chrome.runtime.getURL('fennec_icon.png')}" class="copilot-icon" alt="FENNEC (Prototype)" />
                                 <span>FENNEC (Prototype)</span>
                             </div>
+                            <span id="qa-toggle" class="quick-actions-toggle">☰</span>
                             <button id="copilot-close">✕</button>
                         </div>
-                        <div class="order-summary-header"><span id="qa-toggle" class="quick-actions-toggle">☰</span>ORDER SUMMARY <span id="qs-toggle" class="quick-summary-toggle">⚡</span></div>
+                        <div class="order-summary-header">ORDER SUMMARY <span id="qs-toggle" class="quick-summary-toggle">⚡</span></div>
                         <div class="copilot-body" id="copilot-body-content">
                             <div style="text-align:center; color:#888; margin-top:20px;">Cargando resumen...</div>
                         </div>
@@ -103,24 +104,39 @@
                         qaMenu.innerHTML = '<div class="qa-title">QUICK ACTIONS</div><ul><li id="qa-cancel">Cancel</li></ul>';
                         document.body.appendChild(qaMenu);
 
+                        function showMenu() {
+                            qaMenu.style.display = 'block';
+                            requestAnimationFrame(() => qaMenu.classList.add('show'));
+                        }
+
+                        function hideMenu() {
+                            qaMenu.classList.remove('show');
+                            qaMenu.addEventListener('transitionend', function h() {
+                                qaMenu.style.display = 'none';
+                                qaMenu.removeEventListener('transitionend', h);
+                            }, { once: true });
+                        }
+
                         qaToggle.addEventListener('click', (e) => {
                             e.stopPropagation();
-                            qaMenu.style.display = qaMenu.style.display === 'block' ? 'none' : 'block';
                             if (qaMenu.style.display === 'block') {
+                                hideMenu();
+                            } else {
                                 const rect = qaToggle.getBoundingClientRect();
                                 qaMenu.style.top = rect.bottom + 'px';
                                 qaMenu.style.left = (rect.left - qaMenu.offsetWidth + rect.width) + 'px';
+                                showMenu();
                             }
                         });
 
                         document.addEventListener('click', (e) => {
-                            if (!qaMenu.contains(e.target) && e.target !== qaToggle) {
-                                qaMenu.style.display = 'none';
+                            if (!qaMenu.contains(e.target) && e.target !== qaToggle && qaMenu.style.display === 'block') {
+                                hideMenu();
                             }
                         });
 
                         qaMenu.querySelector('#qa-cancel').addEventListener('click', () => {
-                            qaMenu.style.display = 'none';
+                            hideMenu();
                             startCancelProcedure();
                         });
                     }

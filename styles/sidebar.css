@@ -281,7 +281,7 @@
 
 #copilot-sidebar .quick-actions-toggle {
     cursor: pointer;
-    margin-right: 6px;
+    margin-right: 8px;
     vertical-align: middle;
 }
 
@@ -295,6 +295,14 @@
     z-index: 100000;
     box-shadow: 0 2px 6px rgba(0,0,0,0.2);
     font-size: 13px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.15s ease;
+}
+
+#quick-actions-menu.show {
+    opacity: 0.95;
+    pointer-events: auto;
 }
 
 #quick-actions-menu .qa-title {
