@@ -50,8 +50,10 @@ information scraped from the current page.
   **PRESIDENT**, **SECRETARY**, **TREASURER** or **VP** instead of a generic
   OFFICER label.
 - Amendment order summaries now display the State ID along with formation
-  state and include a **View Family Tree** button that shows the latest
-  child orders from the parent company.
+  state and include a **Family Tree** button that toggles a compact view of the
+  parent order and its latest child orders. Each entry now shows order number,
+  type, date and status, and clicking a number opens that order in a background
+  tab.
 - Unknown order types now fall back to the standard formation view.
 - Fixed a bug that prevented the sidebar from appearing on order pages.
 

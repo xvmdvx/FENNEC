@@ -324,3 +324,19 @@
 #quick-actions-menu li:hover {
     text-decoration: underline;
 }
+
+/* Family tree layout */
+#family-tree-orders .ft-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2px 8px;
+    margin-bottom: 6px;
+    font-size: 12px;
+}
+#family-tree-orders .ft-link {
+    color: #1a73e8;
+    cursor: pointer;
+}
+#family-tree-orders .ft-link:hover {
+    text-decoration: underline;
+}
