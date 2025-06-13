@@ -63,6 +63,19 @@
             'BIZEE.COM 17350 STATE HIGHWAY 249, SUITE 220, HOUSTON, TX 77064'
         ];
 
+        const STATE_NAMES = [
+            'ALABAMA','ALASKA','ARIZONA','ARKANSAS','CALIFORNIA','COLORADO',
+            'CONNECTICUT','DELAWARE','FLORIDA','GEORGIA','HAWAII','IDAHO',
+            'ILLINOIS','INDIANA','IOWA','KANSAS','KENTUCKY','LOUISIANA',
+            'MAINE','MARYLAND','MASSACHUSETTS','MICHIGAN','MINNESOTA',
+            'MISSISSIPPI','MISSOURI','MONTANA','NEBRASKA','NEVADA',
+            'NEW HAMPSHIRE','NEW JERSEY','NEW MEXICO','NEW YORK',
+            'NORTH CAROLINA','NORTH DAKOTA','OHIO','OKLAHOMA','OREGON',
+            'PENNSYLVANIA','RHODE ISLAND','SOUTH CAROLINA','SOUTH DAKOTA',
+            'TENNESSEE','TEXAS','UTAH','VERMONT','VIRGINIA','WASHINGTON',
+            'WEST VIRGINIA','WISCONSIN','WYOMING'
+        ];
+
         function isValidAddress(str) {
             if (!str) return false;
             let cleaned = str.trim()
@@ -78,8 +91,9 @@
             if (words.length < 2) return false;
             if (!/[A-Za-z]/.test(cleaned)) return false;
 
-            const stateZip = /\b[A-Z]{2}\s+\d{5}(?:-\d{4})?\b/;
-            if (!stateZip.test(cleaned)) return false;
+            const stateZip = /\b[A-Z]{2}\s+\d{5}(?:-\d{4})?(?:\s+USA?)?\b/i;
+            const stateNameRegex = new RegExp('\\b(' + STATE_NAMES.join('|') + ')\\b\\s+\\d{5}(?:-\\d{4})?(?:\\s+USA?)?\\b', 'i');
+            if (!(stateZip.test(cleaned) || stateNameRegex.test(cleaned))) return false;
 
             if (/\bP\.?O\.?\s+BOX\b/i.test(cleaned)) {
                 return /\b\d{1,}\b/.test(cleaned);
