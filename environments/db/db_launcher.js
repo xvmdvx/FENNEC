@@ -27,10 +27,11 @@
         if (msg.action === 'getChildOrders') {
             try {
                 const orders = getChildOrdersInfo();
-                sendResponse({ childOrders: orders });
+                const parent = getBasicOrderInfo();
+                sendResponse({ childOrders: orders, parentInfo: parent });
             } catch (err) {
                 console.warn('[FENNEC] Error extracting child orders:', err);
-                sendResponse({ childOrders: null });
+                sendResponse({ childOrders: null, parentInfo: null });
             }
             return true;
         }
@@ -789,8 +790,10 @@
             </div>`;
             if (isAmendment) {
                 html += `
-                <div style="text-align:center;margin-bottom:10px;"><button id="view-family-tree" class="copilot-button">VIEW FAMILY TREE</button></div>
-                <div id="family-tree-orders"></div>`;
+                <div style="text-align:center;margin-bottom:10px;">
+                    <button id="view-family-tree" class="copilot-button" style="padding:4px 8px;font-size:12px;">FAMILY TREE</button>
+                </div>
+                <div id="family-tree-orders" style="display:none"></div>`;
             }
         }
         // AGENT
@@ -901,6 +904,17 @@
             const ftBtn = body.querySelector('#view-family-tree');
             if (ftBtn) {
                 ftBtn.addEventListener('click', () => {
+                    const container = body.querySelector('#family-tree-orders');
+                    if (!container) return;
+
+                    if (container.style.display === 'block') {
+                        container.style.display = 'none';
+                        return;
+                    }
+                    container.style.display = 'block';
+
+                    if (container.dataset.loaded === 'true') return;
+
                     const parentId = getParentOrderId();
                     if (!parentId) {
                         alert('Parent order not found');
@@ -909,21 +923,42 @@
                     ftBtn.disabled = true;
                     chrome.runtime.sendMessage({ action: 'fetchChildOrders', orderId: parentId }, (resp) => {
                         ftBtn.disabled = false;
-                        if (!resp || !resp.childOrders || !resp.childOrders.length) return;
+                        if (!resp || !resp.childOrders || !resp.parentInfo) return;
                         const box = document.createElement('div');
                         box.className = 'white-box';
                         box.style.marginBottom = '10px';
-                        box.innerHTML = resp.childOrders.map(o => `
-                            <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
-                                <span><b>${renderCopy(o.orderId)}</b></span>
-                                <span>${escapeHtml(o.date)}</span>
-                                <span class="copilot-tag">${escapeHtml(o.status)}</span>
+
+                        let html = '';
+                        const parent = resp.parentInfo;
+                        html += `<div class="section-label">PARENT</div>`;
+                        html += `<div class="ft-grid">` +
+                            `<div><b><a href="#" class="ft-link" data-id="${escapeHtml(parent.orderId)}">${escapeHtml(parent.orderId)}</a></b></div>` +
+                            `<div>${escapeHtml(parent.type)}</div>` +
+                            `<div>${escapeHtml(parent.date)}</div>` +
+                            `<div><span class="copilot-tag">${escapeHtml(parent.status)}</span></div>` +
+                            `</div>`;
+                        html += `<div class="section-label">CHILD</div>`;
+                        html += resp.childOrders.map(o => `
+                            <div class="ft-grid">
+                                <div><b><a href="#" class="ft-link" data-id="${escapeHtml(o.orderId)}">${escapeHtml(o.orderId)}</a></b></div>
+                                <div>${escapeHtml(o.type)}</div>
+                                <div>${escapeHtml(o.date)}</div>
+                                <div><span class="copilot-tag">${escapeHtml(o.status)}</span></div>
                             </div>`).join('');
-                        const container = body.querySelector('#family-tree-orders');
-                        if (container) {
-                            container.innerHTML = '';
-                            container.appendChild(box);
-                        }
+                        box.innerHTML = html;
+                        container.innerHTML = '';
+                        container.appendChild(box);
+                        container.dataset.loaded = 'true';
+
+                        container.querySelectorAll('.ft-link').forEach(a => {
+                            a.addEventListener('click', e => {
+                                e.preventDefault();
+                                const id = a.dataset.id;
+                                if (id) {
+                                    chrome.runtime.sendMessage({ action: 'openTab', url: `https://db.incfile.com/incfile/order/detail/${id}` });
+                                }
+                            });
+                        });
                     });
                 });
             }
@@ -1026,9 +1061,10 @@
             const cells = row.querySelectorAll('td');
             if (cells.length < 5) return null;
             const numTxt = cells[0].textContent.replace(/[^0-9]/g, '');
+            const type = cells[2].textContent.trim();
             const date = cells[3].textContent.trim();
             const status = cells[4].textContent.trim();
-            return { orderId: numTxt, date, status };
+            return { orderId: numTxt, type, date, status };
         };
         const info = rows.map(parse).filter(Boolean);
         info.sort((a, b) => {
@@ -1037,6 +1073,17 @@
             return (isNaN(db) ? 0 : db) - (isNaN(da) ? 0 : da);
         });
         return info.slice(0, 3);
+    }
+
+    function getBasicOrderInfo() {
+        const orderId = (location.pathname.match(/detail\/(\d+)/) || [])[1] || '';
+        const type = getOrderType();
+        const dateLi = Array.from(document.querySelectorAll('li')).find(li =>
+            li.querySelector('a') && li.querySelector('a').innerText.trim().toLowerCase() === 'date ordered'
+        );
+        const date = dateLi ? dateLi.querySelector('span')?.innerText.trim() || '' : '';
+        const status = document.querySelector('.btn-status-text')?.innerText.trim() || '';
+        return { orderId, type, date, status };
     }
 
     function getParentOrderId() {

@@ -107,6 +107,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         const query = { url: `${url}*` };
         let attempts = 15;
         let delay = 1000;
+        let createdTabId = null;
 
         const openAndQuery = () => {
             chrome.tabs.query(query, (tabs) => {
@@ -115,9 +116,10 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
                     if (!tab || tab.status !== "complete") {
                         if (attempts > 0) {
                             if (!tab) {
-                                chrome.tabs.create({ url, active: false }, t => {
-                                    tab = t;
-                                });
+                            chrome.tabs.create({ url, active: false }, t => {
+                                tab = t;
+                                createdTabId = t.id;
+                            });
                             }
                             setTimeout(() => {
                                 attempts--;
@@ -126,17 +128,20 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
                             }, delay);
                         } else {
                             console.warn(`[Copilot] Child order fetch timed out for ${orderId}`);
-                            sendResponse({ childOrders: null });
+                            sendResponse({ childOrders: null, parentInfo: null });
+                            if (createdTabId) chrome.tabs.remove(createdTabId);
                         }
                         return;
                     }
                     chrome.tabs.sendMessage(tab.id, { action: "getChildOrders" }, resp => {
                         if (chrome.runtime.lastError) {
                             console.warn("[Copilot] Child order extraction error:", chrome.runtime.lastError.message);
-                            sendResponse({ childOrders: null });
+                            sendResponse({ childOrders: null, parentInfo: null });
+                            if (createdTabId) chrome.tabs.remove(createdTabId);
                             return;
                         }
                         sendResponse(resp);
+                        if (createdTabId) chrome.tabs.remove(createdTabId);
                     });
                 };
                 ensureLoaded();
