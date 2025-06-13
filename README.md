@@ -44,6 +44,8 @@ information scraped from the current page.
 - Addresses are clickable to open a Google search and copy the text.
 - Hides the agent subscription status line when RA service is not provided by Incfile.
 - Provides a Quick Actions menu with a **Cancel** option that resolves active issues and opens the cancellation dialog with the reason preselected.
+- The Quick Actions toggle icon is now vertically centered.
+- Cancel automation now detects the "Cancel / Refund" link even when spaces surround the slash.
 - Officer tags in the quick summary now show specific roles like
   **PRESIDENT**, **SECRETARY**, **TREASURER** or **VP** instead of a generic
   OFFICER label.

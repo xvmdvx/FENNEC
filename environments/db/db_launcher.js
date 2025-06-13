@@ -871,7 +871,7 @@
             statusBtn.click();
             setTimeout(() => {
                 const cancelLink = Array.from(document.querySelectorAll('.dropdown-menu a'))
-                    .find(a => /cancel\/?refund/i.test(a.textContent));
+                    .find(a => /cancel.*refund/i.test(a.textContent));
                 if (!cancelLink) return console.warn('[Copilot] Cancel option not found');
                 cancelLink.click();
                 selectReason();
