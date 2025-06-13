@@ -42,6 +42,7 @@ information scraped from the current page.
 - Displays a sidebar on order detail pages.
 - Scrapes company, agent and officer data and presents it in a compact layout.
 - Addresses are clickable to open a Google search and copy the text.
+- Provides a Quick Actions menu with a **Cancel** option that resolves active issues and opens the cancellation dialog with the reason preselected.
 
 ## Known limitations
 
