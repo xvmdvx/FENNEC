@@ -55,3 +55,27 @@ npm test
 ```
 
 This will display instructions for manually verifying the extension inside Chrome.
+
+## Testing the example pages
+
+The `examples/` folder contains HTML snapshots of DB order pages. When opened directly from disk they do not match the extension's host permissions, so the sidebar will not appear.
+
+To view the sidebar with these pages you can either serve them as `db.incfile.com` or extend `manifest.json` for local URLs.
+
+1. **Serve locally as `db.incfile.com`**. Map `db.incfile.com` to `127.0.0.1` in your hosts file and run a small web server inside `examples`:
+
+    ```bash
+    cd examples
+    python3 -m http.server 8000
+    ```
+
+    Visit `http://db.incfile.com:8000/<file>.htm` to trigger the extension.
+
+2. **Update `manifest.json`**. Add local file or localhost entries to `host_permissions`:
+
+    ```json
+    "file:///*",
+    "http://localhost:8000/*"
+    ```
+
+    Reload the extension after editing the manifest.
