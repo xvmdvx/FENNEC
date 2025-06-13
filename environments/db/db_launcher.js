@@ -793,16 +793,16 @@
     });
 
     function getActiveIssueText() {
-        // Newer DB layout uses a table inside the "issue-history" section.
-        const tableRows = Array.from(document.querySelectorAll('.issue-history table tbody tr'));
-        for (const row of tableRows) {
+        // Newer DB layout keeps a full history table inside the hidden modal.
+        const modalRows = Array.from(document.querySelectorAll('#modalUpdateIssue table tbody tr'));
+        for (const row of modalRows) {
             const cells = row.querySelectorAll('td');
             if (cells.length >= 5) {
-                const resolution = cells[4].innerText.trim();
+                const resolution = cells[4].textContent.trim();
                 // If the resolution cell contains a "Mark Resolved" button, this
                 // row represents the currently open issue.
                 if (/mark resolved/i.test(resolution)) {
-                    return cells[2].innerText.trim();
+                    return cells[2].textContent.trim();
                 }
                 // Skip rows that have already been resolved.
                 if (/resolved/i.test(resolution)) {
@@ -811,15 +811,31 @@
             }
         }
 
+        // Visible table inside the issue-history sidebar.
+        const tableRows = Array.from(document.querySelectorAll('.issue-history table tbody tr'));
+        for (const row of tableRows) {
+            const cells = row.querySelectorAll('td');
+            if (cells.length >= 5) {
+                const resolution = cells[4].textContent.trim();
+                if (/mark resolved/i.test(resolution)) {
+                    return cells[2].textContent.trim();
+                }
+                if (/resolved/i.test(resolution)) {
+                    continue;
+                }
+            }
+        }
+
         // Fallback to the older timeline-based layout.
         const history = document.querySelector('.issue-history .steamline');
-        if (!history) return null;
-        const items = Array.from(history.querySelectorAll('.sl-item'));
-        for (const it of items) {
-            const txt = it.innerText.trim();
-            if (!txt) continue;
-            if (/Resolved/i.test(txt)) continue;
-            return txt;
+        if (history) {
+            const items = Array.from(history.querySelectorAll('.sl-item'));
+            for (const it of items) {
+                const txt = it.textContent.trim();
+                if (!txt) continue;
+                if (/Resolved/i.test(txt)) continue;
+                return txt;
+            }
         }
         return null;
     }
