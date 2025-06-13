@@ -1,5 +1,9 @@
 // Injects the FENNEC sidebar into Gmail pages.
 (function persistentSidebar() {
+    // Clear the closed flag on full reloads so the sidebar returns
+    window.addEventListener('beforeunload', () => {
+        sessionStorage.removeItem('copilotSidebarClosed');
+    });
     chrome.runtime.onMessage.addListener((msg) => {
         if (msg.action === 'fennecToggle') {
             window.location.reload();

@@ -1,5 +1,9 @@
 // Injects the FENNEC sidebar into DB pages.
 (function main() {
+    // Clear the closed flag on reloads so the sidebar reappears
+    window.addEventListener('beforeunload', () => {
+        sessionStorage.removeItem('copilotSidebarClosed');
+    });
     let currentOrderType = null;
 
     // Map of US states to their Secretary of State business search pages
