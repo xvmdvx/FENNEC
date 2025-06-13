@@ -41,10 +41,10 @@ information scraped from the current page.
 
 ## Development
 
-This repository now includes a minimal `package.json` to simplify future testing and build automation. It currently provides a placeholder test script:
+This repository now includes a minimal `package.json` to simplify future testing and build automation. The `npm test` command prints manual testing steps:
 
 ```bash
 npm test
 ```
 
-This will output `No tests configured` until automated tests are added.
+This will display instructions for manually verifying the extension inside Chrome.
