@@ -1,0 +1,9 @@
+{
+  "name": "fennec-extension",
+  "version": "0.1.0",
+  "description": "Prototype Chrome extension for Gmail and DB interface",
+  "scripts": {
+    "test": "echo \"No tests configured\" && exit 1"
+  },
+  "license": "MIT"
+}
