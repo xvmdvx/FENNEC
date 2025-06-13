@@ -21,11 +21,10 @@ information scraped from the current page.
 - Displays a small order summary inside the sidebar.
 - Opens Gmail search and the DB order page in new tabs when clicking the buttons.
 - Uses `margin-right` to ensure Gmail navigation controls stay visible.
-
 - The top header bar shifts left along with the main panels so account menus remain accessible.
-=======
-
- - If you close the sidebar it will remain hidden until the tab is reloaded.
+- If you close the sidebar it will remain hidden until the tab is reloaded.
+- When opening an order, the sidebar now retries for up to 10 seconds to display any
+  **ACTIVE ISSUE** found on the DB page.
 
 ### DB
 - Displays a sidebar on order detail pages.

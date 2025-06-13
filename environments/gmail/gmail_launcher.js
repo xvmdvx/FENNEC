@@ -468,6 +468,8 @@
                         }
                         if (resp && resp.issueText) {
                             fillIssueBox(resp.issueText);
+                        } else if (attempts > 0) {
+                            setTimeout(() => { attempts--; tryFetch(); }, 1000);
                         }
                     });
                 });
