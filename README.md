@@ -33,7 +33,8 @@ information scraped from the current page.
   until the DB tab reports it has finished loading before requesting the issue,
   improving reliability on slow connections.
   Header rows in the hidden table are now skipped so issue details appear
-  even when the modal hasn't been opened.
+  even when the modal hasn't been opened. Issue detection now retries longer
+  using exponential backoff and logs a warning if it ultimately times out.
 
 ### DB
 - Displays a sidebar on order detail pages.
