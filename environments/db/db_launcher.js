@@ -741,17 +741,18 @@
         if (agent && Object.values(agent).some(v => v)) {
             const expDate = agent.expiration ? parseDate(agent.expiration) : null;
             const expired = expDate && expDate < new Date();
-            let status = (agent.status || '').trim();
-            let statusClass = 'copilot-tag';
-            let statusDisplay = '';
+            let status = (agent.status || "").trim();
+            let statusClass = "copilot-tag";
+            let statusDisplay = "";
+            const showStatus = isInternal(agent.name, agent.address);
             if (/^yes/i.test(status)) {
-                statusClass += ' copilot-tag-green';
-                statusDisplay = `Active${agent.expiration ? ` (${escapeHtml(agent.expiration)})` : ''}`;
+                statusClass += " copilot-tag-green";
+                statusDisplay = `Active${agent.expiration ? ` (${escapeHtml(agent.expiration)})` : ""}`;
             } else if (/resigned|staged for resignatio/i.test(status) || expired) {
-                statusClass += ' copilot-tag-red';
-                statusDisplay = `Resigned${agent.expiration ? ` (${escapeHtml(agent.expiration)})` : ''}`;
+                statusClass += " copilot-tag-red";
+                statusDisplay = `Resigned${agent.expiration ? ` (${escapeHtml(agent.expiration)})` : ""}`;
             } else if (status && !/no service/i.test(status)) {
-                statusDisplay = `${status}${agent.expiration ? ` (${escapeHtml(agent.expiration)})` : ''}`;
+                statusDisplay = `${status}${agent.expiration ? ` (${escapeHtml(agent.expiration)})` : ""}`;
             }
             const statusHtml = statusDisplay ? `<span class="${statusClass}">${escapeHtml(statusDisplay)}</span>`
                                               : '<span style="color:#aaa">-</span>';
@@ -760,7 +761,7 @@
             <div class="white-box" style="margin-bottom:10px">
                 <div><b>${renderCopy(agent.name)}</b></div>
                 <div>${renderAddress(agent.address, isVAAddress(agent.address))}</div>
-                <div>${statusHtml}</div>
+                ${showStatus ? `<div>${statusHtml}</div>` : ""}
             </div>`;
         }
         // DIRECTORS / MEMBERS
