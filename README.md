@@ -34,7 +34,9 @@ information scraped from the current page.
   improving reliability on slow connections.
   Header rows in the hidden table are now skipped so issue details appear
   even when the modal hasn't been opened. Issue detection now retries longer
-  using exponential backoff and logs a warning if it ultimately times out.
+  using exponential backoff and logs a warning if it ultimately times out. Tab
+  lookups are handled by the background script to comply with MV3 content
+  script restrictions.
 
 ### DB
 - Displays a sidebar on order detail pages.
