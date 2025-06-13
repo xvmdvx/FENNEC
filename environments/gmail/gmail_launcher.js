@@ -457,7 +457,7 @@
             }
         }
 
-        function checkLastIssue(orderId, attempts = 10) {
+        function checkLastIssue(orderId, attempts = 15, delay = 1000) {
             if (!orderId) return;
             // Show placeholder immediately while we try to fetch the issue
             fillIssueBox(null, orderId);
@@ -466,17 +466,23 @@
             const tryFetch = () => {
                 chrome.tabs.query(query, tabs => {
                     const tab = tabs && tabs[0];
-                    if (!tab) {
-                        if (attempts > 0) setTimeout(() => { attempts--; tryFetch(); }, 1000);
+                    if (!tab || tab.status !== "complete") {
+                        if (attempts > 0) {
+                            setTimeout(() => { attempts--; delay = Math.min(delay * 1.5, 10000); tryFetch(); }, delay);
+                        } else {
+                            console.warn(`[Copilot] Issue check timed out for order ${orderId}`);
+                            fillIssueBox(null, orderId);
+                        }
                         return;
                     }
-                    if (tab.status !== 'complete') {
-                        if (attempts > 0) setTimeout(() => { attempts--; tryFetch(); }, 1000);
-                        return;
-                    }
-                    chrome.tabs.sendMessage(tab.id, { action: 'getLastIssue' }, resp => {
+                    chrome.tabs.sendMessage(tab.id, { action: "getLastIssue" }, resp => {
                         if (chrome.runtime.lastError) {
-                            if (attempts > 0) setTimeout(() => { attempts--; tryFetch(); }, 1000);
+                            if (attempts > 0) {
+                                setTimeout(() => { attempts--; delay = Math.min(delay * 1.5, 10000); tryFetch(); }, delay);
+                            } else {
+                                console.warn(`[Copilot] Issue check timed out for order ${orderId}`);
+                                fillIssueBox(null, orderId);
+                            }
                             return;
                         }
                         fillIssueBox(resp && resp.issueInfo, orderId);
