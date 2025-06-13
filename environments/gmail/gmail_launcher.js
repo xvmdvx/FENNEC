@@ -469,6 +469,10 @@
                         if (attempts > 0) setTimeout(() => { attempts--; tryFetch(); }, 1000);
                         return;
                     }
+                    if (tab.status !== 'complete') {
+                        if (attempts > 0) setTimeout(() => { attempts--; tryFetch(); }, 1000);
+                        return;
+                    }
                     chrome.tabs.sendMessage(tab.id, { action: 'getLastIssue' }, resp => {
                         if (chrome.runtime.lastError) {
                             if (attempts > 0) setTimeout(() => { attempts--; tryFetch(); }, 1000);
