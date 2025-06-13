@@ -812,13 +812,15 @@
             return { text, active };
         }
 
-        const modalRows = Array.from(document.querySelectorAll('#modalUpdateIssue table tbody tr'));
+        const modalRows = Array.from(document.querySelectorAll('#modalUpdateIssue table tbody tr'))
+            .filter(r => r.querySelectorAll('td').length >= 5);
         if (modalRows.length) {
             const info = parseRow(modalRows[0]);
             if (info) return info;
         }
 
-        const tableRows = Array.from(document.querySelectorAll('.issue-history table tbody tr'));
+        const tableRows = Array.from(document.querySelectorAll('.issue-history table tbody tr'))
+            .filter(r => r.querySelectorAll('td').length >= 5);
         if (tableRows.length) {
             const info = parseRow(tableRows[0]);
             if (info) return info;
