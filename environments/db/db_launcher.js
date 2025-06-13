@@ -600,7 +600,19 @@
         if (agent && agent.name) addRole(agent.name, 'RA', agent.address);
         directors.forEach(d => addRole(d.name, isLLC ? 'MEMBER' : 'DIRECTOR', d.address));
         shareholders.forEach(s => addRole(s.name, 'SHAREHOLDER', s.address));
-        officers.forEach(o => addRole(o.name, 'OFFICER', o.address));
+        officers.forEach(o => {
+            if (o.position) {
+                o.position.split(/[,/&]+|\band\b/i).forEach(p => {
+                    let role = p.trim().toUpperCase();
+                    if (!role) return;
+                    role = role.replace(/\./g, '');
+                    if (/^VICE/i.test(role) || /^VP/i.test(role)) role = 'VP';
+                    addRole(o.name, role, o.address);
+                });
+            } else {
+                addRole(o.name, 'OFFICER', o.address);
+            }
+        });
 
         const addrs = [];
         const pushAddr = (label, addr, name) => {
