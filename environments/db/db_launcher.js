@@ -304,6 +304,14 @@
         if (!text) return '';
         const lines = text.split(/\n+/).map(l => l.trim()).filter(Boolean);
         return lines.map(l => {
+            const idx = l.indexOf(':');
+            if (idx !== -1) {
+                const before = l.slice(0, idx + 1);
+                const after = l.slice(idx + 1).trim();
+                if (isAddressLine(after)) {
+                    return `<div>${escapeHtml(before)} ${renderAddress(after)}</div>`;
+                }
+            }
             if (isAddressLine(l)) {
                 return `<div>${renderAddress(l)}</div>`;
             }
