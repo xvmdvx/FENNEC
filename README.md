@@ -75,6 +75,8 @@ information scraped from the current page.
   periods, so the sidebar no longer hangs on "Cargando resumen".
 - Resolved an error on amendment orders that showed "Error loading summary"
   by falling back to `textContent` when detecting the order type.
+- Fixed a `ReferenceError` when loading amendment summaries by defining
+  state abbreviation lists before they are used.
 
 ## Known limitations
 
