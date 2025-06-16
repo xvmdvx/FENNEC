@@ -71,6 +71,8 @@ information scraped from the current page.
 - Fixed a bug that prevented the sidebar from appearing on order pages.
 - Resolved a `ReferenceError` in the DB sidebar by defining `SOS_URLS` at
   the top level.
+- Fixed a crash when parsing amendment details containing addresses with
+  periods, so the sidebar no longer hangs on "Cargando resumen".
 
 ## Known limitations
 
