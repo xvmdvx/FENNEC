@@ -286,6 +286,54 @@
         return `<span class="copilot-copy" data-copy="${esc}">${esc}</span>`;
     }
 
+    function renderName(text) {
+        if (!text) return '<span style="color:#aaa">-</span>';
+        const esc = escapeHtml(text);
+        const url = 'https://www.google.com/search?q=' + encodeURIComponent(text);
+        return `<a href="${url}" target="_blank" class="copilot-copy copilot-name" data-copy="${esc}">${esc}</a>`;
+    }
+
+    function isAddressLine(line) {
+        if (!line) return false;
+        const addrRegex = /(street|st\.|road|rd\.|ave\.|avenue|drive|dr\.|lane|ln\.|boulevard|blvd|pkwy|parkway|court|ct\.|hwy|highway)/i;
+        const zipRegex = /\b[A-Z]{2}\s*\d{5}(?:-\d{4})?$/i;
+        return (addrRegex.test(line) && /\d/.test(line)) || zipRegex.test(line);
+    }
+
+    function formatAmendmentDetails(text) {
+        if (!text) return '';
+        const lines = text.split(/\n+/).map(l => l.trim()).filter(Boolean);
+        return lines.map(l => {
+            if (isAddressLine(l)) {
+                return `<div>${renderAddress(l)}</div>`;
+            }
+            return `<div>${renderName(l)}</div>`;
+        }).join('');
+    }
+
+    function extractAmendmentDetails() {
+        const label = Array.from(document.querySelectorAll('#vcomp label'))
+            .find(l => l.innerText.trim().toLowerCase().includes('amendment details'));
+        if (!label) return null;
+        let valDiv = label.nextElementSibling;
+        const parent = label.closest('div');
+        if ((!valDiv || !valDiv.innerText.trim()) && parent) {
+            if (parent.nextElementSibling && parent.nextElementSibling.innerText.trim()) {
+                valDiv = parent.nextElementSibling;
+            } else {
+                const siblings = Array.from(parent.parentElement.children);
+                const idx = siblings.indexOf(parent);
+                for (let i = idx + 1; i < siblings.length; i++) {
+                    if (siblings[i].innerText.trim()) {
+                        valDiv = siblings[i];
+                        break;
+                    }
+                }
+            }
+        }
+        return valDiv ? valDiv.innerText.trim() : null;
+    }
+
     function parseDate(text) {
         const parsed = Date.parse(text);
         return isNaN(parsed) ? null : new Date(parsed);
@@ -692,6 +740,8 @@
         const dedupedOfficers = Object.values(officerMap).map(o => ({ name: o.name, address: o.address, position: Array.from(o.positions).join(', ') }));
         officers = dedupedOfficers;
 
+        const amendmentDetails = isAmendment ? extractAmendmentDetails() : null;
+
         // ---------- QUICK SUMMARY -------------
         const INTERNAL_NAME_PATTERNS = [/incfile/i, /republic registered agent/i];
         const INTERNAL_ADDR_PATTERNS = [/17350 state hwy 249/i];
@@ -895,7 +945,7 @@
             html += `
             <div class="section-label">AGENT:</div>
             <div class="white-box" style="margin-bottom:10px">
-                <div><b>${renderCopy(agent.name)}</b></div>
+                <div><b>${renderName(agent.name)}</b></div>
                 <div>${renderAddress(agent.address, isVAAddress(agent.address))}</div>
                 ${showStatus ? `<div>${statusHtml}</div>` : ""}
             </div>`;
@@ -906,7 +956,7 @@
             <div class="section-label">${isLLC ? 'MEMBERS:' : 'DIRECTORS:'}</div>
             <div class="white-box" style="margin-bottom:10px">
                 ${directors.map(d => `
-                    <div><b>${renderCopy(d.name)}</b></div>
+                    <div><b>${renderName(d.name)}</b></div>
                     <div>${renderAddress(d.address, isVAAddress(d.address))}</div>
                 `).join('<hr style="border:none; border-top:1px solid #eee; margin:6px 0"/>')}
             </div>`;
@@ -917,7 +967,7 @@
             <div class="section-label">SHAREHOLDERS:</div>
             <div class="white-box" style="margin-bottom:10px">
                 ${shareholders.map(s => `
-                    <div><b>${renderCopy(s.name)}</b></div>
+                    <div><b>${renderName(s.name)}</b></div>
                     <div>${renderAddress(s.address, isVAAddress(s.address))}</div>
                     <div>${renderCopy(s.shares)}</div>
                 `).join('<hr style="border:none; border-top:1px solid #eee; margin:6px 0"/>')}
@@ -931,11 +981,18 @@
                 ${officers.map(o => {
                     const addrLine = o.address && o.address !== '-' ? `<div>${renderAddress(o.address, isVAAddress(o.address))}</div>` : '';
                     return `
-                        <div><b>${renderCopy(o.name)}</b></div>
+                        <div><b>${renderName(o.name)}</b></div>
                         ${addrLine}
                         <div>${renderCopy(o.position)}</div>
                     `;
                 }).join('<hr style="border:none; border-top:1px solid #eee; margin:6px 0"/>')}
+            </div>`;
+        }
+        if (isAmendment && amendmentDetails) {
+            html += `
+            <div class="section-label">AMENDMENT DETAILS:</div>
+            <div class="white-box" style="margin-bottom:10px">
+                ${formatAmendmentDetails(amendmentDetails)}
             </div>`;
         }
 
@@ -972,6 +1029,13 @@
                 });
             });
             body.querySelectorAll('.company-purpose .copilot-copy').forEach(el => {
+                el.addEventListener('click', e => {
+                    const text = el.dataset.copy;
+                    if (!text) return;
+                    window.open('https://www.google.com/search?q=' + encodeURIComponent(text), '_blank');
+                });
+            });
+            body.querySelectorAll('.copilot-name').forEach(el => {
                 el.addEventListener('click', e => {
                     const text = el.dataset.copy;
                     if (!text) return;
