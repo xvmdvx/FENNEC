@@ -307,7 +307,7 @@
     }
 
     function highlightAddresses(text) {
-        const re = /\b\d+[^.,\n]*?(?:street|st\.|road|rd\.|ave\.|avenue|drive|dr\.|lane|ln\.|boulevard|blvd|pkwy|parkway|court|ct\.|hwy|highway)[^.,\n]*/gi;
+        const re = /\b\d[\w-]*[^.\n]*?(?:street|st\.?|road|rd\.?|ave\.?|avenue|drive|dr\.?|lane|ln\.?|boulevard|blvd\.?|pkwy|parkway|court|ct\.?|hwy|highway|way|loop|circle|cir\.?|place|pl\.?|trail|trl\.?|point|pt\.?|falls?|fls?|bit)[^.\n]*/gi;
         let out = '';
         let last = 0;
         for (let m; (m = re.exec(text)); ) {
@@ -326,7 +326,7 @@
 
     function isAddressLine(line) {
         if (!line) return false;
-        const addrRegex = /(street|st\.|road|rd\.|ave\.|avenue|drive|dr\.|lane|ln\.|boulevard|blvd|pkwy|parkway|court|ct\.|hwy|highway)/i;
+        const addrRegex = /(street|st\.?|road|rd\.?|ave\.?|avenue|drive|dr\.?|lane|ln\.?|boulevard|blvd\.?|pkwy|parkway|court|ct\.?|hwy|highway|way|loop|circle|cir\.?|place|pl\.?|trail|trl\.?|point|pt\.?|falls?|fls?|bit)/i;
         return addrRegex.test(line) && /\d/.test(line);
     }
 

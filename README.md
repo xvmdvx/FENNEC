@@ -65,6 +65,8 @@ information scraped from the current page.
   address portion is turned into a link so the preceding text remains plain.
 - Partial addresses lacking a state or ZIP code now appear in **bold** and link
   to a Google search instead of showing the USPS icon.
+- Address detection recognizes abbreviations like "Fls" or "Bit" and street
+  numbers with trailing letters (e.g. `22Y`).
 - Unknown order types now fall back to the standard formation view.
 - Fixed a bug that prevented the sidebar from appearing on order pages.
 - Resolved a `ReferenceError` in the DB sidebar by defining `SOS_URLS` at
