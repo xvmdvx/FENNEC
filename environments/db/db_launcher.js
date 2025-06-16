@@ -98,7 +98,7 @@
     function getOrderType() {
         const el = document.getElementById("ordType");
         if (!el) return "formation";
-        const txt = el.innerText.trim().toLowerCase();
+        const txt = (el.textContent || "").trim().toLowerCase();
         if (/amendment/.test(txt)) return "amendment";
         if (/silver|gold|platinum/.test(txt)) return "formation";
         return "formation";

@@ -73,6 +73,8 @@ information scraped from the current page.
   the top level.
 - Fixed a crash when parsing amendment details containing addresses with
   periods, so the sidebar no longer hangs on "Cargando resumen".
+- Resolved an error on amendment orders that showed "Error loading summary"
+  by falling back to `textContent` when detecting the order type.
 
 ## Known limitations
 
