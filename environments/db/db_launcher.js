@@ -293,29 +293,54 @@
         return `<a href="${url}" target="_blank" class="copilot-copy copilot-name" data-copy="${esc}">${esc}</a>`;
     }
 
+    const STATE_ABBRS = 'AL AK AZ AR CA CO CT DE FL GA HI ID IL IN IA KS KY LA ME MD MA MI MN MS MO MT NE NV NH NJ NM NY NC ND OH OK OR PA RI SC SD TN TX UT VT VA WA WV WI WY'.split(' ');
+    const STATE_NAMES = [
+        'Alabama','Alaska','Arizona','Arkansas','California','Colorado','Connecticut','Delaware','Florida','Georgia','Hawaii','Idaho','Illinois','Indiana','Iowa','Kansas','Kentucky','Louisiana','Maine','Maryland','Massachusetts','Michigan','Minnesota','Mississippi','Missouri','Montana','Nebraska','Nevada','New Hampshire','New Jersey','New Mexico','New York','North Carolina','North Dakota','Ohio','Oklahoma','Oregon','Pennsylvania','Rhode Island','South Carolina','South Dakota','Tennessee','Texas','Utah','Vermont','Virginia','Washington','West Virginia','Wisconsin','Wyoming'
+    ];
+
+    function isFullAddress(text) {
+        if (/\b\d{5}(?:-\d{4})?\b/.test(text)) return true;
+        const abbrRe = new RegExp('\\b(' + STATE_ABBRS.join('|') + ')\\b', 'i');
+        if (abbrRe.test(text)) return true;
+        const nameRe = new RegExp('\\b(' + STATE_NAMES.join('|') + ')\\b', 'i');
+        return nameRe.test(text);
+    }
+
+    function highlightAddresses(text) {
+        const re = /\b\d+[^.,\n]*?(?:street|st\.|road|rd\.|ave\.|avenue|drive|dr\.|lane|ln\.|boulevard|blvd|pkwy|parkway|court|ct\.|hwy|highway)[^.,\n]*/gi;
+        let out = '';
+        let last = 0;
+        for (let m; (m = re.exec(text)); ) {
+            out += escapeHtml(text.slice(last, m.index));
+            const addr = m[0].trim();
+            if (isFullAddress(addr)) {
+                out += renderAddress(addr);
+            } else {
+                out += '<strong>' + renderName(addr) + '</strong>';
+            }
+            last = re.lastIndex;
+        }
+        out += escapeHtml(text.slice(last));
+        return out;
+    }
+
     function isAddressLine(line) {
         if (!line) return false;
         const addrRegex = /(street|st\.|road|rd\.|ave\.|avenue|drive|dr\.|lane|ln\.|boulevard|blvd|pkwy|parkway|court|ct\.|hwy|highway)/i;
-        const zipRegex = /\b[A-Z]{2}\s*\d{5}(?:-\d{4})?$/i;
-        return (addrRegex.test(line) && /\d/.test(line)) || zipRegex.test(line);
+        return addrRegex.test(line) && /\d/.test(line);
     }
 
     function formatAmendmentDetails(text) {
         if (!text) return '';
-        const lines = text.split(/\n+/).map(l => l.trim()).filter(Boolean);
+        const lines = text.split(/\n+|\.\s*/).map(l => l.trim()).filter(Boolean);
         return lines.map(l => {
             const idx = l.indexOf(':');
             if (idx !== -1) {
                 const before = l.slice(0, idx + 1);
                 const after = l.slice(idx + 1).trim();
-                if (isAddressLine(after)) {
-                    return `<div>${escapeHtml(before)} ${renderAddress(after)}</div>`;
-                }
+                return `<div>${escapeHtml(before)} ${highlightAddresses(after)}</div>`;
             }
-            if (isAddressLine(l)) {
-                return `<div>${renderAddress(l)}</div>`;
-            }
-            return `<div>${renderName(l)}</div>`;
+            return `<div>${highlightAddresses(l)}</div>`;
         }).join('');
     }
 
