@@ -238,6 +238,10 @@
         }
     } catch (e) {
         console.error("[Copilot] ERROR en DB Launcher:", e);
+        const body = document.getElementById('copilot-body-content');
+        if (body) {
+            body.innerHTML = '<div style="text-align:center; color:#aaa; margin-top:40px">Error loading summary.</div>';
+        }
     }
 
 
