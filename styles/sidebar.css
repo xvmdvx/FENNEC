@@ -179,6 +179,9 @@
 .copilot-copy:hover {
     text-decoration: underline;
 }
+.copilot-name {
+    text-decoration: none;
+}
 
 .copilot-expired {
     color: #8B0000 !important;

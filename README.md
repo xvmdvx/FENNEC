@@ -58,6 +58,9 @@ information scraped from the current page.
   tab.
 - The company name (or State ID on amendments) links to the state's SOS business
   search page.
+- Amendment summaries now include an **Amendment Details** section. Addresses in
+  this area are clickable with a USPS lookup icon, and names throughout the
+  summary open a Google search when clicked.
 - Unknown order types now fall back to the standard formation view.
 - Fixed a bug that prevented the sidebar from appearing on order pages.
 - Resolved a `ReferenceError` in the DB sidebar by defining `SOS_URLS` at
