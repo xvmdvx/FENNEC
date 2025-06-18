@@ -521,6 +521,7 @@
         function handleEmailSearchClick() {
             const context = extractOrderContextFromEmail();
             fillOrderSummaryBox(context);
+            loadDbSummary();
 
             if (!context || !context.email) {
                 alert("No se pudo detectar el correo del cliente.");
@@ -592,9 +593,8 @@
             document.body.appendChild(sidebar);
             console.log("[Copilot] Sidebar INYECTADO en Gmail.");
 
-            const ctx = extractOrderContextFromEmail();
-            fillOrderSummaryBox(ctx);
-            loadDbSummary();
+            // Start with empty boxes. Details load after the user interacts
+            // with EMAIL SEARCH or OPEN ORDER.
 
             // Botón de cierre
             document.getElementById('copilot-close').onclick = () => {
@@ -677,6 +677,9 @@
                         alert("No se encontró ningún número de orden válido en el correo.");
                         return;
                     }
+                    const context = extractOrderContextFromEmail();
+                    fillOrderSummaryBox(context);
+                    loadDbSummary();
                     const url = `https://db.incfile.com/incfile/order/detail/${orderId}`;
                     chrome.runtime.sendMessage({ action: "replaceTabs", urls: [url] });
                     checkLastIssue(orderId);
