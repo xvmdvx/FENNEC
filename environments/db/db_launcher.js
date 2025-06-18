@@ -6,6 +6,19 @@
     });
     let currentOrderType = null;
 
+    function showReopenIcon() {
+        if (document.getElementById('fennec-reopen')) return;
+        const btn = document.createElement('div');
+        btn.id = 'fennec-reopen';
+        btn.innerHTML = `<img src="${chrome.runtime.getURL('fennec_icon.png')}" alt="FENNEC"/>`;
+        btn.addEventListener('click', () => {
+            sessionStorage.removeItem('copilotSidebarClosed');
+            btn.remove();
+            initSidebar();
+        });
+        document.body.appendChild(btn);
+    }
+
     // Map of US states to their Secretary of State business search pages
     const SOS_URLS = {
         "Alabama": "http://sos.alabama.gov/business-entities/llcs",
@@ -154,6 +167,9 @@
                         <div class="copilot-body" id="copilot-body-content">
                             <div style="text-align:center; color:#888; margin-top:20px;">Cargando resumen...</div>
                         </div>
+                        <div style="text-align:center; padding:10px;">
+                            <button id="copilot-refresh" class="copilot-button">Refresh</button>
+                        </div>
                     `;
                     document.body.appendChild(sidebar);
                     document.getElementById('copilot-close').onclick = () => {
@@ -162,7 +178,15 @@
                         const style = document.getElementById('copilot-db-padding');
                         if (style) style.remove();
                         sessionStorage.setItem('copilotSidebarClosed', 'true');
+                        showReopenIcon();
                         console.log("[Copilot] Sidebar cerrado manualmente en DB.");
+                    };
+                    document.getElementById('copilot-refresh').onclick = () => {
+                        if (currentOrderType === "amendment") {
+                            extractAndShowAmendmentData();
+                        } else {
+                            extractAndShowFormationData();
+                        }
                     };
                     const orderType = getOrderType();
                     currentOrderType = orderType;

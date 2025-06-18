@@ -20,9 +20,10 @@ information scraped from the current page.
 - The order number parser is tolerant to common formats (e.g. with `#`, parentheses or spaces).
 - Displays a small order summary inside the sidebar.
 - Opens Gmail search and the DB order page in new tabs when clicking the buttons.
+- A **Refresh** button at the bottom updates the summary without reloading the page.
 - Uses `margin-right` to ensure Gmail navigation controls stay visible.
 - The top header bar shifts left along with the main panels so account menus remain accessible.
-- If you close the sidebar it will remain hidden until the tab is reloaded.
+- Closing the sidebar leaves a small FENNEC icon that can be clicked to reopen it.
 - The Gmail script now runs in all frames so the sidebar appears even when the
   interface is embedded in nested iframes.
 - When opening an order, the sidebar shows the **latest issue** from the DB page.
@@ -47,6 +48,8 @@ information scraped from the current page.
 - Hides the agent subscription status line when RA service is not provided by Incfile.
 - Provides a Quick Actions menu with a **Cancel** option that resolves active issues and opens the cancellation dialog with the reason preselected.
 - The Quick Actions icon now sits in the header next to the close button and the menu fades in and out.
+- A **Refresh** button at the bottom updates the order details.
+- Closing the sidebar leaves a small FENNEC icon that can be clicked to reopen it.
 - Cancel automation now detects the "Cancel / Refund" link even when spaces surround the slash.
 - Officer tags in the quick summary now show specific roles like
   **PRESIDENT**, **SECRETARY**, **TREASURER** or **VP** instead of a generic

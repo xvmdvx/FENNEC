@@ -343,3 +343,24 @@
 #family-tree-orders .ft-link:hover {
     text-decoration: underline;
 }
+
+/* Floating reopen icon */
+#fennec-reopen {
+    position: fixed;
+    right: 14px;
+    bottom: 14px;
+    width: 40px;
+    height: 40px;
+    border-radius: 20px;
+    background: #c6c6c6;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 99999;
+}
+#fennec-reopen img {
+    width: 28px;
+    height: 28px;
+}

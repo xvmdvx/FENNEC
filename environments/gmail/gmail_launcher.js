@@ -17,6 +17,20 @@
         try {
             const SIDEBAR_WIDTH = 340;
 
+        function showReopenIcon() {
+            if (document.getElementById('fennec-reopen')) return;
+            const btn = document.createElement('div');
+            btn.id = 'fennec-reopen';
+            btn.innerHTML = `<img src="${chrome.runtime.getURL('fennec_icon.png')}" alt="FENNEC"/>`;
+            btn.addEventListener('click', () => {
+                sessionStorage.removeItem('copilotSidebarClosed');
+                btn.remove();
+                const panels = applyPaddingToMainPanels();
+                injectSidebar(panels);
+            });
+            document.body.appendChild(btn);
+        }
+
         function applyPaddingToMainPanels() {
             const candidates = [
                 ...Array.from(document.body.querySelectorAll(':scope > .nH')),
@@ -547,6 +561,9 @@
                             No intel yet.
                         </div>
                     </div>
+                    <div style="text-align:center; margin-top:12px;">
+                        <button id="copilot-refresh" class="copilot-button">Refresh</button>
+                    </div>
                 </div>
             `;
             document.body.appendChild(sidebar);
@@ -562,7 +579,14 @@
                 // Limpiar el margin aplicado a los paneles
                 mainPanels.forEach(el => el.style.marginRight = '');
                 sessionStorage.setItem('copilotSidebarClosed', 'true');
+                showReopenIcon();
                 console.log("[Copilot] Sidebar cerrado manualmente en Gmail.");
+            };
+
+            document.getElementById('copilot-refresh').onclick = () => {
+                const nctx = extractOrderContextFromEmail();
+                fillOrderSummaryBox(nctx);
+                fillIntelBox(nctx);
             };
 
             // Botón EMAIL SEARCH (listener UNIFICADO)
