@@ -154,7 +154,11 @@
                     style.id = 'copilot-db-padding';
                     style.textContent = `
                         #frm-search-order { margin-right: ${SIDEBAR_WIDTH}px !important; }
-                        .modal-fullscreen { width: calc(100% - ${SIDEBAR_WIDTH}px); }
+                        .modal-fullscreen {
+                            width: calc(100% - ${SIDEBAR_WIDTH}px);
+                            margin-left: 0 !important;
+                            margin-right: ${SIDEBAR_WIDTH}px !important;
+                        }
                     `;
                     document.head.appendChild(style);
                 }

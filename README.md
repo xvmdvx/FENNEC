@@ -87,6 +87,8 @@ information scraped from the current page.
   by falling back to `textContent` when detecting the order type.
 - Fixed a `ReferenceError` when loading amendment summaries by defining
   state abbreviation lists before they are used.
+- Adjusted issue modals so the sidebar no longer covers the "View All"
+  dialog on DB pages.
 
 ## Known limitations
 
