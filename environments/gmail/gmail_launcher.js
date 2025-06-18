@@ -574,15 +574,15 @@
                         <button id="btn-email-search" class="copilot-button">📧 EMAIL SEARCH</button>
                         <button id="btn-open-order" class="copilot-button">📂 OPEN ORDER</button>
                     </div>
-                    <div class="order-summary-box">
-                        <strong>ORDER SUMMARY</strong><br>
-                        <div id="order-summary-content" style="color:#ccc; font-size:13px;">
-                            No order data yet.
-                        </div>
-                    </div>
                     <div class="issue-summary-box" id="issue-summary-box" style="margin-top:10px;">
                         <strong>ISSUE <span id="issue-status-label" class="issue-status-label"></span></strong><br>
                         <div id="issue-summary-content" style="color:#ccc; font-size:13px;">No issue data yet.</div>
+                    </div>
+                    <div class="order-summary-header">ORDER SUMMARY</div>
+                    <div class="order-summary-box">
+                        <div id="order-summary-content" style="color:#ccc; font-size:13px;">
+                            No order data yet.
+                        </div>
                     </div>
                     <div id="db-summary-section"></div>
                     <div class="copilot-footer">
