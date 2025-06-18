@@ -186,15 +186,18 @@
                         </div>
                     `;
                     document.body.appendChild(sidebar);
-                    document.getElementById('copilot-close').onclick = () => {
-                        sidebar.remove();
-                        document.body.style.marginRight = '';
-                        const style = document.getElementById('copilot-db-padding');
-                        if (style) style.remove();
-                        sessionStorage.setItem('copilotSidebarClosed', 'true');
-                        console.log("[Copilot] Sidebar cerrado manualmente en DB.");
-                        showFloatingIcon();
-                    };
+                    const closeBtn = sidebar.querySelector('#copilot-close');
+                    if (closeBtn) {
+                        closeBtn.onclick = () => {
+                            sidebar.remove();
+                            document.body.style.marginRight = '';
+                            const style = document.getElementById('copilot-db-padding');
+                            if (style) style.remove();
+                            sessionStorage.setItem('copilotSidebarClosed', 'true');
+                            console.log("[Copilot] Sidebar cerrado manualmente en DB.");
+                            showFloatingIcon();
+                        };
+                    }
                     const orderType = getOrderType();
                     currentOrderType = orderType;
                     const ftIcon = sidebar.querySelector('#family-tree-icon');
@@ -273,13 +276,16 @@
                             startCancelProcedure();
                         });
                     }
-                        document.getElementById("copilot-refresh").onclick = () => {
-                            if (currentOrderType === "amendment") {
-                                extractAndShowAmendmentData();
-                            } else {
-                                extractAndShowFormationData();
-                            }
-                        };
+                        const refreshBtn = sidebar.querySelector('#copilot-refresh');
+                        if (refreshBtn) {
+                            refreshBtn.onclick = () => {
+                                if (currentOrderType === "amendment") {
+                                    extractAndShowAmendmentData();
+                                } else {
+                                    extractAndShowFormationData();
+                                }
+                            };
+                        }
                 })();
             }
         }
