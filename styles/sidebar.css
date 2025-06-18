@@ -15,7 +15,7 @@
 .copilot-header {
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: flex-start;
     padding: 12px;
     background: #c6c6c6;
     color: #000;
@@ -37,6 +37,7 @@
 #copilot-close {
     background: none; border: none; color: #000; font-size: 20px;
     cursor: pointer; outline: none;
+    margin-left: 8px;
 }
 .copilot-body {
     flex: 1;

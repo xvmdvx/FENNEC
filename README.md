@@ -58,7 +58,7 @@ information scraped from the current page.
 - Scrapes company, agent and officer data and presents it in a compact layout.
 - Addresses are clickable to open a Google search and copy the text.
 - Hides the agent subscription status line when RA service is not provided by Incfile.
-- Provides a Quick Actions menu with a **Cancel** option that resolves active issues and opens the cancellation dialog with the reason preselected.
+- Provides a Quick Actions menu with **Emails** and **Cancel** options. **Emails** opens a Google search for the order, client email and name while **Cancel** resolves active issues and opens the cancellation dialog with the reason preselected.
 - The Quick Actions icon now sits in the header next to the close button and the menu fades in and out.
 - A **REFRESH** button at the end of the summary reloads the data.
 - Closing the sidebar leaves a floating Fennec icon to reopen it.
