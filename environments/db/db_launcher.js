@@ -281,9 +281,16 @@
                             hideMenu();
                             const info = getBasicOrderInfo();
                             const client = getClientInfo();
-                            const terms = [info.orderId, client.email, client.name].filter(Boolean).join(' ');
-                            if (terms) {
-                                const url = 'https://www.google.com/search?q=' + encodeURIComponent(terms);
+                            const parts = [];
+                            if (info.orderId) {
+                                parts.push(info.orderId);
+                                parts.push(`subject:"${info.orderId}"`);
+                            }
+                            if (client.email) parts.push(`"${client.email}"`);
+                            if (client.name) parts.push(`"${client.name}"`);
+                            if (parts.length) {
+                                const query = parts.map(p => encodeURIComponent(p)).join('+OR+');
+                                const url = 'https://mail.google.com/mail/u/0/#search/' + query;
                                 chrome.runtime.sendMessage({ action: 'openActiveTab', url });
                             }
                         });
