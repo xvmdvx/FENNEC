@@ -173,7 +173,7 @@
                             <span id="qa-toggle" class="quick-actions-toggle">☰</span>
                             <button id="copilot-close">✕</button>
                         </div>
-                        <div class="order-summary-header">ORDER SUMMARY <span id="qs-toggle" class="quick-summary-toggle">⚡</span></div>
+                        <div class="order-summary-header"><span id="family-tree-icon" class="family-tree-icon" style="display:none">🌳</span> ORDER SUMMARY <span id="qs-toggle" class="quick-summary-toggle">⚡</span></div>
                         <div class="copilot-body" id="copilot-body-content">
                             <div style="text-align:center; color:#888; margin-top:20px;">Cargando resumen...</div>
                             <div class="copilot-footer">
@@ -193,6 +193,10 @@
                     };
                     const orderType = getOrderType();
                     currentOrderType = orderType;
+                    const ftIcon = sidebar.querySelector('#family-tree-icon');
+                    if (ftIcon) {
+                        ftIcon.style.display = orderType === 'amendment' ? 'inline' : 'none';
+                    }
                     if (orderType === "amendment") {
                         extractAndShowAmendmentData();
                     } else {
@@ -999,9 +1003,6 @@
             dbSections.push(compSection);
             if (isAmendment) {
                 html += `
-                <div style="text-align:center;margin-bottom:10px;">
-                    <button id="view-family-tree" class="copilot-button" style="padding:4px 8px;font-size:12px;">FAMILY TREE</button>
-                </div>
                 <div id="family-tree-orders" style="display:none"></div>`;
             }
         }
@@ -1137,9 +1138,9 @@
                     window.open('https://www.google.com/search?q=' + encodeURIComponent(text), '_blank');
                 });
             });
-            const ftBtn = body.querySelector('#view-family-tree');
-            if (ftBtn) {
-                ftBtn.addEventListener('click', () => {
+            const ftIcon = document.getElementById('family-tree-icon');
+            if (ftIcon) {
+                ftIcon.addEventListener('click', () => {
                     const container = body.querySelector('#family-tree-orders');
                     if (!container) return;
 
@@ -1156,9 +1157,11 @@
                         alert('Parent order not found');
                         return;
                     }
-                    ftBtn.disabled = true;
+                    ftIcon.style.opacity = '0.5';
+                    ftIcon.style.pointerEvents = 'none';
                     chrome.runtime.sendMessage({ action: 'fetchChildOrders', orderId: parentId }, (resp) => {
-                        ftBtn.disabled = false;
+                        ftIcon.style.opacity = '1';
+                        ftIcon.style.pointerEvents = 'auto';
                         if (!resp || !resp.childOrders || !resp.parentInfo) return;
                         const box = document.createElement('div');
                         box.className = 'white-box';
