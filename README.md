@@ -75,6 +75,8 @@ information scraped from the current page.
   tab.
 - The family tree icon also appears on Annual Report, Foreign Qualification,
   Virtual Address and Registered Agent orders.
+- Beneath the tree list there is an **AR DIAGNOSE** button that opens all
+  child orders with a HOLD status in background tabs.
 - Fixed detection of the parent order so the tree icon functions on all
   non-formation orders.
 - Fixed missing summary container so the tree icon now opens the parent

@@ -1221,6 +1221,9 @@
                                 <div>${escapeHtml(o.date)}</div>
                                 <div><span class="copilot-tag">${escapeHtml(o.status)}</span></div>
                             </div>`).join('');
+                        html += `<div style="text-align:center; margin-top:8px;">
+                            <button id="ar-diagnose-btn" class="copilot-button">AR DIAGNOSE</button>
+                        </div>`;
                         box.innerHTML = html;
                         container.innerHTML = '';
                         container.appendChild(box);
@@ -1235,6 +1238,19 @@
                                 }
                             });
                         });
+
+                        const diagBtn = container.querySelector('#ar-diagnose-btn');
+                        if (diagBtn) {
+                            diagBtn.addEventListener('click', () => {
+                                const holds = resp.childOrders.filter(o => /hold/i.test(o.status));
+                                if (holds.length) {
+                                    const urls = holds.map(o => `https://db.incfile.com/incfile/order/detail/${o.orderId}`);
+                                    chrome.runtime.sendMessage({ action: 'openTabs', urls });
+                                } else {
+                                    alert('No HOLD orders found');
+                                }
+                            });
+                        }
                     });
                 });
             }
