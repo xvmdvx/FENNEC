@@ -1038,7 +1038,7 @@
             </div>`;
             html += compSection;
             dbSections.push(compSection);
-            if (isAmendment) {
+            if (currentOrderType !== 'formation') {
                 html += `
                 <div id="family-tree-orders" style="display:none"></div>`;
             }
