@@ -47,6 +47,8 @@ information scraped from the current page.
 - Closing the sidebar leaves a floating Fennec icon to reopen it.
 - The action buttons sit side by side and the old Potential Intel box has
   been removed.
+- The **EMAIL SEARCH** and **OPEN ORDER** buttons are now smaller so they
+  never exceed the sidebar width, and their default color is a softer black.
 
 ### DB
 - Displays a sidebar on order detail pages.

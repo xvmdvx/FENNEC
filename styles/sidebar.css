@@ -81,15 +81,19 @@
     gap: 12px;
 }
 
+.copilot-actions .copilot-button {
+    flex: 1;
+}
+
 .copilot-button {
-    background-color: #000000;
+    background-color: #333333;
     color: white;
     border: 2px solid white;
     border-radius: 8px;
-    padding: 6px 14px;
+    padding: 5px 12px;
     cursor: pointer;
     font-weight: bold;
-    font-size: 14px;
+    font-size: 13px;
     text-align: center;
     white-space: nowrap;
     transition: background-color 0.2s ease, transform 0.1s ease;
