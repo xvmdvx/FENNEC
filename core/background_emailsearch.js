@@ -9,6 +9,15 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         });
     }
 
+    if (message.action === "openActiveTab" && message.url) {
+        console.log("[Copilot] Forzando apertura de una pestaña activa:", message.url);
+        chrome.tabs.create({ url: message.url, active: true }, (tab) => {
+            if (chrome.runtime.lastError) {
+                console.error("[Copilot] Error (openActiveTab):", chrome.runtime.lastError.message);
+            }
+        });
+    }
+
     if (message.action === "openTabs" && Array.isArray(message.urls)) {
         console.log("[Copilot] Forzando apertura de múltiples pestañas:", message.urls);
         message.urls.forEach((url, i) => {

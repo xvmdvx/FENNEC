@@ -237,7 +237,7 @@
                         const qaMenu = document.createElement('div');
                         qaMenu.id = 'quick-actions-menu';
                         qaMenu.style.display = 'none';
-                        qaMenu.innerHTML = '<div class="qa-title">QUICK ACTIONS</div><ul><li id="qa-cancel">Cancel</li></ul>';
+                        qaMenu.innerHTML = '<div class="qa-title">QUICK ACTIONS</div><ul><li id="qa-emails">Emails</li><li id="qa-cancel">Cancel</li></ul>';
                         document.body.appendChild(qaMenu);
 
                         function showMenu() {
@@ -258,16 +258,33 @@
                             if (qaMenu.style.display === 'block') {
                                 hideMenu();
                             } else {
-                                const rect = qaToggle.getBoundingClientRect();
-                                qaMenu.style.top = rect.bottom + 'px';
-                                qaMenu.style.left = (rect.left - qaMenu.offsetWidth + rect.width) + 'px';
                                 showMenu();
+                                const rect = qaToggle.getBoundingClientRect();
+                                const menuWidth = qaMenu.offsetWidth;
+                                let left = rect.left - menuWidth + rect.width;
+                                if (left < 0) left = 0;
+                                if (left + menuWidth > window.innerWidth) {
+                                    left = window.innerWidth - menuWidth;
+                                }
+                                qaMenu.style.top = rect.bottom + 'px';
+                                qaMenu.style.left = left + 'px';
                             }
                         });
 
                         document.addEventListener('click', (e) => {
                             if (!qaMenu.contains(e.target) && e.target !== qaToggle && qaMenu.style.display === 'block') {
                                 hideMenu();
+                            }
+                        });
+
+                        qaMenu.querySelector('#qa-emails').addEventListener('click', () => {
+                            hideMenu();
+                            const info = getBasicOrderInfo();
+                            const client = getClientInfo();
+                            const terms = [info.orderId, client.email, client.name].filter(Boolean).join(' ');
+                            if (terms) {
+                                const url = 'https://www.google.com/search?q=' + encodeURIComponent(terms);
+                                chrome.runtime.sendMessage({ action: 'openActiveTab', url });
                             }
                         });
 
@@ -1341,5 +1358,38 @@
         if (!link) return null;
         const m = link.href.match(/detail\/(\d+)/);
         return m ? m[1] : null;
+    }
+
+    function getClientInfo() {
+        const tab = document.querySelector('#vclient');
+        if (tab) {
+            const row = tab.querySelector('table tbody tr');
+            if (row) {
+                const nameCell = row.querySelector('td[id^="clientName"]');
+                const contactCell = row.querySelector('td[id^="clientContact"]');
+                const name = nameCell ? getText(nameCell).replace(/^\s*✓?\s*/, '') : '';
+                let email = '';
+                if (contactCell) {
+                    const match = getText(contactCell).match(/[\w.+-]+@[\w.-]+/);
+                    if (match) email = match[0];
+                }
+                return { name, email };
+            }
+        }
+        const contactHeader = Array.from(document.querySelectorAll('h3.box-title'))
+            .find(h => getText(h).toLowerCase().includes('contact info'));
+        if (contactHeader) {
+            const body = contactHeader.closest('.form-body');
+            if (body) {
+                const nameLabel = Array.from(body.querySelectorAll('label'))
+                    .find(l => getText(l).toLowerCase().startsWith('name'));
+                const emailLabel = Array.from(body.querySelectorAll('label'))
+                    .find(l => getText(l).toLowerCase().startsWith('email'));
+                const name = nameLabel ? getText(nameLabel.parentElement.querySelector('.form-control-static')) : '';
+                const email = emailLabel ? getText(emailLabel.parentElement.querySelector('.form-control-static')) : '';
+                return { name, email };
+            }
+        }
+        return { name: '', email: '' };
     }
 })();
