@@ -72,6 +72,8 @@ information scraped from the current page.
   view of the parent order and its latest child orders. Each entry now shows order number,
   type, date and status, and clicking a number opens that order in a background
   tab.
+- The family tree icon also appears on Annual Report, Foreign Qualification,
+  Virtual Address and Registered Agent orders.
 - The company name (or State ID on amendments) links to the state's SOS business
   search page.
 - Amendment summaries now include an **Amendment Details** section. Addresses in
