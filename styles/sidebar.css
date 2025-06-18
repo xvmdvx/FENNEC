@@ -213,6 +213,11 @@
     margin-left: 6px;
     vertical-align: middle;
 }
+#copilot-sidebar .family-tree-icon {
+    cursor: pointer;
+    margin-right: 6px;
+    vertical-align: middle;
+}
 
 #copilot-sidebar #quick-summary {
     overflow: hidden;
