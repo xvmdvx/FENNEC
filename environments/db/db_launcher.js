@@ -134,7 +134,7 @@
         const txt = (el.textContent || "").trim().toLowerCase();
         if (/amendment/.test(txt)) return "amendment";
         if (/silver|gold|platinum/.test(txt)) return "formation";
-        return "formation";
+        return "other";
     }
 
     chrome.storage.local.get({ extensionEnabled: true }, ({ extensionEnabled }) => {
@@ -202,7 +202,7 @@
                     currentOrderType = orderType;
                     const ftIcon = sidebar.querySelector('#family-tree-icon');
                     if (ftIcon) {
-                        ftIcon.style.display = orderType === 'amendment' ? 'inline' : 'none';
+                        ftIcon.style.display = orderType !== 'formation' ? 'inline' : 'none';
                     }
                     if (orderType === "amendment") {
                         extractAndShowAmendmentData();
