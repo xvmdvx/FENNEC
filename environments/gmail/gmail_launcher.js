@@ -47,6 +47,29 @@
 
             return mainPanels;
         }
+        function showFloatingIcon() {
+            if (document.getElementById("fennec-floating-icon")) return;
+            const icon = document.createElement("img");
+            icon.id = "fennec-floating-icon";
+            icon.src = chrome.runtime.getURL("fennec_icon.png");
+            icon.alt = "FENNEC";
+            icon.addEventListener("click", () => {
+                icon.remove();
+                sessionStorage.removeItem("copilotSidebarClosed");
+                const panels = applyPaddingToMainPanels();
+                injectSidebar(panels);
+            });
+            document.body.appendChild(icon);
+        }
+
+        function ensureFloatingIcon() {
+            if (sessionStorage.getItem("copilotSidebarClosed") === "true" &&
+                !document.getElementById("fennec-floating-icon") &&
+                !document.getElementById("copilot-sidebar")) {
+                showFloatingIcon();
+            }
+        }
+
 
         function extractOrderNumber(text) {
             if (!text) return null;
@@ -560,6 +583,9 @@
                     </div>
                     <div id="db-summary-section"></div>
                 </div>
+                <div class="copilot-footer">
+                    <button id="copilot-refresh" class="copilot-button">🔄 REFRESH</button>
+                </div>
             `;
             document.body.appendChild(sidebar);
             console.log("[Copilot] Sidebar INYECTADO en Gmail.");
@@ -574,15 +600,22 @@
                 // Limpiar el margin aplicado a los paneles
                 mainPanels.forEach(el => el.style.marginRight = '');
                 sessionStorage.setItem('copilotSidebarClosed', 'true');
+                showFloatingIcon();
                 console.log("[Copilot] Sidebar cerrado manualmente en Gmail.");
             };
 
             // Botón EMAIL SEARCH (listener UNIFICADO)
             document.getElementById("btn-email-search").onclick = handleEmailSearchClick;
+            document.getElementById("copilot-refresh").onclick = () => {
+                const ctx = extractOrderContextFromEmail();
+                fillOrderSummaryBox(ctx);
+                loadDbSummary();
+                if (ctx && ctx.orderNumber) checkLastIssue(ctx.orderNumber);
+            };
         }
 
         function injectSidebarIfMissing() {
-            if (sessionStorage.getItem('copilotSidebarClosed') === 'true') return;
+            if (sessionStorage.getItem("copilotSidebarClosed") === "true") { ensureFloatingIcon(); return; }
             if (!document.getElementById('copilot-sidebar')) {
                 console.log("[Copilot] Sidebar no encontrado, inyectando en Gmail...");
                 const mainPanels = applyPaddingToMainPanels();

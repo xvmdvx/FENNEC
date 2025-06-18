@@ -43,6 +43,8 @@ information scraped from the current page.
   sidebar (Company, Agent, Members/Directors, Shareholders, Officers and
   Amendment Details) right below the Issue section.
 - While the Issue section loads, a small blinking Fennec icon is shown.
+- A **REFRESH** button at the bottom reloads the sidebar data.
+- Closing the sidebar leaves a floating Fennec icon to reopen it.
 - The action buttons sit side by side and the old Potential Intel box has
   been removed.
 
@@ -53,6 +55,8 @@ information scraped from the current page.
 - Hides the agent subscription status line when RA service is not provided by Incfile.
 - Provides a Quick Actions menu with a **Cancel** option that resolves active issues and opens the cancellation dialog with the reason preselected.
 - The Quick Actions icon now sits in the header next to the close button and the menu fades in and out.
+- A **REFRESH** button at the bottom reloads the summary.
+- Closing the sidebar leaves a floating Fennec icon to reopen it.
 - Cancel automation now detects the "Cancel / Refund" link even when spaces surround the slash.
 - Officer tags in the quick summary now show specific roles like
   **PRESIDENT**, **SECRETARY**, **TREASURER** or **VP** instead of a generic
