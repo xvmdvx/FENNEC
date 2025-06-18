@@ -1,4 +1,5 @@
 // Injects the FENNEC sidebar into Gmail pages.
+// Pads main panels and the attachment viewer so content stays visible.
 (function persistentSidebar() {
     // Clear the closed flag on full reloads so the sidebar returns
     window.addEventListener('beforeunload', () => {
@@ -21,7 +22,8 @@
             const candidates = [
                 ...Array.from(document.body.querySelectorAll(':scope > .nH')),
                 ...Array.from(document.body.querySelectorAll('.aeF')),
-                ...Array.from(document.body.querySelectorAll('.Bk'))
+                ...Array.from(document.body.querySelectorAll('.Bk')),
+                ...Array.from(document.body.querySelectorAll('div[role="dialog"]'))
             ];
 
             // También ajustamos la barra superior de Gmail

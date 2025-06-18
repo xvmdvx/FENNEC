@@ -89,6 +89,8 @@ information scraped from the current page.
   by falling back to `textContent` when detecting the order type.
 - Fixed a `ReferenceError` when loading amendment summaries by defining
   state abbreviation lists before they are used.
+- Fixed missing padding when previewing attachments in Gmail so documents
+  remain fully visible.
 
 ## Known limitations
 
