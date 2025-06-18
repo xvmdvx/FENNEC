@@ -1354,6 +1354,12 @@
     }
 
     function getParentOrderId() {
+        const hidden = document.getElementById('currentMainOrder');
+        if (hidden && hidden.value) {
+            const id = hidden.value.replace(/\D/g, '');
+            if (id) return id;
+        }
+
         const link = Array.from(document.querySelectorAll('a[href*="/order/detail/"]'))
             .find(a => {
                 const area =
