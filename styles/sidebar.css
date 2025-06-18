@@ -152,6 +152,9 @@
     line-height: 1.4em;
     text-align: center;
 }
+#issue-summary-content {
+    white-space: pre-line;
+}
 
 /* Ensure DB sidebar sections remain readable */
 #copilot-sidebar .white-box {

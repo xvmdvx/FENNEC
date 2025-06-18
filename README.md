@@ -40,12 +40,11 @@ information scraped from the current page.
   using exponential backoff and logs a warning if it ultimately times out. Tab
   lookups are handled by the background script to comply with MV3 content
   script restrictions.
-- The Issue summary box now appears immediately below the action buttons and
-  the **ORDER SUMMARY** heading sits above its data box for consistency with the
-  DB sidebar.
+- The Issue summary box now appears after the order and DB summaries.
 - The sidebar now displays the latest company data pulled from the DB
   sidebar (Company, Agent, Members/Directors, Shareholders, Officers and
-  Amendment Details) right below the Issue section.
+  Amendment Details) right below the **ORDER SUMMARY** section.
+- Numbered requirements in the Issue text are shown on separate lines for clarity.
 - While the Issue section loads, a small blinking Fennec icon is shown.
 - A **REFRESH** button at the end of the sidebar content reloads the data.
 - Closing the sidebar leaves a floating Fennec icon to reopen it.

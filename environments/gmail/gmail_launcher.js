@@ -481,6 +481,12 @@
             });
         }
 
+        function formatIssueText(text) {
+            if (!text) return '';
+            let formatted = text.replace(/\s*(\d+\s*[).])/g, (m, g) => '\n' + g + ' ');
+            return formatted.replace(/^\n/, '').trim();
+        }
+
         function fillIssueBox(info, orderId) {
             const box = document.getElementById('issue-summary-box');
             const content = document.getElementById('issue-summary-content');
@@ -488,7 +494,7 @@
             if (!box || !content || !label) return;
             box.style.display = 'block';
             if (info && info.text) {
-                content.textContent = info.text;
+                content.textContent = formatIssueText(info.text);
                 label.textContent = info.active ? 'ACTIVE' : 'RESOLVED';
                 label.className = 'issue-status-label ' + (info.active ? 'issue-status-active' : 'issue-status-resolved');
             } else {
@@ -574,10 +580,6 @@
                         <button id="btn-email-search" class="copilot-button">📧 EMAIL SEARCH</button>
                         <button id="btn-open-order" class="copilot-button">📂 OPEN ORDER</button>
                     </div>
-                    <div class="issue-summary-box" id="issue-summary-box" style="margin-top:10px;">
-                        <strong>ISSUE <span id="issue-status-label" class="issue-status-label"></span></strong><br>
-                        <div id="issue-summary-content" style="color:#ccc; font-size:13px;">No issue data yet.</div>
-                    </div>
                     <div class="order-summary-header">ORDER SUMMARY</div>
                     <div class="order-summary-box">
                         <div id="order-summary-content" style="color:#ccc; font-size:13px;">
@@ -585,6 +587,10 @@
                         </div>
                     </div>
                     <div id="db-summary-section"></div>
+                    <div class="issue-summary-box" id="issue-summary-box" style="margin-top:10px;">
+                        <strong>ISSUE <span id="issue-status-label" class="issue-status-label"></span></strong><br>
+                        <div id="issue-summary-content" style="color:#ccc; font-size:13px; white-space:pre-line;">No issue data yet.</div>
+                    </div>
                     <div class="copilot-footer">
                         <button id="copilot-refresh" class="copilot-button">🔄 REFRESH</button>
                     </div>
