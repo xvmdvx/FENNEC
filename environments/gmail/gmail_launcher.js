@@ -443,6 +443,19 @@
             });
         }
 
+        function loadDbSummary() {
+            const container = document.getElementById('db-summary-section');
+            if (!container) return;
+            chrome.storage.local.get({ sidebarDb: [] }, ({ sidebarDb }) => {
+                if (Array.isArray(sidebarDb) && sidebarDb.length) {
+                    container.innerHTML = sidebarDb.join('');
+                    attachCommonListeners(container);
+                } else {
+                    container.innerHTML = '<div style="text-align:center; color:#aaa; font-size:13px;">No DB data.</div>';
+                }
+            });
+        }
+
         function fillIssueBox(info, orderId) {
             const box = document.getElementById('issue-summary-box');
             const content = document.getElementById('issue-summary-content');
@@ -463,7 +476,13 @@
 
         function checkLastIssue(orderId) {
             if (!orderId) return;
-            fillIssueBox(null, orderId);
+            const content = document.getElementById('issue-summary-content');
+            const label = document.getElementById('issue-status-label');
+            if (content && label) {
+                content.innerHTML = `<img src="${chrome.runtime.getURL('fennec_icon.png')}" class="loading-fennec"/>`;
+                label.textContent = '';
+                label.className = 'issue-status-label';
+            }
             chrome.runtime.sendMessage({ action: "checkLastIssue", orderId }, (resp) => {
                 if (chrome.runtime.lastError) {
                     console.warn("[Copilot] Issue check failed:", chrome.runtime.lastError.message);
@@ -477,7 +496,6 @@
         function handleEmailSearchClick() {
             const context = extractOrderContextFromEmail();
             fillOrderSummaryBox(context);
-            fillIntelBox(context);
 
             if (!context || !context.email) {
                 alert("No se pudo detectar el correo del cliente.");
@@ -526,7 +544,6 @@
                     <button id="copilot-close">✕</button>
                 </div>
                 <div class="copilot-body">
-                    <p>Hi, it's Fennec. Check your options below:</p>
                     <div class="copilot-actions">
                         <button id="btn-email-search" class="copilot-button">📧 EMAIL SEARCH</button>
                         <button id="btn-open-order" class="copilot-button">📂 OPEN ORDER</button>
@@ -541,12 +558,7 @@
                         <strong>ISSUE <span id="issue-status-label" class="issue-status-label"></span></strong><br>
                         <div id="issue-summary-content" style="color:#ccc; font-size:13px;">No issue data yet.</div>
                     </div>
-                    <div class="intel-summary-box">
-                        <strong>POTENTIAL INTEL</strong><br>
-                        <div id="intel-summary-content" style="color:#ccc; font-size:13px;">
-                            No intel yet.
-                        </div>
-                    </div>
+                    <div id="db-summary-section"></div>
                 </div>
             `;
             document.body.appendChild(sidebar);
@@ -554,7 +566,7 @@
 
             const ctx = extractOrderContextFromEmail();
             fillOrderSummaryBox(ctx);
-            fillIntelBox(ctx);
+            loadDbSummary();
 
             // Botón de cierre
             document.getElementById('copilot-close').onclick = () => {
@@ -587,6 +599,12 @@
 
         setInterval(injectSidebarIfMissing, 1200);
         console.log("[Copilot] Intervalo de chequeo de sidebar lanzado (Gmail).");
+
+        chrome.storage.onChanged.addListener((changes, area) => {
+            if (area === 'local' && changes.sidebarDb && document.getElementById('db-summary-section')) {
+                loadDbSummary();
+            }
+        });
 
         // --- OPEN ORDER listener robusto, sin cambios ---
         function waitForElement(selector, timeout = 10000) {

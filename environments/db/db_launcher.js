@@ -244,6 +244,7 @@
         }
     } catch (e) {
         console.error("[Copilot] ERROR en DB Launcher:", e);
+
         const body = document.getElementById('copilot-body-content');
         if (body) {
             body.innerHTML = '<div style="text-align:center; color:#aaa; margin-top:40px">Error loading summary.</div>';
@@ -642,6 +643,7 @@
 
 
     function extractAndShowFormationData(isAmendment = false) {
+        const dbSections = [];
         // 1. COMPANY
         const companyRaw = extractSingle('#vcomp .form-body', [
             {name: 'name', label: 'company name'},
@@ -949,11 +951,13 @@
             }
             companyLines.push(addrHtml);
             companyLines.push(`<div class="company-purpose">${renderCopy(company.purpose)}</div>`);
-            html += `
+            const compSection = `
             <div class="section-label">COMPANY:</div>
             <div class="white-box" style="margin-bottom:10px">
                 ${companyLines.join('')}
             </div>`;
+            html += compSection;
+            dbSections.push(compSection);
             if (isAmendment) {
                 html += `
                 <div style="text-align:center;margin-bottom:10px;">
@@ -981,17 +985,19 @@
             }
             const statusHtml = statusDisplay ? `<span class="${statusClass}">${escapeHtml(statusDisplay)}</span>`
                                               : '<span style="color:#aaa">-</span>';
-            html += `
+            const agentSection = `
             <div class="section-label">AGENT:</div>
             <div class="white-box" style="margin-bottom:10px">
                 <div><b>${renderName(agent.name)}</b></div>
                 <div>${renderAddress(agent.address, isVAAddress(agent.address))}</div>
                 ${showStatus ? `<div>${statusHtml}</div>` : ""}
             </div>`;
+            html += agentSection;
+            dbSections.push(agentSection);
         }
         // DIRECTORS / MEMBERS
         if (directors.length) {
-            html += `
+            const dirSection = `
             <div class="section-label">${isLLC ? 'MEMBERS:' : 'DIRECTORS:'}</div>
             <div class="white-box" style="margin-bottom:10px">
                 ${directors.map(d => `
@@ -999,10 +1005,12 @@
                     <div>${renderAddress(d.address, isVAAddress(d.address))}</div>
                 `).join('<hr style="border:none; border-top:1px solid #eee; margin:6px 0"/>')}
             </div>`;
+            html += dirSection;
+            dbSections.push(dirSection);
         }
         // SHAREHOLDERS
         if (shareholders.length) {
-            html += `
+            const shSection = `
             <div class="section-label">SHAREHOLDERS:</div>
             <div class="white-box" style="margin-bottom:10px">
                 ${shareholders.map(s => `
@@ -1011,10 +1019,12 @@
                     <div>${renderCopy(s.shares)}</div>
                 `).join('<hr style="border:none; border-top:1px solid #eee; margin:6px 0"/>')}
             </div>`;
+            html += shSection;
+            dbSections.push(shSection);
         }
         // OFFICERS
         if (officers.length) {
-            html += `
+            const offSection = `
             <div class="section-label">OFFICERS:</div>
             <div class="white-box" style="margin-bottom:10px">
                 ${officers.map(o => {
@@ -1026,18 +1036,24 @@
                     `;
                 }).join('<hr style="border:none; border-top:1px solid #eee; margin:6px 0"/>')}
             </div>`;
+            html += offSection;
+            dbSections.push(offSection);
         }
         if (isAmendment && amendmentDetails) {
-            html += `
+            const amendSection = `
             <div class="section-label">AMENDMENT DETAILS:</div>
             <div class="white-box" style="margin-bottom:10px">
                 ${formatAmendmentDetails(amendmentDetails)}
             </div>`;
+            html += amendSection;
+            dbSections.push(amendSection);
         }
 
         if (!html) {
             html = `<div style="text-align:center; color:#aaa; margin-top:40px">No se encontró información relevante de la orden.</div>`;
         }
+
+        chrome.storage.local.set({ sidebarDb: dbSections });
 
         const body = document.getElementById('copilot-body-content');
         if (body) {

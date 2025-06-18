@@ -39,6 +39,12 @@ information scraped from the current page.
   using exponential backoff and logs a warning if it ultimately times out. Tab
   lookups are handled by the background script to comply with MV3 content
   script restrictions.
+- The sidebar now displays the latest company data pulled from the DB
+  sidebar (Company, Agent, Members/Directors, Shareholders, Officers and
+  Amendment Details) right below the Issue section.
+- While the Issue section loads, a small blinking Fennec icon is shown.
+- The action buttons sit side by side and the old Potential Intel box has
+  been removed.
 
 ### DB
 - Displays a sidebar on order detail pages.
