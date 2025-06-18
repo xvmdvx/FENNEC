@@ -91,6 +91,8 @@ information scraped from the current page.
   state abbreviation lists before they are used.
 - Fixed missing padding when previewing attachments in Gmail so documents
   remain fully visible.
+- Fixed sidebar layering so the DB "View all / Add Issue" modal is not
+  obscured.
 
 ## Known limitations
 
