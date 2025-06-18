@@ -29,6 +29,10 @@
         }
     }
 
+    function getText(el) {
+        return el ? (el.textContent || el.innerText || "").trim() : "";
+    }
+
     // Map of US states to their Secretary of State business search pages
     const SOS_URLS = {
         "Alabama": "http://sos.alabama.gov/business-entities/llcs",
@@ -396,25 +400,25 @@
 
     function extractAmendmentDetails() {
         const label = Array.from(document.querySelectorAll('#vcomp label'))
-            .find(l => l.innerText.trim().toLowerCase().includes('amendment details'));
+            .find(l => getText(l).toLowerCase().includes('amendment details'));
         if (!label) return null;
         let valDiv = label.nextElementSibling;
         const parent = label.closest('div');
-        if ((!valDiv || !valDiv.innerText.trim()) && parent) {
-            if (parent.nextElementSibling && parent.nextElementSibling.innerText.trim()) {
+        if ((!valDiv || !getText(valDiv)) && parent) {
+            if (parent.nextElementSibling && getText(parent.nextElementSibling)) {
                 valDiv = parent.nextElementSibling;
             } else {
                 const siblings = Array.from(parent.parentElement.children);
                 const idx = siblings.indexOf(parent);
                 for (let i = idx + 1; i < siblings.length; i++) {
-                    if (siblings[i].innerText.trim()) {
+                    if (getText(siblings[i])) {
                         valDiv = siblings[i];
                         break;
                     }
                 }
             }
         }
-        return valDiv ? valDiv.innerText.trim() : null;
+        return valDiv ? getText(valDiv) : null;
     }
 
     function parseDate(text) {
@@ -463,19 +467,19 @@
             fields.forEach(field => {
                 if (obj[field.name]) return;
                 let label = Array.from(row.querySelectorAll('label')).find(l =>
-                    l.innerText.trim().toLowerCase().includes(field.label.toLowerCase())
+                    getText(l).toLowerCase().includes(field.label.toLowerCase())
                 );
                 if (label) {
                     let valDiv = label.nextElementSibling;
                     const parent = label.closest('div');
-                    if ((!valDiv || !valDiv.innerText.trim()) && parent) {
-                        if (parent.nextElementSibling && parent.nextElementSibling.innerText.trim()) {
+                    if ((!valDiv || !getText(valDiv)) && parent) {
+                        if (parent.nextElementSibling && getText(parent.nextElementSibling)) {
                             valDiv = parent.nextElementSibling;
                         } else {
                             const siblings = Array.from(parent.parentElement.children);
                             const idx = siblings.indexOf(parent);
                             for (let i = idx + 1; i < siblings.length; i++) {
-                                if (siblings[i].innerText.trim()) {
+                                if (getText(siblings[i])) {
                                     valDiv = siblings[i];
                                     break;
                                 }
@@ -483,7 +487,7 @@
                         }
                     }
                     if (valDiv) {
-                        obj[field.name] = cleanFieldValue(field.name, valDiv.innerText);
+                        obj[field.name] = cleanFieldValue(field.name, getText(valDiv));
                     }
                 }
             });
@@ -500,19 +504,19 @@
             let obj = {};
             fields.forEach(field => {
                 let label = Array.from(row.querySelectorAll('label')).find(l =>
-                    l.innerText.trim().toLowerCase().includes(field.label.toLowerCase())
+                    getText(l).toLowerCase().includes(field.label.toLowerCase())
                 );
                 if (label) {
                     let valDiv = label.nextElementSibling;
                     const parent = label.closest('div');
-                    if ((!valDiv || !valDiv.innerText.trim()) && parent) {
-                        if (parent.nextElementSibling && parent.nextElementSibling.innerText.trim()) {
+                    if ((!valDiv || !getText(valDiv)) && parent) {
+                        if (parent.nextElementSibling && getText(parent.nextElementSibling)) {
                             valDiv = parent.nextElementSibling;
                         } else {
                             const siblings = Array.from(parent.parentElement.children);
                             const idx = siblings.indexOf(parent);
                             for (let i = idx + 1; i < siblings.length; i++) {
-                                if (siblings[i].innerText.trim()) {
+                                if (getText(siblings[i])) {
                                     valDiv = siblings[i];
                                     break;
                                 }
@@ -520,7 +524,7 @@
                         }
                     }
                     if (valDiv) {
-                        obj[field.name] = cleanFieldValue(field.name, valDiv.innerText);
+                        obj[field.name] = cleanFieldValue(field.name, getText(valDiv));
                     }
                 }
             });
@@ -539,19 +543,19 @@
             fields.forEach(field => {
                 if (obj[field.name]) return;
                 let label = Array.from(row.querySelectorAll('label')).find(l =>
-                    l.innerText.trim().toLowerCase().includes(field.label.toLowerCase())
+                    getText(l).toLowerCase().includes(field.label.toLowerCase())
                 );
                 if (label) {
                     let valDiv = label.nextElementSibling;
                     const parent = label.closest('div');
-                    if ((!valDiv || !valDiv.innerText.trim()) && parent) {
-                        if (parent.nextElementSibling && parent.nextElementSibling.innerText.trim()) {
+                    if ((!valDiv || !getText(valDiv)) && parent) {
+                        if (parent.nextElementSibling && getText(parent.nextElementSibling)) {
                             valDiv = parent.nextElementSibling;
                         } else {
                             const siblings = Array.from(parent.parentElement.children);
                             const idx = siblings.indexOf(parent);
                             for (let i = idx + 1; i < siblings.length; i++) {
-                                if (siblings[i].innerText.trim()) {
+                                if (getText(siblings[i])) {
                                     valDiv = siblings[i];
                                     break;
                                 }
@@ -559,7 +563,7 @@
                         }
                     }
                     if (valDiv) {
-                        obj[field.name] = cleanFieldValue(field.name, valDiv.innerText);
+                        obj[field.name] = cleanFieldValue(field.name, getText(valDiv));
                     }
                 }
             });
@@ -589,19 +593,19 @@
             rows.forEach(row => {
                 fields.forEach(field => {
                     let label = Array.from(row.querySelectorAll('label')).find(l =>
-                        l.innerText.trim().toLowerCase().includes(field.label.toLowerCase())
+                        getText(l).toLowerCase().includes(field.label.toLowerCase())
                     );
                     if (label) {
                         let valDiv = label.nextElementSibling;
                         const parent = label.closest('div');
-                        if ((!valDiv || !valDiv.innerText.trim()) && parent) {
-                            if (parent.nextElementSibling && parent.nextElementSibling.innerText.trim()) {
+                        if ((!valDiv || !getText(valDiv)) && parent) {
+                            if (parent.nextElementSibling && getText(parent.nextElementSibling)) {
                                 valDiv = parent.nextElementSibling;
                             } else {
                                 const siblings = Array.from(parent.parentElement.children);
                                 const idx = siblings.indexOf(parent);
                                 for (let i = idx + 1; i < siblings.length; i++) {
-                                    if (siblings[i].innerText.trim()) {
+                                    if (getText(siblings[i])) {
                                         valDiv = siblings[i];
                                         break;
                                     }
@@ -609,7 +613,7 @@
                             }
                         }
                         if (valDiv) {
-                            obj[field.name] = cleanFieldValue(field.name, valDiv.innerText);
+                            obj[field.name] = cleanFieldValue(field.name, getText(valDiv));
                         }
                     }
                 });
@@ -633,10 +637,10 @@
             return groups.map(g => {
                 const label = g.querySelector('label');
                 const val = g.querySelector('.form-control-static, p');
-                if (!label || !val || !val.innerText.trim()) return null;
+                if (!label || !val || !getText(val)) return null;
                 return {
-                    name: val.innerText.trim(),
-                    position: label.innerText.replace(/:/g, '').trim()
+                    name: getText(val),
+                    position: getText(label).replace(/:/g, '')
                 };
             }).filter(Boolean);
         }
@@ -658,14 +662,14 @@
             for (const g of groups) {
                 const label = g.querySelector('label');
                 const val = g.querySelector('.form-control-static, p');
-                if (!label || !val || !val.innerText.trim()) continue;
-                const text = label.innerText.trim().toLowerCase();
+                if (!label || !val || !getText(val)) continue;
+                const text = getText(label).toLowerCase();
                 if (text.includes('street') || text.includes('city') ||
                     text.includes('zip') || text.includes('address')) {
                     continue;
                 }
-                name = val.innerText.trim();
-                position = label.innerText.replace(/:/g, '').trim();
+                name = getText(val);
+                position = getText(label).replace(/:/g, '');
                 break;
             }
 
@@ -704,9 +708,9 @@
         ]);
 
         const physicalBox = Array.from(document.querySelectorAll('#vcomp .form-body h4, #vcomp .form-body h3'))
-            .find(h => h.innerText.toLowerCase().includes('physical'));
+            .find(h => getText(h).toLowerCase().includes('physical'));
         const mailingBox = Array.from(document.querySelectorAll('#vcomp .form-body h4, #vcomp .form-body h3'))
-            .find(h => h.innerText.toLowerCase().includes('mailing'));
+            .find(h => getText(h).toLowerCase().includes('mailing'));
 
         const physicalRaw = physicalBox ?
             extractSingleElement(physicalBox.closest('.white-box') || physicalBox.parentElement, [
@@ -730,7 +734,7 @@
                 {name: 'address', label: 'address'}
             ]) : null;
 
-        const headerStatus = document.querySelector('.btn-status-text')?.innerText?.trim() || null;
+        const headerStatus = getText(document.querySelector('.btn-status-text')) || null;
 
         const company = companyRaw ? {
             name: companyRaw.name,
@@ -768,7 +772,7 @@
 
         // Detectar tipo de entidad para nombrar apropiadamente
         const entTypeEl = document.getElementById('entityType');
-        const entityType = entTypeEl ? entTypeEl.innerText.trim().toLowerCase() : '';
+        const entityType = entTypeEl ? getText(entTypeEl).toLowerCase() : '';
         const isLLC = entityType.includes('llc');
 
         // 3. DIRECTORS/MEMBERS
@@ -893,7 +897,7 @@
         });
 
         const orderItems = Array.from(document.querySelectorAll('.order-items li'))
-            .map(li => li.innerText.trim().toLowerCase());
+            .map(li => getText(li).toLowerCase());
 
         // Registered Agent subscription status from #vagent section
         const hasRA = /^yes/i.test(agent.status || '');
@@ -903,16 +907,16 @@
         const vaSection = document.querySelector('#vvirtual-address');
         if (vaSection) {
             const vaTexts = Array.from(vaSection.querySelectorAll('td, span'))
-                .map(el => el.innerText.trim().toLowerCase());
+                .map(el => getText(el).toLowerCase());
             hasVA = vaTexts.some(t => t.includes('active'));
             if (!hasVA && vaTexts.some(t => t.includes('inactive'))) {
                 hasVA = false;
             }
         } else {
             const vaBtn = Array.from(document.querySelectorAll('button'))
-                .find(b => /virtual address/i.test(b.innerText));
+                .find(b => /virtual address/i.test(getText(b)));
             if (vaBtn) {
-                const txt = vaBtn.innerText.toLowerCase();
+                const txt = getText(vaBtn).toLowerCase();
                 hasVA = txt.includes('active');
             }
         }
@@ -1318,16 +1322,16 @@
         const orderId = (location.pathname.match(/detail\/(\d+)/) || [])[1] || '';
         const type = getOrderType();
         const dateLi = Array.from(document.querySelectorAll('li')).find(li =>
-            li.querySelector('a') && li.querySelector('a').innerText.trim().toLowerCase() === 'date ordered'
+            li.querySelector('a') && getText(li.querySelector('a')).toLowerCase() === 'date ordered'
         );
-        const date = dateLi ? dateLi.querySelector('span')?.innerText.trim() || '' : '';
-        const status = document.querySelector('.btn-status-text')?.innerText.trim() || '';
+        const date = dateLi ? getText(dateLi.querySelector('span')) || '' : '';
+        const status = getText(document.querySelector('.btn-status-text')) || '';
         return { orderId, type, date, status };
     }
 
     function getParentOrderId() {
         const link = Array.from(document.querySelectorAll('a[href*="/order/detail/"]'))
-            .find(a => /parent order/i.test(a.closest('li')?.innerText || a.closest('.form-group')?.innerText || ''));
+            .find(a => /parent order/i.test(getText(a.closest('li')) || getText(a.closest('.form-group')) || ''));
         if (!link) return null;
         const m = link.href.match(/detail\/(\d+)/);
         return m ? m[1] : null;
