@@ -6,6 +6,28 @@
     });
     let currentOrderType = null;
 
+    function showFloatingIcon() {
+        if (document.getElementById("fennec-floating-icon")) return;
+        const icon = document.createElement("img");
+        icon.id = "fennec-floating-icon";
+        icon.src = chrome.runtime.getURL("fennec_icon.png");
+        icon.alt = "FENNEC";
+        icon.addEventListener("click", () => {
+            icon.remove();
+            sessionStorage.removeItem("copilotSidebarClosed");
+            initSidebar();
+        });
+        document.body.appendChild(icon);
+    }
+
+    function ensureFloatingIcon() {
+        if (sessionStorage.getItem("copilotSidebarClosed") === "true" &&
+            !document.getElementById("copilot-sidebar") &&
+            !document.getElementById("fennec-floating-icon")) {
+            showFloatingIcon();
+        }
+    }
+
     // Map of US states to their Secretary of State business search pages
     const SOS_URLS = {
         "Alabama": "http://sos.alabama.gov/business-entities/llcs",
@@ -118,7 +140,7 @@
 
         try {
         function initSidebar() {
-            if (sessionStorage.getItem('copilotSidebarClosed') === 'true') return;
+            if (sessionStorage.getItem("copilotSidebarClosed") === "true") { showFloatingIcon(); return; }
             if (!document.getElementById('copilot-sidebar')) {
                 console.log("[Copilot] Sidebar no encontrado, inyectando en DB...");
 
@@ -154,6 +176,9 @@
                         <div class="copilot-body" id="copilot-body-content">
                             <div style="text-align:center; color:#888; margin-top:20px;">Cargando resumen...</div>
                         </div>
+                        <div class="copilot-footer">
+                            <button id="copilot-refresh" class="copilot-button">🔄 REFRESH</button>
+                        </div>
                     `;
                     document.body.appendChild(sidebar);
                     document.getElementById('copilot-close').onclick = () => {
@@ -163,6 +188,7 @@
                         if (style) style.remove();
                         sessionStorage.setItem('copilotSidebarClosed', 'true');
                         console.log("[Copilot] Sidebar cerrado manualmente en DB.");
+                        showFloatingIcon();
                     };
                     const orderType = getOrderType();
                     currentOrderType = orderType;
@@ -233,6 +259,13 @@
                             startCancelProcedure();
                         });
                     }
+                        document.getElementById("copilot-refresh").onclick = () => {
+                            if (currentOrderType === "amendment") {
+                                extractAndShowAmendmentData();
+                            } else {
+                                extractAndShowFormationData();
+                            }
+                        };
                 })();
             }
         }
