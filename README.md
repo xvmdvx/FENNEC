@@ -75,6 +75,8 @@ information scraped from the current page.
   tab.
 - The family tree icon also appears on Annual Report, Foreign Qualification,
   Virtual Address and Registered Agent orders.
+- Fixed detection of the parent order so the tree icon functions on all
+  non-formation orders.
 - The company name (or State ID on amendments) links to the state's SOS business
   search page.
 - Amendment summaries now include an **Amendment Details** section. Addresses in

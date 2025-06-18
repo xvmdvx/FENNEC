@@ -1355,7 +1355,13 @@
 
     function getParentOrderId() {
         const link = Array.from(document.querySelectorAll('a[href*="/order/detail/"]'))
-            .find(a => /parent order/i.test(getText(a.closest('li')) || getText(a.closest('.form-group')) || ''));
+            .find(a => {
+                const area =
+                    getText(a.closest('li')) ||
+                    getText(a.closest('.form-group')) ||
+                    getText(a.parentElement) || '';
+                return /(parent|main|formation|original) order/i.test(area);
+            });
         if (!link) return null;
         const m = link.href.match(/detail\/(\d+)/);
         return m ? m[1] : null;
