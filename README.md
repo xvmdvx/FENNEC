@@ -97,6 +97,7 @@ information scraped from the current page.
   remain fully visible.
 - Fixed sidebar layering so the DB "View all / Add Issue" modal is not
   obscured.
+- Fixed a crash when the **Refresh** button listener failed to attach on some DB pages.
 
 ## Known limitations
 
