@@ -63,6 +63,7 @@ information scraped from the current page.
 - A **REFRESH** button at the end of the summary reloads the data.
 - Closing the sidebar leaves a floating Fennec icon to reopen it.
 - Cancel automation now detects the "Cancel / Refund" link even when spaces surround the slash.
+- The Cancel quick action resumes automatically after the page refreshes when resolving an issue.
 - Officer tags in the quick summary now show specific roles like
   **PRESIDENT**, **SECRETARY**, **TREASURER** or **VP** instead of a generic
   OFFICER label.
