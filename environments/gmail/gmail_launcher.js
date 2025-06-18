@@ -620,6 +620,7 @@
                 loadDbSummary();
                 if (ctx && ctx.orderNumber) checkLastIssue(ctx.orderNumber);
             };
+            setupOpenOrderButton();
         }
 
         function injectSidebarIfMissing() {
@@ -647,7 +648,7 @@
             }
         });
 
-        // --- OPEN ORDER listener robusto, sin cambios ---
+        // --- OPEN ORDER listener reutilizable ---
         function waitForElement(selector, timeout = 10000) {
             return new Promise((resolve, reject) => {
                 const intervalTime = 100;
@@ -667,7 +668,9 @@
             });
         }
 
-        waitForElement("#btn-open-order").then((button) => {
+        function setupOpenOrderButton() {
+            const button = document.getElementById("btn-open-order");
+            if (!button) return;
             button.addEventListener("click", function () {
                 try {
                     const bodyNode = document.querySelector(".a3s");
@@ -694,6 +697,10 @@
                     alert("Ocurrió un error al intentar abrir la orden.");
                 }
             });
+        }
+
+        waitForElement("#btn-open-order").then(() => {
+            setupOpenOrderButton();
         }).catch((err) => {
             console.warn("[OPEN ORDER] No se pudo inyectar el listener:", err);
         });
