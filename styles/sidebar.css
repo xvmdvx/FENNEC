@@ -48,7 +48,8 @@
 .copilot-actions {
     margin-top: 10px;
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
+    justify-content: space-between;
     gap: 8px;
 }
 
@@ -75,8 +76,8 @@
 .copilot-actions {
     margin-top: 16px;
     display: flex;
-    flex-direction: column;
-    align-items: center;
+    flex-direction: row;
+    justify-content: space-between;
     gap: 12px;
 }
 
@@ -342,4 +343,15 @@
 }
 #family-tree-orders .ft-link:hover {
     text-decoration: underline;
+}
+
+@keyframes fennec-blink {
+    0%, 50%, 100% { opacity: 1; }
+    25%, 75% { opacity: 0; }
+}
+
+.loading-fennec {
+    width: 20px;
+    animation: fennec-blink 1s linear infinite;
+    vertical-align: middle;
 }
