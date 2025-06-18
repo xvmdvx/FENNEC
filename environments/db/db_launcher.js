@@ -310,6 +310,9 @@
                                 }
                             };
                         }
+                        if (sessionStorage.getItem('fennecCancelPending') === '1') {
+                            openCancelPopup();
+                        }
                 })();
             }
         }
@@ -1244,50 +1247,41 @@
 
     });
 
+    function openCancelPopup() {
+        const statusBtn = document.querySelector('.btn-status-text');
+        if (!statusBtn) return console.warn('[Copilot] Status dropdown not found');
+        statusBtn.click();
+        setTimeout(() => {
+            const cancelLink = Array.from(document.querySelectorAll('.dropdown-menu a'))
+                .find(a => /cancel.*refund/i.test(a.textContent));
+            if (!cancelLink) return console.warn('[Copilot] Cancel option not found');
+            sessionStorage.removeItem('fennecCancelPending');
+            cancelLink.click();
+            selectCancelReason();
+        }, 500);
+    }
+
+    function selectCancelReason() {
+        const sel = document.querySelector('select');
+        if (!sel) return setTimeout(selectCancelReason, 500);
+        const opt = Array.from(sel.options)
+            .find(o => /client.*cancell?ation/i.test(o.textContent));
+        if (opt) {
+            sel.value = opt.value;
+            sel.dispatchEvent(new Event('change', { bubbles: true }));
+        }
+    }
+
     function startCancelProcedure() {
         console.log('[Copilot] Starting cancel procedure');
-
-        function resolveIfNeeded(next) {
-            const btn = Array.from(document.querySelectorAll('a'))
-                .find(a => /mark resolved/i.test(a.textContent));
-            if (btn) {
-                btn.click();
-                const check = setInterval(() => {
-                    if (document.readyState === 'complete') {
-                        clearInterval(check);
-                        next();
-                    }
-                }, 1000);
-            } else {
-                next();
-            }
+        const btn = Array.from(document.querySelectorAll('a'))
+            .find(a => /mark resolved/i.test(a.textContent));
+        if (btn) {
+            sessionStorage.setItem('fennecCancelPending', '1');
+            btn.click();
+        } else {
+            openCancelPopup();
         }
-
-        function openCancelPopup() {
-            const statusBtn = document.querySelector('.btn-status-text');
-            if (!statusBtn) return console.warn('[Copilot] Status dropdown not found');
-            statusBtn.click();
-            setTimeout(() => {
-                const cancelLink = Array.from(document.querySelectorAll('.dropdown-menu a'))
-                    .find(a => /cancel.*refund/i.test(a.textContent));
-                if (!cancelLink) return console.warn('[Copilot] Cancel option not found');
-                cancelLink.click();
-                selectReason();
-            }, 500);
-        }
-
-        function selectReason() {
-            const sel = document.querySelector('select');
-            if (!sel) return setTimeout(selectReason, 500);
-            const opt = Array.from(sel.options)
-                .find(o => /client.*cancell?ation/i.test(o.textContent));
-            if (opt) {
-                sel.value = opt.value;
-                sel.dispatchEvent(new Event('change', { bubbles: true }));
-            }
-        }
-
-        resolveIfNeeded(openCancelPopup);
     }
 
     function getLastIssueInfo() {
