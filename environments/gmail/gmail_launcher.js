@@ -582,9 +582,9 @@
                         <div id="issue-summary-content" style="color:#ccc; font-size:13px;">No issue data yet.</div>
                     </div>
                     <div id="db-summary-section"></div>
-                </div>
-                <div class="copilot-footer">
-                    <button id="copilot-refresh" class="copilot-button">🔄 REFRESH</button>
+                    <div class="copilot-footer">
+                        <button id="copilot-refresh" class="copilot-button">🔄 REFRESH</button>
+                    </div>
                 </div>
             `;
             document.body.appendChild(sidebar);

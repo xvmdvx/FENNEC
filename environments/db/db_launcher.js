@@ -5,6 +5,7 @@
         sessionStorage.removeItem('copilotSidebarClosed');
     });
     let currentOrderType = null;
+    let initQuickSummary = null;
 
     function showFloatingIcon() {
         if (document.getElementById("fennec-floating-icon")) return;
@@ -175,9 +176,9 @@
                         <div class="order-summary-header">ORDER SUMMARY <span id="qs-toggle" class="quick-summary-toggle">⚡</span></div>
                         <div class="copilot-body" id="copilot-body-content">
                             <div style="text-align:center; color:#888; margin-top:20px;">Cargando resumen...</div>
-                        </div>
-                        <div class="copilot-footer">
-                            <button id="copilot-refresh" class="copilot-button">🔄 REFRESH</button>
+                            <div class="copilot-footer">
+                                <button id="copilot-refresh" class="copilot-button">🔄 REFRESH</button>
+                            </div>
                         </div>
                     `;
                     document.body.appendChild(sidebar);
@@ -198,19 +199,24 @@
                         extractAndShowFormationData();
                     }
                     const qsToggle = sidebar.querySelector('#qs-toggle');
-                    const qsBox = sidebar.querySelector('#quick-summary');
-                    if (qsBox) {
-                        qsBox.style.maxHeight = '0';
-                        qsBox.classList.add('quick-summary-collapsed');
-                    }
-                    if (qsToggle && qsBox) {
+                    initQuickSummary = () => {
+                        const box = sidebar.querySelector('#quick-summary');
+                        if (box) {
+                            box.style.maxHeight = '0';
+                            box.classList.add('quick-summary-collapsed');
+                        }
+                    };
+                    initQuickSummary();
+                    if (qsToggle) {
                         qsToggle.addEventListener('click', () => {
-                            if (qsBox.style.maxHeight && qsBox.style.maxHeight !== '0px') {
-                                qsBox.style.maxHeight = '0';
-                                qsBox.classList.add('quick-summary-collapsed');
+                            const box = sidebar.querySelector('#quick-summary');
+                            if (!box) return;
+                            if (box.style.maxHeight && box.style.maxHeight !== '0px') {
+                                box.style.maxHeight = '0';
+                                box.classList.add('quick-summary-collapsed');
                             } else {
-                                qsBox.classList.remove('quick-summary-collapsed');
-                                qsBox.style.maxHeight = qsBox.scrollHeight + 'px';
+                                box.classList.remove('quick-summary-collapsed');
+                                box.style.maxHeight = box.scrollHeight + 'px';
                             }
                         });
                     }
@@ -1091,6 +1097,7 @@
         const body = document.getElementById('copilot-body-content');
         if (body) {
             body.innerHTML = html;
+            if (typeof initQuickSummary === 'function') initQuickSummary();
             body.querySelectorAll('.copilot-address').forEach(el => {
                 el.addEventListener('click', e => {
                     e.preventDefault();
