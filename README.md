@@ -114,7 +114,8 @@ information scraped from the current page.
 - Address detection recognizes abbreviations like "Fls" or "Bit" and street
   numbers with trailing letters (e.g. `22Y`).
 - Street addresses with two lines now appear across three lines to keep the city
-  and state separate.
+  and state separate. Addresses with only one street line are shown on two
+  lines.
 - Unknown order types now fall back to the standard formation view.
 - Fixed a bug that prevented the sidebar from appearing on order pages.
 - Resolved a `ReferenceError` in the DB sidebar by defining `SOS_URLS` at
