@@ -241,9 +241,18 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
                             if (target) { target.click(); return true; }
                             return false;
                         }
-                        let tries = 20;
+
+                        function clickStateAnchor(stateName) {
+                            const slug = stateName.replace(/\s+/g, '-');
+                            const sel = `a[href*='/${slug}_']`;
+                            const el = document.querySelector(sel);
+                            if (el) { el.click(); return true; }
+                            return clickExact(stateName);
+                        }
+
+                        let tries = 40;
                         const run = () => {
-                            if (clickExact(state)) {
+                            if (clickStateAnchor(state)) {
                                 if (type) setTimeout(() => clickExact(type), 500);
                             } else if (tries-- > 0) {
                                 setTimeout(run, 500);
