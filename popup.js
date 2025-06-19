@@ -12,6 +12,7 @@ function saveState() {
     const urls = [
       'https://mail.google.com/*',
       'https://*.incfile.com/incfile/order/detail/*',
+      'https://*.incfile.com/storage/incfile/*',
       'https://tools.usps.com/*'
     ];
 
