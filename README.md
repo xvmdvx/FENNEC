@@ -128,8 +128,6 @@ information scraped from the current page.
   state abbreviation lists before they are used.
 - Fixed missing padding when previewing attachments in Gmail so documents
   remain fully visible.
-- Fixed sidebar layering so the DB "View all / Add Issue" modal is not
-  obscured.
 - Fixed a crash when the **Refresh** button listener failed to attach on some DB pages.
 - Stored DB summaries now include the order number so the sidebar on storage pages only displays matching data.
 - A separator line now appears between addresses and the RA/VA tags in the quick summary, and those tags are repeated at the bottom of the Company section. Fields showing `N/A` or blank values are omitted, and shareholders display their share count prefixed with "Shares:".
@@ -183,3 +181,5 @@ Reload the extension after editing the manifest.
   initializing.
 - Fixed a `ReferenceError` when opening the Filing Department knowledge base by
   properly passing the selected state and order type to the injected script.
+- Fixed sidebar layering so the DB "View all / Add Issue" modal is not
+  obscured.

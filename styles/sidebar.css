@@ -5,7 +5,7 @@
     height: 100vh;
     background: #212121;
     color: #fff;
-    z-index: 1030;
+    z-index: 1060;
     box-shadow: -2px 0 16px rgba(0,0,0,0.22);
     display: flex;
     flex-direction: column;
@@ -409,6 +409,6 @@
     right: 20px;
     width: 40px;
     height: 40px;
-    z-index: 1030;
+    z-index: 1060;
     cursor: pointer;
 }
