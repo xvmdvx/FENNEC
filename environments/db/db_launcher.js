@@ -572,11 +572,11 @@
         if (!isValidField(addr)) return '';
         const parts = addr.split(/,\s*/);
 
-        let firstLine = parts.shift() || '';
+        const firstLine = parts.shift() || '';
         let secondLine = '';
         let rest = '';
 
-        if (parts.length > 1) {
+        if (parts.length > 2) {
             secondLine = parts.shift();
             rest = parts.join(', ');
         } else {
