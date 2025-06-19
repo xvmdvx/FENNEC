@@ -271,6 +271,12 @@
             return `<span class="copilot-copy" data-copy="${esc}">${esc}</span>`;
         }
 
+        function renderCopyIcon(text) {
+            if (!text) return '';
+            const esc = escapeHtml(text);
+            return `<span class="copilot-copy-icon" data-copy="${esc}" title="Copy">⧉</span>`;
+        }
+
         function parseOrderDetails(text) {
             const details = {};
 
@@ -459,7 +465,7 @@
                     window.open(url, '_blank');
                 });
             });
-            rootEl.querySelectorAll('.copilot-copy').forEach(el => {
+            rootEl.querySelectorAll('.copilot-copy, .copilot-copy-icon').forEach(el => {
                 el.addEventListener('click', () => {
                     const text = el.dataset.copy;
                     if (!text) return;

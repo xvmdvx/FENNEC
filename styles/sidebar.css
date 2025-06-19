@@ -189,6 +189,15 @@
 .copilot-copy:hover {
     text-decoration: underline;
 }
+.copilot-copy-icon {
+    cursor: pointer;
+    color: #bbb;
+    margin-left: 4px;
+    font-size: 12px;
+}
+.copilot-copy-icon:hover {
+    color: #fff;
+}
 .copilot-name {
     text-decoration: none;
 }

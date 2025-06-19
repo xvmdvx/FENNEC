@@ -543,6 +543,12 @@
         return `<span class="copilot-copy copilot-name" data-copy="${esc}">${esc}</span>`;
     }
 
+    function renderCopyIcon(text) {
+        if (!isValidField(text)) return '';
+        const esc = escapeHtml(text);
+        return `<span class="copilot-copy-icon" data-copy="${esc}" title="Copy">⧉</span>`;
+    }
+
 
     function isFullAddress(text) {
         if (/\b\d{5}(?:-\d{4})?\b/.test(text)) return true;
@@ -1185,17 +1191,20 @@
                 addrHtml = `<div>${renderAddress(company.address, isVAAddress(company.address))}</div>`;
             }
             const companyLines = [];
-            let nameHtml = renderCopy(company.name);
+            let nameText = escapeHtml(company.name);
             const nameBase = buildSosUrl(company.state, null, 'name');
             if (nameBase) {
-                nameHtml = `<a href="#" class="copilot-sos" data-url="${nameBase}" data-query="${escapeHtml(company.name)}" data-type="name">${nameHtml}</a>`;
+                nameText = `<a href="#" class="copilot-sos" data-url="${nameBase}" data-query="${escapeHtml(company.name)}" data-type="name">${nameText}</a>`;
             }
-            companyLines.push(`<div><b>${nameHtml}</b></div>`);
+            companyLines.push(`<div><b>${nameText} ${renderCopyIcon(company.name)}</b></div>`);
             if (isAmendment) {
-                let idHtml = company.stateId ? renderCopy(company.stateId) : '<span style="color:#aaa">-</span>';
+                let idHtml = company.stateId ? escapeHtml(company.stateId) : '<span style="color:#aaa">-</span>';
                 const idBase = buildSosUrl(company.state, null, 'id');
                 if (company.stateId && idBase) {
                     idHtml = `<a href="#" class="copilot-sos" data-url="${idBase}" data-query="${escapeHtml(company.stateId)}" data-type="id">${idHtml}</a>`;
+                    idHtml += ' ' + renderCopyIcon(company.stateId);
+                } else if (company.stateId) {
+                    idHtml += ' ' + renderCopyIcon(company.stateId);
                 }
                 companyLines.push(`<div>${idHtml}</div>`);
                 companyLines.push(`<div>${company.state || '<span style="color:#aaa">-</span>'}</div>`);
@@ -1326,7 +1335,7 @@
                     window.open(url, '_blank');
                 });
             });
-            body.querySelectorAll('.copilot-copy').forEach(el => {
+            body.querySelectorAll('.copilot-copy, .copilot-copy-icon').forEach(el => {
                 el.addEventListener('click', e => {
                     const text = el.dataset.copy;
                     if (!text) return;
