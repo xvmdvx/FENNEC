@@ -174,3 +174,5 @@ Reload the extension after editing the manifest.
 - Fixed a race condition where the "Family Tree" view failed to load if the
   background script queried the page before helper functions finished
   initializing.
+- Fixed a `ReferenceError` when opening the Filing Department knowledge base by
+  properly passing the selected state and order type to the injected script.

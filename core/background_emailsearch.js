@@ -225,6 +225,8 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     }
 
     if (message.action === "openKnowledgeBase" && message.state) {
+        const state = message.state;
+        const type = message.orderType || "";
         const url = "https://coda.io/d/Bizee-Filing-Department_dQJWsDF3UZ6/Knowledge-Base_suQao1ou";
         chrome.tabs.create({ url, active: true }, (tab) => {
             if (chrome.runtime.lastError) {
