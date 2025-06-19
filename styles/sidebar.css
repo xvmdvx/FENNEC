@@ -415,16 +415,17 @@
 
 #fennec-diagnose-overlay {
     position: fixed;
-    top: 80px;
-    right: 20px;
-    background: #fff;
-    color: #000;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    padding: 8px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: #2e2e2e;
+    color: #f1f1f1;
+    border-radius: 8px;
+    padding: 12px 16px;
     z-index: 1065;
     box-shadow: 0 2px 6px rgba(0,0,0,0.2);
     font-size: 13px;
+    text-align: center;
 }
 
 #fennec-diagnose-overlay .diag-close {
@@ -433,16 +434,26 @@
     right: 6px;
     cursor: pointer;
     font-weight: bold;
+    color: #fff;
 }
 
 #fennec-diagnose-overlay .diag-card {
     display: inline-block;
     vertical-align: top;
-    width: 160px;
-    margin: 4px;
-    padding: 6px;
-    border: 1px solid #eee;
-    border-radius: 4px;
-    background: #fafafa;
+    width: 180px;
+    margin: 8px;
+    padding: 8px;
+    border-radius: 8px;
+    background: #3a3a3a;
+    color: #f1f1f1;
     text-align: center;
+}
+
+#fennec-diagnose-overlay .diag-issue {
+    background: #2e2e2e;
+    border-radius: 6px;
+    padding: 6px;
+    margin-top: 6px;
+    font-size: 12px;
+    color: #f1f1f1;
 }
