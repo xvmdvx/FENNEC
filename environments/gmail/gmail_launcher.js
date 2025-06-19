@@ -607,8 +607,8 @@
             sidebar.innerHTML = `
                 <div class="copilot-header">
                     <div class="copilot-title">
-                        <img src="${chrome.runtime.getURL('fennec_icon.png')}" class="copilot-icon" alt="FENNEC (Prototype)" />
-                        <span>FENNEC (Prototype)</span>
+                        <img src="${chrome.runtime.getURL('fennec_icon.png')}" class="copilot-icon" alt="FENNEC (v0.2)" />
+                        <span>FENNEC (v0.2)</span>
                     </div>
                     <button id="copilot-close">✕</button>
                 </div>
