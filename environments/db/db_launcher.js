@@ -464,6 +464,16 @@
         return isNaN(parsed) ? null : new Date(parsed);
     }
 
+    function formatDateLikeParent(text) {
+        const d = new Date(text);
+        if (isNaN(d)) return text;
+        return d.toLocaleDateString('en-US', {
+            month: 'short',
+            day: '2-digit',
+            year: 'numeric'
+        });
+    }
+
     function cleanFieldValue(name, text) {
         if (!text) return text;
         if (name === 'expiration') {
@@ -990,11 +1000,16 @@
                 <span class="${raClass}">RA: ${hasRA ? 'Sí' : 'No'}</span>
                 <span class="${vaClass}">VA: ${hasVA ? 'Sí' : 'No'}</span>
             </div>`);
+
         html += `
             <div class="white-box quick-summary-content" id="quick-summary" style="margin-bottom:10px">
                 ${summaryParts.join('')}
             </div>
         `;
+
+        if (currentOrderType !== 'formation') {
+            html += `<div id="family-tree-orders" class="ft-collapsed"></div>`;
+        }
 
         // COMPANY
         if (company) {
@@ -1043,10 +1058,6 @@
             </div>`;
             html += compSection;
             dbSections.push(compSection);
-            if (currentOrderType !== 'formation') {
-                html += `
-                <div id="family-tree-orders" style="display:none"></div>`;
-            }
         }
         // AGENT
         if (agent && Object.values(agent).some(v => v)) {
@@ -1189,13 +1200,17 @@
                     const container = body.querySelector('#family-tree-orders');
                     if (!container) return;
 
-                    if (container.style.display === 'block') {
-                        container.style.display = 'none';
+                    if (container.style.maxHeight && container.style.maxHeight !== '0px') {
+                        container.style.maxHeight = '0';
+                        container.classList.add('ft-collapsed');
                         return;
                     }
-                    container.style.display = 'block';
+                    container.classList.remove('ft-collapsed');
 
-                    if (container.dataset.loaded === 'true') return;
+                    if (container.dataset.loaded === 'true') {
+                        container.style.maxHeight = container.scrollHeight + 'px';
+                        return;
+                    }
 
                     const parentId = getParentOrderId();
                     if (!parentId) {
@@ -1214,28 +1229,40 @@
 
                         let html = '';
                         const parent = resp.parentInfo;
+                        const pStatusClass =
+                            /shipped|review|processing/i.test(parent.status) ? 'copilot-tag copilot-tag-green' :
+                            /canceled/i.test(parent.status) ? 'copilot-tag copilot-tag-red' :
+                            /hold/i.test(parent.status) ? 'copilot-tag copilot-tag-purple' : 'copilot-tag';
                         html += `<div class="section-label">PARENT</div>`;
                         html += `<div class="ft-grid">` +
                             `<div><b><a href="#" class="ft-link" data-id="${escapeHtml(parent.orderId)}">${escapeHtml(parent.orderId)}</a></b></div>` +
-                            `<div>${escapeHtml(parent.type)}</div>` +
-                            `<div>${escapeHtml(parent.date)}</div>` +
-                            `<div><span class="copilot-tag">${escapeHtml(parent.status)}</span></div>` +
+                            `<div class="ft-type">${escapeHtml(parent.type).toUpperCase()}</div>` +
+                            `<div class="ft-date">${escapeHtml(parent.date)}</div>` +
+                            `<div><span class="${pStatusClass}">${escapeHtml(parent.status)}</span></div>` +
                             `</div>`;
                         html += `<div class="section-label">CHILD</div>`;
-                        html += resp.childOrders.map(o => `
+                        html += resp.childOrders.map(o => {
+                            const cls =
+                                /shipped|review|processing/i.test(o.status) ? 'copilot-tag copilot-tag-green' :
+                                /canceled/i.test(o.status) ? 'copilot-tag copilot-tag-red' :
+                                /hold/i.test(o.status) ? 'copilot-tag copilot-tag-purple' : 'copilot-tag';
+                            return `
                             <div class="ft-grid">
                                 <div><b><a href="#" class="ft-link" data-id="${escapeHtml(o.orderId)}">${escapeHtml(o.orderId)}</a></b></div>
-                                <div>${escapeHtml(o.type)}</div>
-                                <div>${escapeHtml(o.date)}</div>
-                                <div><span class="copilot-tag">${escapeHtml(o.status)}</span></div>
-                            </div>`).join('');
+                                <div class="ft-type">${escapeHtml(o.type).toUpperCase()}</div>
+                                <div class="ft-date">${escapeHtml(o.date)}</div>
+                                <div><span class="${cls}">${escapeHtml(o.status)}</span></div>
+                            </div>`;
+                        }).join('');
                         html += `<div style="text-align:center; margin-top:8px;">
-                            <button id="ar-diagnose-btn" class="copilot-button">AR DIAGNOSE</button>
+                            <button id="ar-diagnose-btn" class="copilot-button">🩺 DIAGNOSE</button>
                         </div>`;
                         box.innerHTML = html;
                         container.innerHTML = '';
                         container.appendChild(box);
                         container.dataset.loaded = 'true';
+                        container.style.maxHeight = container.scrollHeight + 'px';
+                        container.classList.remove('ft-collapsed');
 
                         container.querySelectorAll('.ft-link').forEach(a => {
                             a.addEventListener('click', e => {
@@ -1353,7 +1380,7 @@
             if (cells.length < 5) return null;
             const numTxt = cells[0].textContent.replace(/[^0-9]/g, '');
             const type = cells[2].textContent.trim();
-            const date = cells[3].textContent.trim();
+            const date = formatDateLikeParent(cells[3].textContent.trim());
             const status = cells[4].textContent.trim();
             return { orderId: numTxt, type, date, status };
         };
@@ -1368,11 +1395,17 @@
 
     function getBasicOrderInfo() {
         const orderId = (location.pathname.match(/detail\/(\d+)/) || [])[1] || '';
-        const type = getOrderType();
+        let type = getOrderType();
+        const pkgEl = document.getElementById('ordType');
+        if (type === 'formation' && pkgEl) {
+            const pkg = getText(pkgEl).toUpperCase();
+            if (/SILVER|GOLD|PLATINUM/.test(pkg)) type = pkg;
+        }
         const dateLi = Array.from(document.querySelectorAll('li')).find(li =>
             li.querySelector('a') && getText(li.querySelector('a')).toLowerCase() === 'date ordered'
         );
-        const date = dateLi ? getText(dateLi.querySelector('span')) || '' : '';
+        const dateRaw = dateLi ? getText(dateLi.querySelector('span')) || '' : '';
+        const date = formatDateLikeParent(dateRaw);
         const status = getText(document.querySelector('.btn-status-text')) || '';
         return { orderId, type, date, status };
     }
