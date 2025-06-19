@@ -76,13 +76,10 @@ information scraped from the current page.
   tab.
 - The family tree icon also appears on Annual Report, Foreign Qualification,
   Virtual Address and Registered Agent orders.
-- Beneath the tree list there is an **🩺 DIAGNOSE** button that opens all
- child orders with a HOLD status in background tabs. After the pages load the
- extension reads the latest issue on each one and shows a centered floating
- summary on the parent order. Each card now displays a clickable order number
- with the type in parentheses, the colored status tag and the latest issue
- text. If no issue is present the summary displays who placed the order on
- hold.
+- Beneath the tree list there is an **🩺 DIAGNOSE** button that opens each HOLD
+  child order in a temporary tab, gathers the latest issue or hold user and
+  then closes the tab. A centered floating summary appears on the parent order
+  with a clickable order number, the colored status tag and the retrieved text.
 - The family tree panel now slides open with the same animation as the Quick
   Summary and is positioned directly below it. Status labels are color coded
   (green for **SHIPPED**, **REVIEW** or **PROCESSING**, red for **CANCELED**, purple
