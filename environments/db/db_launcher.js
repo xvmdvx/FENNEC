@@ -1370,7 +1370,7 @@
             const ftIcon = document.getElementById('family-tree-icon');
             if (ftIcon) {
                 ftIcon.addEventListener('click', () => {
-                    const container = body.querySelector('#family-tree-orders');
+                    const container = document.getElementById('family-tree-orders');
                     if (!container) return;
 
                     if (container.style.maxHeight && container.style.maxHeight !== '0px') {
@@ -1381,7 +1381,9 @@
                     container.classList.remove('ft-collapsed');
 
                     if (container.dataset.loaded === 'true') {
-                        container.style.maxHeight = container.scrollHeight + 'px';
+                        requestAnimationFrame(() => {
+                            container.style.maxHeight = container.scrollHeight + 'px';
+                        });
                         return;
                     }
 
