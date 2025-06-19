@@ -494,11 +494,11 @@
             });
         }
 
-        function loadDbSummary() {
+        function loadDbSummary(expectedId) {
             const container = document.getElementById('db-summary-section');
             if (!container) return;
-            chrome.storage.local.get({ sidebarDb: [] }, ({ sidebarDb }) => {
-                if (Array.isArray(sidebarDb) && sidebarDb.length) {
+            chrome.storage.local.get({ sidebarDb: [], sidebarOrderId: null }, ({ sidebarDb, sidebarOrderId }) => {
+                if (Array.isArray(sidebarDb) && sidebarDb.length && (!expectedId || sidebarOrderId === expectedId)) {
                     container.innerHTML = sidebarDb.join('');
                     attachCommonListeners(container);
                 } else {
@@ -553,14 +553,14 @@
         function refreshSidebar() {
             const ctx = extractOrderContextFromEmail();
             fillOrderSummaryBox(ctx);
-            loadDbSummary();
+            loadDbSummary(ctx && ctx.orderNumber);
             if (ctx && ctx.orderNumber) checkLastIssue(ctx.orderNumber);
         }
 
         function handleEmailSearchClick() {
             const context = extractOrderContextFromEmail();
             fillOrderSummaryBox(context);
-            loadDbSummary();
+            loadDbSummary(context && context.orderNumber);
 
             if (!context || !context.email) {
                 alert("No se pudo detectar el correo del cliente.");
@@ -716,7 +716,7 @@
                     }
                     const context = extractOrderContextFromEmail();
                     fillOrderSummaryBox(context);
-                    loadDbSummary();
+                    loadDbSummary(context && context.orderNumber);
                     const url = `https://db.incfile.com/incfile/order/detail/${orderId}`;
                     chrome.runtime.sendMessage({ action: "replaceTabs", urls: [url] });
                     checkLastIssue(orderId);

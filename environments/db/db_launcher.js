@@ -37,8 +37,9 @@
     function loadStoredSummary() {
         const body = document.getElementById('copilot-body-content');
         if (!body) return;
-        chrome.storage.local.get({ sidebarDb: [] }, ({ sidebarDb }) => {
-            if (Array.isArray(sidebarDb) && sidebarDb.length) {
+        const currentId = getBasicOrderInfo().orderId;
+        chrome.storage.local.get({ sidebarDb: [], sidebarOrderId: null }, ({ sidebarDb, sidebarOrderId }) => {
+            if (Array.isArray(sidebarDb) && sidebarDb.length && sidebarOrderId && sidebarOrderId === currentId) {
                 body.innerHTML = sidebarDb.join('');
             } else {
                 body.innerHTML = '<div style="text-align:center; color:#aaa; margin-top:40px">No DB data.</div>';
@@ -1401,7 +1402,8 @@
             html = `<div style="text-align:center; color:#aaa; margin-top:40px">No se encontró información relevante de la orden.</div>`;
         }
 
-        chrome.storage.local.set({ sidebarDb: dbSections });
+        const orderInfo = getBasicOrderInfo();
+        chrome.storage.local.set({ sidebarDb: dbSections, sidebarOrderId: orderInfo.orderId });
 
         const body = document.getElementById('copilot-body-content');
         if (body) {
