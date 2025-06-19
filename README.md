@@ -69,7 +69,7 @@ information scraped from the current page.
 - Officer tags in the quick summary now show specific roles like
   **PRESIDENT**, **SECRETARY**, **TREASURER** or **VP** instead of a generic
   OFFICER label.
-- Amendment order summaries now display the State ID along with formation
+- Order summaries now display the State ID when available along with formation
   state and include a tree icon next to the SUMMARY heading that toggles a compact
   view of the parent order and its latest child orders. Each entry now shows order number,
   type, date and status, and clicking a number opens that order in a background
@@ -91,7 +91,7 @@ information scraped from the current page.
 - Works on DB sandbox subdomains by building links from the current origin.
 - The sidebar also remains visible on document storage pages, reusing the last
   order summary.
-- The company name (or State ID on amendments) links to the state's SOS business
+- The company name (and State ID when present) links to the state's SOS business
   search page. Clicking either now opens the search form, fills in the value and
   automatically runs the query.
 - A light gray copy icon next to the Company name and State ID copies the value
