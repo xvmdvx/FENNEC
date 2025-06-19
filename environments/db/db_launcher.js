@@ -505,8 +505,15 @@
 
     function isValidField(text) {
         if (!text) return false;
-        const clean = String(text).replace(/\s+/g, '').toLowerCase();
-        return clean !== 'n/a' && clean !== 'na';
+        const clean = String(text).trim().toLowerCase();
+        const compact = clean.replace(/\s+/g, '');
+        if (!compact) return false;
+        if (compact === 'n/a' || compact === 'na') return false;
+        if (clean.includes('no service')) return false;
+        if (['us', 'usa', 'unitedstates', 'unitedstatesofamerica'].includes(compact)) {
+            return false;
+        }
+        return true;
     }
 
     function renderAddress(addr, isVA = false) {
@@ -890,6 +897,15 @@
 
     function extractAndShowFormationData(isAmendment = false) {
         const dbSections = [];
+        function addEmptySection(label) {
+            const section = `
+            <div class="section-label">${label}</div>
+            <div class="white-box" style="margin-bottom:10px">
+                <div style="color:#aaa">NO INFO</div>
+            </div>`;
+            html += section;
+            dbSections.push(section);
+        }
         // 1. COMPANY
         const companyRaw = extractSingle('#vcomp .form-body', [
             {name: 'name', label: 'company name'},
@@ -1210,11 +1226,18 @@
             <div class="white-box" style="margin-bottom:10px">
                 ${companyLines.join('')}
             </div>`;
-            html += compSection;
-            dbSections.push(compSection);
+            if (companyLines.length) {
+                html += compSection;
+                dbSections.push(compSection);
+            } else {
+                addEmptySection('COMPANY:');
+            }
+        } else {
+            addEmptySection('COMPANY:');
         }
         // AGENT
-        if (agent && Object.values(agent).some(v => v)) {
+        const hasAgentInfo = agent && Object.values(agent).some(v => isValidField(v));
+        if (hasAgentInfo) {
             const expDate = agent.expiration ? parseDate(agent.expiration) : null;
             const expired = expDate && expDate < new Date();
             let status = (agent.status || "").trim();
@@ -1241,6 +1264,8 @@
             </div>`;
             html += agentSection;
             dbSections.push(agentSection);
+        } else {
+            addEmptySection('AGENT:');
         }
         // DIRECTORS / MEMBERS
         if (directors.length) {
@@ -1254,6 +1279,8 @@
             </div>`;
             html += dirSection;
             dbSections.push(dirSection);
+        } else {
+            addEmptySection(isLLC ? 'MEMBERS:' : 'DIRECTORS:');
         }
         // SHAREHOLDERS
         if (shareholders.length) {
@@ -1270,6 +1297,8 @@
             </div>`;
             html += shSection;
             dbSections.push(shSection);
+        } else {
+            addEmptySection('SHAREHOLDERS:');
         }
         // OFFICERS
         if (officers.length) {
@@ -1287,8 +1316,11 @@
             </div>`;
             html += offSection;
             dbSections.push(offSection);
+        } else {
+            addEmptySection('OFFICERS:');
         }
-        if (isAmendment && amendmentDetails) {
+        if (isAmendment) {
+            if (amendmentDetails) {
             const amendSection = `
             <div class="section-label">AMENDMENT DETAILS:</div>
             <div class="white-box" style="margin-bottom:10px">
@@ -1296,6 +1328,9 @@
             </div>`;
             html += amendSection;
             dbSections.push(amendSection);
+            } else {
+                addEmptySection('AMENDMENT DETAILS:');
+            }
         }
 
         if (!html) {
