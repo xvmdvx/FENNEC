@@ -11,7 +11,7 @@
   ],
   "host_permissions": [
     "https://mail.google.com/*",
-    "https://db.incfile.com/incfile/order/detail/*",
+    "https://*.incfile.com/incfile/order/detail/*",
     "https://tools.usps.com/*"
   ],
   "content_scripts": [
@@ -29,7 +29,7 @@
     },
     {
       "matches": [
-        "https://db.incfile.com/incfile/order/detail/*"
+        "https://*.incfile.com/incfile/order/detail/*"
       ],
       "js": [
         "environments/db/db_launcher.js"

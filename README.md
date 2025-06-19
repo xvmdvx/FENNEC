@@ -87,6 +87,7 @@ information scraped from the current page.
 - Fixed missing summary container so the tree icon now opens the parent
   overview on Annual Report, Foreign Qualification, Certificate of Good
   Standing, Reinstatement, Dissolution and Virtual Address orders.
+- Works on DB sandbox subdomains by building links from the current origin.
 - The company name (or State ID on amendments) links to the state's SOS business
   search page. Clicking either now opens the search form, fills in the value and
   automatically runs the query.

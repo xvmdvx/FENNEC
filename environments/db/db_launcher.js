@@ -1433,7 +1433,7 @@
                                 e.preventDefault();
                                 const id = a.dataset.id;
                                 if (id) {
-                                    chrome.runtime.sendMessage({ action: 'openTab', url: `https://db.incfile.com/incfile/order/detail/${id}` });
+                                    chrome.runtime.sendMessage({ action: 'openTab', url: `${location.origin}/incfile/order/detail/${id}` });
                                 }
                             });
                         });
@@ -1443,7 +1443,7 @@
                             diagBtn.addEventListener('click', () => {
                                 const holds = resp.childOrders.filter(o => /hold/i.test(o.status));
                                 if (holds.length) {
-                                    const urls = holds.map(o => `https://db.incfile.com/incfile/order/detail/${o.orderId}`);
+                                    const urls = holds.map(o => `${location.origin}/incfile/order/detail/${o.orderId}`);
                                     chrome.runtime.sendMessage({ action: 'openTabs', urls });
                                 } else {
                                     alert('No HOLD orders found');
