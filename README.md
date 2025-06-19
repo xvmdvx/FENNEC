@@ -92,6 +92,8 @@ information scraped from the current page.
   overview on Annual Report, Foreign Qualification, Certificate of Good
   Standing, Reinstatement, Dissolution and Virtual Address orders.
 - Works on DB sandbox subdomains by building links from the current origin.
+- Fixed diagnose summary not appearing on sandbox subdomains by using the
+  current origin when checking child orders.
 - The sidebar also remains visible on document storage pages, reusing the last
   order summary.
 - The company name (and State ID when present) links to the state's SOS business

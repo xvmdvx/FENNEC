@@ -67,7 +67,15 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
     if (message.action === "checkLastIssue" && message.orderId) {
         const orderId = message.orderId;
-        const query = { url: `https://db.incfile.com/incfile/order/detail/${orderId}*` };
+        let base = "https://db.incfile.com";
+        if (sender && sender.tab && sender.tab.url) {
+            try {
+                base = new URL(sender.tab.url).origin;
+            } catch (err) {
+                console.warn("[Copilot] Invalid sender URL", sender.tab.url);
+            }
+        }
+        const query = { url: `${base}/incfile/order/detail/${orderId}*` };
         let attempts = 15;
         let delay = 1000;
 
@@ -112,7 +120,15 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
     if (message.action === "checkHoldUser" && message.orderId) {
         const orderId = message.orderId;
-        const query = { url: `https://db.incfile.com/incfile/order/detail/${orderId}*` };
+        let base = "https://db.incfile.com";
+        if (sender && sender.tab && sender.tab.url) {
+            try {
+                base = new URL(sender.tab.url).origin;
+            } catch (err) {
+                console.warn("[Copilot] Invalid sender URL", sender.tab.url);
+            }
+        }
+        const query = { url: `${base}/incfile/order/detail/${orderId}*` };
         let attempts = 15;
         let delay = 1000;
 
