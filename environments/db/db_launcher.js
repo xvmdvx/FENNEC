@@ -573,16 +573,20 @@
         const parts = addr.split(/,\s*/);
 
         let firstLine = parts.shift() || '';
-        let secondLine = parts.join(', ');
+        let secondLine = '';
+        let rest = '';
 
-        if (parts.length > 2) {
-            const extra = parts.shift();
-            firstLine = `${firstLine}, ${extra}`;
-            secondLine = parts.join(', ');
+        if (parts.length > 1) {
+            secondLine = parts.shift();
+            rest = parts.join(', ');
+        } else {
+            rest = parts.join(', ');
         }
 
-        const display = secondLine ? `${escapeHtml(firstLine)}<br>${escapeHtml(secondLine)}`
-                                    : escapeHtml(firstLine);
+        const lines = [firstLine];
+        if (secondLine) lines.push(secondLine);
+        if (rest) lines.push(rest);
+        const display = lines.map(escapeHtml).join('<br>');
         const escFull = escapeHtml(addr);
         const extra = isVA
             ? ` <span class="copilot-tag copilot-tag-green">VA</span>`
