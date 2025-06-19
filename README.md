@@ -48,7 +48,7 @@ information scraped from the current page.
 - Numbered requirements in the Issue text are shown on separate lines for clarity.
 - While the Issue section loads, a small blinking Fennec icon is shown.
 - A **REFRESH** button at the end of the sidebar content reloads the data.
-- Closing the sidebar leaves a floating Fennec icon to reopen it.
+ - Closing the sidebar leaves a floating Fennec icon in the upper right corner to reopen it. Reopening refreshes the sidebar with the current email.
 - The action buttons sit side by side and the old Potential Intel box has
   been removed.
 - The **EMAIL SEARCH** and **OPEN ORDER** buttons are now smaller so they
@@ -63,7 +63,7 @@ information scraped from the current page.
 - Provides a Quick Actions menu with **Emails** and **Cancel** options. **Emails** now opens a Gmail search for the order number, client email and name while **Cancel** resolves active issues and opens the cancellation dialog with the reason preselected.
 - The Quick Actions icon now sits in the header next to the close button and the menu fades in and out.
 - A **REFRESH** button at the end of the summary reloads the data.
-- Closing the sidebar leaves a floating Fennec icon to reopen it.
+ - Closing the sidebar leaves a floating Fennec icon in the upper right corner to reopen it. Reopening refreshes the sidebar with the current order.
 - Cancel automation now detects the "Cancel / Refund" link even when spaces surround the slash.
 - The Cancel quick action resumes automatically after the page refreshes when resolving an issue.
 - Officer tags in the quick summary now show specific roles like

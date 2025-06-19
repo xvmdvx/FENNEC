@@ -405,7 +405,7 @@
 }
 #fennec-floating-icon {
     position: fixed;
-    bottom: 20px;
+    top: 20px;
     right: 20px;
     width: 40px;
     height: 40px;
