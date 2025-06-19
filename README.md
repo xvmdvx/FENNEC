@@ -76,8 +76,12 @@ information scraped from the current page.
   tab.
 - The family tree icon also appears on Annual Report, Foreign Qualification,
   Virtual Address and Registered Agent orders.
-- Beneath the tree list there is an **AR DIAGNOSE** button that opens all
+- Beneath the tree list there is an **🩺 DIAGNOSE** button that opens all
   child orders with a HOLD status in background tabs.
+- The family tree panel now slides open with the same animation as the Quick
+  Summary and is positioned directly below it. Status labels are color coded
+  (green for **SHIPPED**, **REVIEW** or **PROCESSING**, red for **CANCELED**, purple
+  for **HOLD**) and the button reads **🩺 DIAGNOSE**.
 - Fixed detection of the parent order so the tree icon functions on all
   non-formation orders.
 - Fixed missing summary container so the tree icon now opens the parent

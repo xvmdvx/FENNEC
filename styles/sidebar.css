@@ -351,6 +351,22 @@
     margin-bottom: 6px;
     font-size: 12px;
 }
+#family-tree-orders {
+    overflow: hidden;
+    max-height: 0;
+    transition: max-height 0.3s ease;
+}
+#family-tree-orders.ft-collapsed {
+    margin-bottom: 0 !important;
+    padding: 0 !important;
+}
+#family-tree-orders .section-label {
+    text-align: center;
+}
+#family-tree-orders .ft-type,
+#family-tree-orders .ft-date {
+    font-size: 11px;
+}
 #family-tree-orders .ft-link {
     color: #1a73e8;
     cursor: pointer;
