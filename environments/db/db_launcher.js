@@ -1073,20 +1073,22 @@
 
         if (agent && agent.name) addRole(agent.name, 'RA', agent.address);
         directors.forEach(d => addRole(d.name, isLLC ? 'MEMBER' : 'DIRECTOR', d.address));
-        shareholders.forEach(s => addRole(s.name, 'SHAREHOLDER', s.address));
-        officers.forEach(o => {
-            if (o.position) {
-                o.position.split(/[,/&]+|\band\b/i).forEach(p => {
-                    let role = p.trim().toUpperCase();
-                    if (!role) return;
-                    role = role.replace(/\./g, '');
-                    if (/^VICE/i.test(role) || /^VP/i.test(role)) role = 'VP';
-                    addRole(o.name, role, o.address);
-                });
-            } else {
-                addRole(o.name, 'OFFICER', o.address);
-            }
-        });
+        if (!isLLC) {
+            shareholders.forEach(s => addRole(s.name, 'SHAREHOLDER', s.address));
+            officers.forEach(o => {
+                if (o.position) {
+                    o.position.split(/[,/&]+|\band\b/i).forEach(p => {
+                        let role = p.trim().toUpperCase();
+                        if (!role) return;
+                        role = role.replace(/\./g, '');
+                        if (/^VICE/i.test(role) || /^VP/i.test(role)) role = 'VP';
+                        addRole(o.name, role, o.address);
+                    });
+                } else {
+                    addRole(o.name, 'OFFICER', o.address);
+                }
+            });
+        }
 
         const addrs = [];
         const pushAddr = (label, addr, name) => {
@@ -1100,8 +1102,10 @@
         }
         if (agent && agent.address) pushAddr('Agent', agent.address, agent.name);
         directors.forEach((d, i) => pushAddr(`${isLLC ? 'Member' : 'Director'} ${i+1}`, d.address, d.name));
-        shareholders.forEach((s, i) => pushAddr(`Shareholder ${i+1}`, s.address, s.name));
-        officers.forEach((o, i) => pushAddr(`Officer ${i+1}`, o.address, o.name));
+        if (!isLLC) {
+            shareholders.forEach((s, i) => pushAddr(`Shareholder ${i+1}`, s.address, s.name));
+            officers.forEach((o, i) => pushAddr(`Officer ${i+1}`, o.address, o.name));
+        }
 
         const normalizeAddr = a => {
             if (!a) return '';
@@ -1291,42 +1295,44 @@
         } else {
             addEmptySection(isLLC ? 'MEMBERS:' : 'DIRECTORS:');
         }
-        // SHAREHOLDERS
-        if (shareholders.length) {
-            const shSection = `
-            <div class="section-label">SHAREHOLDERS:</div>
-            <div class="white-box" style="margin-bottom:10px">
-                ${shareholders.map(s => {
-                    const name = `<div><b>${renderName(s.name)}</b></div>`;
-                    const addr = `<div>${renderAddress(s.address, isVAAddress(s.address))}</div>`;
-                    const shares = renderCopy(s.shares);
-                    const shareLine = shares ? `<div>Shares: ${shares}</div>` : '';
-                    return `${name}${addr}${shareLine}`;
-                }).join('<hr style="border:none; border-top:1px solid #eee; margin:6px 0"/>')}
-            </div>`;
-            html += shSection;
-            dbSections.push(shSection);
-        } else {
-            addEmptySection('SHAREHOLDERS:');
-        }
-        // OFFICERS
-        if (officers.length) {
-            const offSection = `
-            <div class="section-label">OFFICERS:</div>
-            <div class="white-box" style="margin-bottom:10px">
-                ${officers.map(o => {
-                    const addrLine = o.address && o.address !== '-' ? `<div>${renderAddress(o.address, isVAAddress(o.address))}</div>` : '';
-                    return `
-                        <div><b>${renderName(o.name)}</b></div>
-                        ${addrLine}
-                        <div>${renderCopy(o.position)}</div>
-                    `;
-                }).join('<hr style="border:none; border-top:1px solid #eee; margin:6px 0"/>')}
-            </div>`;
-            html += offSection;
-            dbSections.push(offSection);
-        } else {
-            addEmptySection('OFFICERS:');
+        if (!isLLC) {
+            // SHAREHOLDERS
+            if (shareholders.length) {
+                const shSection = `
+                <div class="section-label">SHAREHOLDERS:</div>
+                <div class="white-box" style="margin-bottom:10px">
+                    ${shareholders.map(s => {
+                        const name = `<div><b>${renderName(s.name)}</b></div>`;
+                        const addr = `<div>${renderAddress(s.address, isVAAddress(s.address))}</div>`;
+                        const shares = renderCopy(s.shares);
+                        const shareLine = shares ? `<div>Shares: ${shares}</div>` : '';
+                        return `${name}${addr}${shareLine}`;
+                    }).join('<hr style="border:none; border-top:1px solid #eee; margin:6px 0"/>')}
+                </div>`;
+                html += shSection;
+                dbSections.push(shSection);
+            } else {
+                addEmptySection('SHAREHOLDERS:');
+            }
+            // OFFICERS
+            if (officers.length) {
+                const offSection = `
+                <div class="section-label">OFFICERS:</div>
+                <div class="white-box" style="margin-bottom:10px">
+                    ${officers.map(o => {
+                        const addrLine = o.address && o.address !== '-' ? `<div>${renderAddress(o.address, isVAAddress(o.address))}</div>` : '';
+                        return `
+                            <div><b>${renderName(o.name)}</b></div>
+                            ${addrLine}
+                            <div>${renderCopy(o.position)}</div>
+                        `;
+                    }).join('<hr style="border:none; border-top:1px solid #eee; margin:6px 0"/>')}
+                </div>`;
+                html += offSection;
+                dbSections.push(offSection);
+            } else {
+                addEmptySection('OFFICERS:');
+            }
         }
         if (isAmendment) {
             if (amendmentDetails) {
