@@ -34,6 +34,18 @@
         return el ? (el.textContent || el.innerText || "").trim() : "";
     }
 
+    function loadStoredSummary() {
+        const body = document.getElementById('copilot-body-content');
+        if (!body) return;
+        chrome.storage.local.get({ sidebarDb: [] }, ({ sidebarDb }) => {
+            if (Array.isArray(sidebarDb) && sidebarDb.length) {
+                body.innerHTML = sidebarDb.join('');
+            } else {
+                body.innerHTML = '<div style="text-align:center; color:#aaa; margin-top:40px">No DB data.</div>';
+            }
+        });
+    }
+
     // Map of US states to their SOS business search pages (name and ID)
     const SOS_URLS = {
         "Alabama": {
@@ -383,18 +395,23 @@
                             showFloatingIcon();
                         };
                     }
-                    const orderType = getOrderType();
-                    currentOrderType = orderType;
-                    const rawType = getText(document.getElementById('ordType')) || '';
-                    currentOrderTypeText = normalizeOrderType(rawType);
-                    const ftIcon = sidebar.querySelector('#family-tree-icon');
-                    if (ftIcon) {
-                        ftIcon.style.display = orderType !== 'formation' ? 'inline' : 'none';
-                    }
-                    if (orderType === "amendment") {
-                        extractAndShowAmendmentData();
+                    const isStorage = /\/storage\/incfile\//.test(location.pathname);
+                    if (isStorage) {
+                        loadStoredSummary();
                     } else {
-                        extractAndShowFormationData();
+                        const orderType = getOrderType();
+                        currentOrderType = orderType;
+                        const rawType = getText(document.getElementById('ordType')) || '';
+                        currentOrderTypeText = normalizeOrderType(rawType);
+                        const ftIcon = sidebar.querySelector('#family-tree-icon');
+                        if (ftIcon) {
+                            ftIcon.style.display = orderType !== 'formation' ? 'inline' : 'none';
+                        }
+                        if (orderType === "amendment") {
+                            extractAndShowAmendmentData();
+                        } else {
+                            extractAndShowFormationData();
+                        }
                     }
                     const qsToggle = sidebar.querySelector('#qs-toggle');
                     initQuickSummary = () => {
@@ -1661,7 +1678,8 @@
     }
 
     function getBasicOrderInfo() {
-        const orderId = (location.pathname.match(/detail\/(\d+)/) || [])[1] || '';
+        const m = location.pathname.match(/(?:detail|storage\/incfile)\/(\d+)/);
+        const orderId = m ? m[1] : '';
         let type = getOrderType();
         const pkgEl = document.getElementById('ordType');
         if (type === 'formation' && pkgEl) {

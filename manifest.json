@@ -12,6 +12,7 @@
   "host_permissions": [
     "https://mail.google.com/*",
     "https://*.incfile.com/incfile/order/detail/*",
+    "https://*.incfile.com/storage/incfile/*",
     "https://tools.usps.com/*",
     "https://apps.dfi.wi.gov/*",
     "https://apps.dos.ny.gov/*",
@@ -80,7 +81,8 @@
     },
     {
       "matches": [
-        "https://*.incfile.com/incfile/order/detail/*"
+        "https://*.incfile.com/incfile/order/detail/*",
+        "https://*.incfile.com/storage/incfile/*"
       ],
       "js": [
         "environments/db/db_launcher.js"

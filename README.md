@@ -89,6 +89,8 @@ information scraped from the current page.
   overview on Annual Report, Foreign Qualification, Certificate of Good
   Standing, Reinstatement, Dissolution and Virtual Address orders.
 - Works on DB sandbox subdomains by building links from the current origin.
+- The sidebar also remains visible on document storage pages, reusing the last
+  order summary.
 - The company name (or State ID on amendments) links to the state's SOS business
   search page. Clicking either now opens the search form, fills in the value and
   automatically runs the query.
@@ -137,7 +139,7 @@ information scraped from the current page.
 
 - The scripts rely on the browser DOM provided by Chrome. They are not meant to
   run under Node.js or outside the browser context.
-- The extension currently supports only Gmail and DB order detail URLs.
+- The extension currently supports Gmail plus DB order detail and storage URLs.
 
 ## Development
 
