@@ -412,3 +412,37 @@
     z-index: 1060;
     cursor: pointer;
 }
+
+#fennec-diagnose-overlay {
+    position: fixed;
+    top: 80px;
+    right: 20px;
+    background: #fff;
+    color: #000;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    padding: 8px;
+    z-index: 1065;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    font-size: 13px;
+}
+
+#fennec-diagnose-overlay .diag-close {
+    position: absolute;
+    top: 4px;
+    right: 6px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+#fennec-diagnose-overlay .diag-card {
+    display: inline-block;
+    vertical-align: top;
+    width: 160px;
+    margin: 4px;
+    padding: 6px;
+    border: 1px solid #eee;
+    border-radius: 4px;
+    background: #fafafa;
+    text-align: center;
+}

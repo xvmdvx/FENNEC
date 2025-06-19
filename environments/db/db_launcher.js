@@ -294,6 +294,12 @@
             }
             return true;
         }
+        if (msg.action === 'getHoldUser') {
+            getLastHoldUser().then(user => {
+                sendResponse({ holdUser: user });
+            });
+            return true;
+        }
     });
     function getOrderType() {
         const el = document.getElementById("ordType");
@@ -1563,12 +1569,11 @@
                         if (diagBtn) {
                             diagBtn.addEventListener('click', () => {
                                 const holds = resp.childOrders.filter(o => /hold/i.test(o.status));
-                                if (holds.length) {
-                                    const urls = holds.map(o => `${location.origin}/incfile/order/detail/${o.orderId}`);
-                                    chrome.runtime.sendMessage({ action: 'openTabs', urls });
-                                } else {
+                                if (!holds.length) {
                                     alert('No HOLD orders found');
+                                    return;
                                 }
+                                diagnoseHoldOrders(holds);
                             });
                         }
                     });
@@ -1757,5 +1762,91 @@
             }
         }
         return { name: '', email: '' };
+    }
+
+    function diagnoseHoldOrders(orders) {
+        const urls = orders.map(o => `${location.origin}/incfile/order/detail/${o.orderId}`);
+        chrome.runtime.sendMessage({ action: 'openTabs', urls });
+        const promises = orders.map(o => new Promise(res => {
+            chrome.runtime.sendMessage({ action: 'checkLastIssue', orderId: o.orderId }, issueResp => {
+                if (issueResp && issueResp.issueInfo) {
+                    res({ order: o, issue: issueResp.issueInfo.text, active: issueResp.issueInfo.active });
+                } else {
+                    chrome.runtime.sendMessage({ action: 'checkHoldUser', orderId: o.orderId }, holdResp => {
+                        const user = holdResp && holdResp.holdUser ? `On hold by ${holdResp.holdUser}` : 'On hold';
+                        res({ order: o, issue: user, active: true });
+                    });
+                }
+            });
+        }));
+        Promise.all(promises).then(showDiagnoseResults);
+    }
+
+    function showDiagnoseResults(results) {
+        let overlay = document.getElementById('fennec-diagnose-overlay');
+        if (overlay) overlay.remove();
+        overlay = document.createElement('div');
+        overlay.id = 'fennec-diagnose-overlay';
+        const close = document.createElement('div');
+        close.className = 'diag-close';
+        close.textContent = '✕';
+        close.addEventListener('click', () => overlay.remove());
+        overlay.appendChild(close);
+        results.forEach(r => {
+            const card = document.createElement('div');
+            card.className = 'diag-card';
+            const cls =
+                /shipped|review|processing/i.test(r.order.status) ? 'copilot-tag copilot-tag-green' :
+                /canceled/i.test(r.order.status) ? 'copilot-tag copilot-tag-red' :
+                /hold/i.test(r.order.status) ? 'copilot-tag copilot-tag-purple' : 'copilot-tag';
+            card.innerHTML =
+                `<div><b>${escapeHtml(r.order.orderId)}</b></div>` +
+                `<div class="ft-type">${escapeHtml(r.order.type).toUpperCase()}</div>` +
+                `<div><span class="${cls}">${escapeHtml(r.order.status)}</span></div>` +
+                `<div>${escapeHtml(r.issue)}</div>`;
+            overlay.appendChild(card);
+        });
+        document.body.appendChild(overlay);
+    }
+
+    function getLastHoldUser() {
+        const trigger = document.querySelector("a[onclick*='modalTrackOrderHistory']");
+        if (trigger) trigger.click();
+        let attempts = 10;
+        const parse = () => {
+            const rows = Array.from(document.querySelectorAll('#modalTrackOrderHistory table tbody tr'));
+            for (const row of rows) {
+                const cells = row.querySelectorAll('td');
+                if (cells.length >= 2 && /hold status/i.test(cells[1].textContent)) {
+                    const s = row.querySelector('strong');
+                    if (s) return s.textContent.trim();
+                }
+            }
+            const items = Array.from(document.querySelectorAll('#modalTrackOrderHistory .sl-item'));
+            for (const item of items) {
+                const link = item.querySelector('a');
+                if (link && /hold status/i.test(link.textContent)) {
+                    const date = item.querySelector('.sl-date');
+                    if (date) {
+                        const parts = date.textContent.split('-');
+                        if (parts.length > 1) return parts.pop().trim();
+                    }
+                }
+            }
+            return null;
+        };
+        return new Promise(resolve => {
+            const check = () => {
+                const user = parse();
+                if (user || attempts-- <= 0) {
+                    const closeBtn = document.querySelector('#modalTrackOrderHistory .close');
+                    if (closeBtn) closeBtn.click();
+                    resolve(user);
+                } else {
+                    setTimeout(check, 500);
+                }
+            };
+            check();
+        });
     }
 })();

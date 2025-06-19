@@ -110,6 +110,51 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         return true;
     }
 
+    if (message.action === "checkHoldUser" && message.orderId) {
+        const orderId = message.orderId;
+        const query = { url: `https://db.incfile.com/incfile/order/detail/${orderId}*` };
+        let attempts = 15;
+        let delay = 1000;
+
+        const tryFetch = () => {
+            chrome.tabs.query(query, (tabs) => {
+                const tab = tabs && tabs[0];
+                if (!tab || tab.status !== "complete") {
+                    if (attempts > 0) {
+                        setTimeout(() => {
+                            attempts--;
+                            delay = Math.min(delay * 1.5, 10000);
+                            tryFetch();
+                        }, delay);
+                    } else {
+                        console.warn(`[Copilot] Hold user check timed out for order ${orderId}`);
+                        sendResponse({ holdUser: null });
+                    }
+                    return;
+                }
+                chrome.tabs.sendMessage(tab.id, { action: "getHoldUser" }, (resp) => {
+                    if (chrome.runtime.lastError) {
+                        if (attempts > 0) {
+                            setTimeout(() => {
+                                attempts--;
+                                delay = Math.min(delay * 1.5, 10000);
+                                tryFetch();
+                            }, delay);
+                        } else {
+                            console.warn(`[Copilot] Hold user check timed out for order ${orderId}`);
+                            sendResponse({ holdUser: null });
+                        }
+                        return;
+                    }
+                    sendResponse(resp);
+                });
+            });
+        };
+
+        tryFetch();
+        return true;
+    }
+
     if (message.action === "fetchChildOrders" && message.orderId) {
         const orderId = message.orderId;
         let base = "https://db.incfile.com";
