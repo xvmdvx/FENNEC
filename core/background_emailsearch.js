@@ -255,7 +255,15 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
                         let tries = 40;
                         const run = () => {
                             if (clickStateAnchor(state)) {
-                                if (type) setTimeout(() => clickExact(type), 500);
+                                if (type) {
+                                    let typeTries = 40;
+                                    const tryType = () => {
+                                        if (!clickExact(type) && typeTries-- > 0) {
+                                            setTimeout(tryType, 500);
+                                        }
+                                    };
+                                    setTimeout(tryType, 500);
+                                }
                             } else if (tries-- > 0) {
                                 setTimeout(run, 500);
                             }
