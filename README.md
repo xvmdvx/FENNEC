@@ -91,6 +91,8 @@ information scraped from the current page.
 - The company name (or State ID on amendments) links to the state's SOS business
   search page. Clicking either now opens the search form, fills in the value and
   automatically runs the query.
+- A light gray copy icon next to the Company name and State ID copies the value
+  to the clipboard.
 - Amendment summaries now include an **Amendment Details** section. Addresses in
   this area are clickable with a USPS lookup icon, and names throughout the
   summary now copy to the clipboard when clicked.
