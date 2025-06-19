@@ -96,6 +96,9 @@ information scraped from the current page.
   to the clipboard.
 - Clicking the state name now opens the Filing Department knowledge base in a new
   tab and navigates automatically to the matching article for that order type.
+- Order type detection now recognizes Business Formation packages, Foreign
+  Qualification, Amendments, Registered Agent Change and Annual Report (including
+  alternate names like Business Entity Report, Biennial Report or Renewal).
 - Host permissions for every SOS search site are included so the query can be
   injected automatically when those pages open.
 - Updated the West Virginia SOS link and host permission so searches work again.
