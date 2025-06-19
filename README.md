@@ -82,6 +82,7 @@ information scraped from the current page.
   Summary and is positioned directly below it. Status labels are color coded
   (green for **SHIPPED**, **REVIEW** or **PROCESSING**, red for **CANCELED**, purple
   for **HOLD**) and the button reads **🩺 DIAGNOSE**.
+- Fixed an issue where the tree panel sometimes failed to appear when clicking the icon.
 - Fixed detection of the parent order so the tree icon functions on all
   non-formation orders.
 - Fixed missing summary container so the tree icon now opens the parent
