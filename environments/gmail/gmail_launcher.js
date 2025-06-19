@@ -60,6 +60,7 @@
                 sessionStorage.removeItem("copilotSidebarClosed");
                 const panels = applyPaddingToMainPanels();
                 injectSidebar(panels);
+                refreshSidebar();
             });
             document.body.appendChild(icon);
         }
@@ -549,6 +550,13 @@
             });
         }
 
+        function refreshSidebar() {
+            const ctx = extractOrderContextFromEmail();
+            fillOrderSummaryBox(ctx);
+            loadDbSummary();
+            if (ctx && ctx.orderNumber) checkLastIssue(ctx.orderNumber);
+        }
+
         function handleEmailSearchClick() {
             const context = extractOrderContextFromEmail();
             fillOrderSummaryBox(context);
@@ -639,12 +647,7 @@
 
             // Botón EMAIL SEARCH (listener UNIFICADO)
             document.getElementById("btn-email-search").onclick = handleEmailSearchClick;
-            document.getElementById("copilot-refresh").onclick = () => {
-                const ctx = extractOrderContextFromEmail();
-                fillOrderSummaryBox(ctx);
-                loadDbSummary();
-                if (ctx && ctx.orderNumber) checkLastIssue(ctx.orderNumber);
-            };
+            document.getElementById("copilot-refresh").onclick = refreshSidebar;
             setupOpenOrderButton();
         }
 
