@@ -228,7 +228,7 @@
             id: "https://ccfs.sos.wa.gov/#/"
         },
         "West Virginia": {
-            name: "https://apps.wv.gov/sos/businessentitysearch/",
+            name: "https://apps.sos.wv.gov/business/corporations/",
             id: "https://apps.sos.wv.gov/business/corporations/"
         },
         "Wisconsin": {
