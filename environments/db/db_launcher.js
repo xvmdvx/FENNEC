@@ -335,6 +335,13 @@
         return text;
     }
 
+    function mapKbCategory(text) {
+        const t = (text || "").toLowerCase();
+        if (t.includes("business formation")) return "Main Orders";
+        if (t.includes("amendment")) return "Amendments";
+        return text;
+    }
+
     chrome.storage.local.get({ extensionEnabled: true }, ({ extensionEnabled }) => {
         if (!extensionEnabled) {
             console.log('[FENNEC] Extension disabled, skipping DB launcher.');
@@ -615,7 +622,7 @@
     function renderKb(state) {
         if (!isValidField(state)) return '<span style="color:#aaa">-</span>';
         const esc = escapeHtml(state);
-        const type = currentOrderTypeText ? currentOrderTypeText : '';
+        const type = currentOrderTypeText ? mapKbCategory(currentOrderTypeText) : '';
         return `<a href="#" class="copilot-kb" data-state="${esc}" data-otype="${escapeHtml(type)}">${esc}</a>`;
     }
 
