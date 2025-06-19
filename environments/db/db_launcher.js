@@ -1271,20 +1271,18 @@
                 nameText = `<a href="#" class="copilot-sos" data-url="${nameBase}" data-query="${escapeHtml(company.name)}" data-type="name">${nameText}</a>`;
             }
             companyLines.push(`<div><b>${nameText} ${renderCopyIcon(company.name)}</b></div>`);
-            if (isAmendment) {
-                let idHtml = company.stateId ? escapeHtml(company.stateId) : '<span style="color:#aaa">-</span>';
+            if (company.stateId) {
+                let idHtml = escapeHtml(company.stateId);
                 const idBase = buildSosUrl(company.state, null, 'id');
-                if (company.stateId && idBase) {
+                if (idBase) {
                     idHtml = `<a href="#" class="copilot-sos" data-url="${idBase}" data-query="${escapeHtml(company.stateId)}" data-type="id">${idHtml}</a>`;
                     idHtml += ' ' + renderCopyIcon(company.stateId);
-                } else if (company.stateId) {
+                } else {
                     idHtml += ' ' + renderCopyIcon(company.stateId);
                 }
                 companyLines.push(`<div>${idHtml}</div>`);
-                companyLines.push(`<div>${renderKb(company.state)}</div>`);
-            } else {
-                companyLines.push(`<div>${renderKb(company.state)}</div>`);
             }
+            companyLines.push(`<div>${renderKb(company.state)}</div>`);
             companyLines.push(addrHtml);
             companyLines.push(`<div class="company-purpose">${renderCopy(company.purpose)}</div>`);
             companyLines.push(`<div><span class="${raClass}">RA: ${hasRA ? 'Sí' : 'No'}</span> <span class="${vaClass}">VA: ${hasVA ? 'Sí' : 'No'}</span></div>`);
