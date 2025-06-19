@@ -93,6 +93,8 @@ information scraped from the current page.
   automatically runs the query.
 - A light gray copy icon next to the Company name and State ID copies the value
   to the clipboard.
+- Host permissions for every SOS search site are included so the query can be
+  injected automatically when those pages open.
 - Amendment summaries now include an **Amendment Details** section. Addresses in
   this area are clickable with a USPS lookup icon, and names throughout the
   summary now copy to the clipboard when clicked.
