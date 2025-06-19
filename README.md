@@ -58,6 +58,7 @@ information scraped from the current page.
 - Displays a sidebar on order detail pages.
 - Scrapes company, agent and officer data and presents it in a compact layout.
 - Addresses are clickable to open a Google search and copy the text.
+- The company purpose also opens a Google search. Addresses and the purpose text are only underlined on hover.
 - Hides the agent subscription status line when RA service is not provided by Incfile.
 - Provides a Quick Actions menu with **Emails** and **Cancel** options. **Emails** now opens a Gmail search for the order number, client email and name while **Cancel** resolves active issues and opens the cancellation dialog with the reason preselected.
 - The Quick Actions icon now sits in the header next to the close button and the menu fades in and out.
@@ -86,7 +87,7 @@ information scraped from the current page.
   search page.
 - Amendment summaries now include an **Amendment Details** section. Addresses in
   this area are clickable with a USPS lookup icon, and names throughout the
-  summary open a Google search when clicked.
+  summary now copy to the clipboard when clicked.
 - When a line mixes description text with an address after a colon, only the
   address portion is turned into a link so the preceding text remains plain.
 - Partial addresses lacking a state or ZIP code now appear in **bold** and link
