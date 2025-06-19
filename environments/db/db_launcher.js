@@ -624,15 +624,6 @@
         return isNaN(parsed) ? null : new Date(parsed);
     }
 
-    function formatDateLikeParent(text) {
-        const d = new Date(text);
-        if (isNaN(d)) return text;
-        return d.toLocaleDateString('en-US', {
-            month: 'short',
-            day: '2-digit',
-            year: 'numeric'
-        });
-    }
 
     function cleanFieldValue(name, text) {
         if (!text) return text;
@@ -1496,6 +1487,16 @@
             sel.value = opt.value;
             sel.dispatchEvent(new Event('change', { bubbles: true }));
         }
+    }
+
+    function formatDateLikeParent(text) {
+        const d = new Date(text);
+        if (isNaN(d)) return text;
+        return d.toLocaleDateString('en-US', {
+            month: 'short',
+            day: '2-digit',
+            year: 'numeric'
+        });
     }
 
     function startCancelProcedure() {

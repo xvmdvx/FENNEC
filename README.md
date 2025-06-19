@@ -164,4 +164,10 @@ To view the sidebar with these pages you can either serve them as `db.incfile.co
     "http://localhost:8000/*"
     ```
 
-    Reload the extension after editing the manifest.
+Reload the extension after editing the manifest.
+
+### Bug fixes
+
+- Fixed a race condition where the "Family Tree" view failed to load if the
+  background script queried the page before helper functions finished
+  initializing.
