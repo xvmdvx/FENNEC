@@ -11,7 +11,7 @@ function saveState() {
   chrome.storage.local.set({ extensionEnabled: toggle.checked }, () => {
     const urls = [
       'https://mail.google.com/*',
-      'https://db.incfile.com/incfile/order/detail/*',
+      'https://*.incfile.com/incfile/order/detail/*',
       'https://tools.usps.com/*'
     ];
 
