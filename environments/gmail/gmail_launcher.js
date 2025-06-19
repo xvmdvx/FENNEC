@@ -482,6 +482,15 @@
                     chrome.runtime.sendMessage({ action: 'sosSearch', url, query, searchType: type });
                 });
             });
+            rootEl.querySelectorAll('.copilot-kb').forEach(el => {
+                el.addEventListener('click', e => {
+                    e.preventDefault();
+                    const state = el.dataset.state;
+                    const otype = el.dataset.otype || '';
+                    if (!state) return;
+                    chrome.runtime.sendMessage({ action: 'openKnowledgeBase', state, orderType: otype });
+                });
+            });
         }
 
         function loadDbSummary() {

@@ -223,4 +223,45 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         });
         return;
     }
+
+    if (message.action === "openKnowledgeBase" && message.state) {
+        const url = "https://coda.io/d/Bizee-Filing-Department_dQJWsDF3UZ6/Knowledge-Base_suQao1ou";
+        chrome.tabs.create({ url, active: true }, (tab) => {
+            if (chrome.runtime.lastError) {
+                console.error("[Copilot] Error opening KB tab:", chrome.runtime.lastError.message);
+                return;
+            }
+            const inject = (tabId) => {
+                chrome.scripting.executeScript({
+                    target: { tabId },
+                    func: (state, type) => {
+                        function clickExact(txt) {
+                            const nodes = Array.from(document.querySelectorAll('a,button,span,div'));
+                            const target = nodes.find(n => n.textContent && n.textContent.trim().toLowerCase() === txt.toLowerCase());
+                            if (target) { target.click(); return true; }
+                            return false;
+                        }
+                        let tries = 20;
+                        const run = () => {
+                            if (clickExact(state)) {
+                                if (type) setTimeout(() => clickExact(type), 500);
+                            } else if (tries-- > 0) {
+                                setTimeout(run, 500);
+                            }
+                        };
+                        run();
+                    },
+                    args: [state, type]
+                });
+            };
+            const listener = (tabId, info) => {
+                if (tabId === tab.id && info.status === 'complete') {
+                    chrome.tabs.onUpdated.removeListener(listener);
+                    inject(tabId);
+                }
+            };
+            chrome.tabs.onUpdated.addListener(listener);
+        });
+        return;
+    }
 });

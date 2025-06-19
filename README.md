@@ -94,6 +94,8 @@ information scraped from the current page.
   automatically runs the query.
 - A light gray copy icon next to the Company name and State ID copies the value
   to the clipboard.
+- Clicking the state name now opens the Filing Department knowledge base in a new
+  tab and navigates automatically to the matching article for that order type.
 - Host permissions for every SOS search site are included so the query can be
   injected automatically when those pages open.
 - Updated the West Virginia SOS link and host permission so searches work again.

@@ -62,7 +62,8 @@
     "https://www.sos.state.co.us/*",
     "https://www.sosnc.gov/*",
     "https://www.vermontbusinessregistry.com/*",
-    "https://wyobiz.wyo.gov/*"
+    "https://wyobiz.wyo.gov/*",
+    "https://coda.io/*"
   ],
   "content_scripts": [
     {
