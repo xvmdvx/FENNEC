@@ -1800,16 +1800,17 @@
                 /canceled/i.test(r.order.status) ? "copilot-tag copilot-tag-red" :
                 /hold/i.test(r.order.status) ? "copilot-tag copilot-tag-purple" : "copilot-tag";
 
-            const idDiv = document.createElement("div");
-            const b = document.createElement("b");
-            b.textContent = r.order.orderId;
-            idDiv.appendChild(b);
-            card.appendChild(idDiv);
-
-            const typeDiv = document.createElement("div");
-            typeDiv.className = "ft-type";
-            typeDiv.textContent = r.order.type.toUpperCase();
-            card.appendChild(typeDiv);
+            const line = document.createElement("div");
+            const link = document.createElement("a");
+            link.href = `${location.origin}/incfile/order/detail/${r.order.orderId}`;
+            link.target = "_blank";
+            link.textContent = r.order.orderId;
+            line.appendChild(link);
+            const typeSpan = document.createElement("span");
+            typeSpan.className = "ft-type";
+            typeSpan.textContent = ` (${r.order.type.toUpperCase()})`;
+            line.appendChild(typeSpan);
+            card.appendChild(line);
 
             const statusDiv = document.createElement("div");
             const statusSpan = document.createElement("span");
@@ -1819,6 +1820,7 @@
             card.appendChild(statusDiv);
 
             const issueDiv = document.createElement("div");
+            issueDiv.className = "diag-issue";
             issueDiv.textContent = r.issue;
             card.appendChild(issueDiv);
 
