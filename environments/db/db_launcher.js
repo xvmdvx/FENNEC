@@ -291,6 +291,37 @@
         return "other";
     }
 
+    function normalizeOrderType(text) {
+        const t = (text || "").toLowerCase();
+        if (t.includes("amendment")) return "Amendment";
+        if (t.includes("foreign") && t.includes("qualification")) {
+            return "Foreign Qualification";
+        }
+        if (t.includes("registered agent") && t.includes("change")) {
+            return "Registered Agent Change";
+        }
+        const annual = [
+            "annual report",
+            "business entity report",
+            "biennial report",
+            "information report",
+            "annual statement",
+            "annual registration report",
+            "annual list",
+            "annual certificate",
+            "renewal",
+            "public information report",
+            "pir",
+            "registration fee"
+        ];
+        if (annual.some(k => t.includes(k))) return "Annual Report";
+        if (t.includes("silver")) return "Business Formation - Silver";
+        if (t.includes("gold")) return "Business Formation - Gold";
+        if (t.includes("platinum")) return "Business Formation - Platinum";
+        if (t.includes("formation")) return "Business Formation";
+        return text;
+    }
+
     chrome.storage.local.get({ extensionEnabled: true }, ({ extensionEnabled }) => {
         if (!extensionEnabled) {
             console.log('[FENNEC] Extension disabled, skipping DB launcher.');
@@ -354,7 +385,8 @@
                     }
                     const orderType = getOrderType();
                     currentOrderType = orderType;
-                    currentOrderTypeText = getText(document.getElementById('ordType')) || '';
+                    const rawType = getText(document.getElementById('ordType')) || '';
+                    currentOrderTypeText = normalizeOrderType(rawType);
                     const ftIcon = sidebar.querySelector('#family-tree-icon');
                     if (ftIcon) {
                         ftIcon.style.display = orderType !== 'formation' ? 'inline' : 'none';
