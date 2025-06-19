@@ -5,6 +5,7 @@
         sessionStorage.removeItem('copilotSidebarClosed');
     });
     let currentOrderType = null;
+    let currentOrderTypeText = null;
     let initQuickSummary = null;
 
     function showFloatingIcon() {
@@ -353,6 +354,7 @@
                     }
                     const orderType = getOrderType();
                     currentOrderType = orderType;
+                    currentOrderTypeText = getText(document.getElementById('ordType')) || '';
                     const ftIcon = sidebar.querySelector('#family-tree-icon');
                     if (ftIcon) {
                         ftIcon.style.display = orderType !== 'formation' ? 'inline' : 'none';
@@ -554,6 +556,13 @@
         if (!isValidField(text)) return '';
         const esc = escapeHtml(text);
         return `<span class="copilot-copy-icon" data-copy="${esc}" title="Copy">⧉</span>`;
+    }
+
+    function renderKb(state) {
+        if (!isValidField(state)) return '<span style="color:#aaa">-</span>';
+        const esc = escapeHtml(state);
+        const type = currentOrderTypeText ? currentOrderTypeText : '';
+        return `<a href="#" class="copilot-kb" data-state="${esc}" data-otype="${escapeHtml(type)}">${esc}</a>`;
     }
 
 
@@ -1214,9 +1223,9 @@
                     idHtml += ' ' + renderCopyIcon(company.stateId);
                 }
                 companyLines.push(`<div>${idHtml}</div>`);
-                companyLines.push(`<div>${company.state || '<span style="color:#aaa">-</span>'}</div>`);
+                companyLines.push(`<div>${renderKb(company.state)}</div>`);
             } else {
-                companyLines.push(`<div>${company.state || '<span style="color:#aaa">-</span>'}</div>`);
+                companyLines.push(`<div>${renderKb(company.state)}</div>`);
             }
             companyLines.push(addrHtml);
             companyLines.push(`<div class="company-purpose">${renderCopy(company.purpose)}</div>`);
@@ -1376,6 +1385,15 @@
                     const type = el.dataset.type || 'name';
                     if (!url || !query) return;
                     chrome.runtime.sendMessage({ action: 'sosSearch', url, query, searchType: type });
+                });
+            });
+            body.querySelectorAll('.copilot-kb').forEach(el => {
+                el.addEventListener('click', e => {
+                    e.preventDefault();
+                    const state = el.dataset.state;
+                    const otype = el.dataset.otype || '';
+                    if (!state) return;
+                    chrome.runtime.sendMessage({ action: 'openKnowledgeBase', state, orderType: otype });
                 });
             });
             body.querySelectorAll('.company-purpose .copilot-copy').forEach(el => {
