@@ -160,4 +160,59 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         openAndQuery();
         return true;
     }
+
+    if (message.action === "sosSearch" && message.url && message.query) {
+        chrome.tabs.create({ url: message.url, active: true }, (tab) => {
+            if (chrome.runtime.lastError) {
+                console.error("[Copilot] Error opening SOS tab:", chrome.runtime.lastError.message);
+                return;
+            }
+            const inject = (tabId) => {
+                chrome.scripting.executeScript({
+                    target: { tabId },
+                    func: (q, type) => {
+                        const patterns = type === 'id'
+                            ? ['id', 'number', 'document', 'control']
+                            : ['name', 'business', 'entity'];
+                        let attempts = 10;
+                        const run = () => {
+                            const inputs = Array.from(document.querySelectorAll('input,textarea'));
+                            const field = inputs.find(i => {
+                                const attrs = (i.name || '') + ' ' + (i.id || '') + ' ' + (i.placeholder || '') + ' ' + (i.getAttribute('aria-label') || '');
+                                const txt = attrs.toLowerCase();
+                                return patterns.some(p => txt.includes(p));
+                            });
+                            if (field) {
+                                field.focus();
+                                field.value = q;
+                                field.dispatchEvent(new Event('input', { bubbles: true }));
+                                const form = field.form;
+                                const btn = form ? form.querySelector('button[type="submit"],input[type="submit"]') : null;
+                                if (btn) {
+                                    btn.click();
+                                } else if (form) {
+                                    form.submit();
+                                } else {
+                                    field.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
+                                    field.dispatchEvent(new KeyboardEvent('keyup', { key: 'Enter', bubbles: true }));
+                                }
+                            } else if (attempts-- > 0) {
+                                setTimeout(run, 500);
+                            }
+                        };
+                        run();
+                    },
+                    args: [message.query, message.searchType]
+                });
+            };
+            const listener = (tabId, info) => {
+                if (tabId === tab.id && info.status === 'complete') {
+                    chrome.tabs.onUpdated.removeListener(listener);
+                    inject(tabId);
+                }
+            };
+            chrome.tabs.onUpdated.addListener(listener);
+        });
+        return;
+    }
 });

@@ -88,7 +88,8 @@ information scraped from the current page.
   overview on Annual Report, Foreign Qualification, Certificate of Good
   Standing, Reinstatement, Dissolution and Virtual Address orders.
 - The company name (or State ID on amendments) links to the state's SOS business
-  search page.
+  search page. Clicking either now opens the search form, fills in the value and
+  automatically runs the query.
 - Amendment summaries now include an **Amendment Details** section. Addresses in
   this area are clickable with a USPS lookup icon, and names throughout the
   summary now copy to the clipboard when clicked.
