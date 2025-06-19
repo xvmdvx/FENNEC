@@ -1765,17 +1765,12 @@
     }
 
     function diagnoseHoldOrders(orders) {
-        const urls = orders.map(o => `${location.origin}/incfile/order/detail/${o.orderId}`);
-        chrome.runtime.sendMessage({ action: 'openTabs', urls });
         const promises = orders.map(o => new Promise(res => {
-            chrome.runtime.sendMessage({ action: 'checkLastIssue', orderId: o.orderId }, issueResp => {
-                if (issueResp && issueResp.issueInfo) {
-                    res({ order: o, issue: issueResp.issueInfo.text, active: issueResp.issueInfo.active });
+            chrome.runtime.sendMessage({ action: 'fetchLastIssue', orderId: o.orderId }, resp => {
+                if (resp && resp.issueInfo) {
+                    res({ order: o, issue: resp.issueInfo.text, active: resp.issueInfo.active });
                 } else {
-                    chrome.runtime.sendMessage({ action: 'checkHoldUser', orderId: o.orderId }, holdResp => {
-                        const user = holdResp && holdResp.holdUser ? `On hold by ${holdResp.holdUser}` : 'On hold';
-                        res({ order: o, issue: user, active: true });
-                    });
+                    res({ order: o, issue: 'On hold', active: true });
                 }
             });
         }));

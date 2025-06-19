@@ -230,6 +230,72 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         return true;
     }
 
+    if (message.action === "fetchLastIssue" && message.orderId) {
+        const orderId = message.orderId;
+        let base = "https://db.incfile.com";
+        if (sender && sender.tab && sender.tab.url) {
+            try {
+                base = new URL(sender.tab.url).origin;
+            } catch (err) {
+                console.warn("[Copilot] Invalid sender URL", sender.tab.url);
+            }
+        }
+        const url = `${base}/incfile/order/detail/${orderId}`;
+        const query = { url: `${url}*` };
+        let attempts = 15;
+        let delay = 1000;
+        let createdTabId = null;
+
+        const openAndFetch = () => {
+            chrome.tabs.query(query, (tabs) => {
+                let tab = tabs && tabs[0];
+                const ensureLoaded = () => {
+                    if (!tab || tab.status !== "complete") {
+                        if (attempts > 0) {
+                            if (!tab) {
+                                chrome.tabs.create({ url, active: false }, t => {
+                                    tab = t;
+                                    createdTabId = t.id;
+                                });
+                            }
+                            setTimeout(() => {
+                                attempts--;
+                                delay = Math.min(delay * 1.5, 10000);
+                                chrome.tabs.query(query, qs => { tab = qs && qs[0]; ensureLoaded(); });
+                            }, delay);
+                        } else {
+                            console.warn(`[Copilot] Issue fetch timed out for ${orderId}`);
+                            sendResponse({ issueInfo: null });
+                            if (createdTabId) chrome.tabs.remove(createdTabId);
+                        }
+                        return;
+                    }
+                    chrome.tabs.sendMessage(tab.id, { action: "getLastIssue" }, resp => {
+                        if (chrome.runtime.lastError || !resp || !resp.issueInfo) {
+                            chrome.tabs.sendMessage(tab.id, { action: "getHoldUser" }, hold => {
+                                if (chrome.runtime.lastError) {
+                                    console.warn("[Copilot] Hold user fetch error:", chrome.runtime.lastError.message);
+                                    sendResponse({ issueInfo: null });
+                                } else {
+                                    const user = hold && hold.holdUser ? `On hold by ${hold.holdUser}` : "On hold";
+                                    sendResponse({ issueInfo: { text: user, active: true } });
+                                }
+                                if (createdTabId) chrome.tabs.remove(createdTabId);
+                            });
+                        } else {
+                            sendResponse(resp);
+                            if (createdTabId) chrome.tabs.remove(createdTabId);
+                        }
+                    });
+                };
+                ensureLoaded();
+            });
+        };
+
+        openAndFetch();
+        return true;
+    }
+
     if (message.action === "sosSearch" && message.url && message.query) {
         chrome.tabs.create({ url: message.url, active: true }, (tab) => {
             if (chrome.runtime.lastError) {
