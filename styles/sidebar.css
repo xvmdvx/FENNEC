@@ -109,6 +109,7 @@
 .copilot-address {
     color: #1a73e8;
     cursor: pointer;
+    text-decoration: none;
 }
 .copilot-address:hover {
     text-decoration: underline;

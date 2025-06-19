@@ -380,8 +380,7 @@
     function renderName(text) {
         if (!text) return '<span style="color:#aaa">-</span>';
         const esc = escapeHtml(text);
-        const url = 'https://www.google.com/search?q=' + encodeURIComponent(text);
-        return `<a href="${url}" target="_blank" class="copilot-copy copilot-name" data-copy="${esc}">${esc}</a>`;
+        return `<span class="copilot-copy copilot-name" data-copy="${esc}">${esc}</span>`;
     }
 
 
@@ -1170,9 +1169,10 @@
             });
             body.querySelectorAll('.copilot-name').forEach(el => {
                 el.addEventListener('click', e => {
+                    e.preventDefault();
                     const text = el.dataset.copy;
                     if (!text) return;
-                    window.open('https://www.google.com/search?q=' + encodeURIComponent(text), '_blank');
+                    navigator.clipboard.writeText(text).catch(err => console.warn('[Copilot] Clipboard', err));
                 });
             });
             const ftIcon = document.getElementById('family-tree-icon');
