@@ -96,6 +96,7 @@ information scraped from the current page.
   to the clipboard.
 - Host permissions for every SOS search site are included so the query can be
   injected automatically when those pages open.
+- Updated the West Virginia SOS link and host permission so searches work again.
 - Amendment summaries now include an **Amendment Details** section. Addresses in
   this area are clickable with a USPS lookup icon, and names throughout the
   summary now copy to the clipboard when clicked.
