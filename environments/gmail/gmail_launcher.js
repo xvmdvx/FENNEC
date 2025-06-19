@@ -466,6 +466,16 @@
                     navigator.clipboard.writeText(text).catch(err => console.warn('[Copilot] Clipboard', err));
                 });
             });
+            rootEl.querySelectorAll('.copilot-sos').forEach(el => {
+                el.addEventListener('click', e => {
+                    e.preventDefault();
+                    const url = el.dataset.url;
+                    const query = el.dataset.query;
+                    const type = el.dataset.type || 'name';
+                    if (!url || !query) return;
+                    chrome.runtime.sendMessage({ action: 'sosSearch', url, query, searchType: type });
+                });
+            });
         }
 
         function loadDbSummary() {
