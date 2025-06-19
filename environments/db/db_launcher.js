@@ -369,8 +369,8 @@
                     sidebar.innerHTML = `
                         <div class="copilot-header">
                             <div class="copilot-title">
-                                <img src="${chrome.runtime.getURL('fennec_icon.png')}" class="copilot-icon" alt="FENNEC (Prototype)" />
-                                <span>FENNEC (Prototype)</span>
+                                <img src="${chrome.runtime.getURL('fennec_icon.png')}" class="copilot-icon" alt="FENNEC (v0.2)" />
+                                <span>FENNEC (v0.2)</span>
                             </div>
                             <span id="qa-toggle" class="quick-actions-toggle">☰</span>
                             <button id="copilot-close">✕</button>

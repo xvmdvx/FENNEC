@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "FENNEC (Prototype)",
+  "name": "FENNEC (v0.2)",
   "description": "Barra lateral tipo copilot para Gmail y DB",
   "version": "1.0.3",
   "permissions": [
