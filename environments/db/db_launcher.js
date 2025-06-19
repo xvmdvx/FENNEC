@@ -349,8 +349,14 @@
             .replace(/'/g, "&#039;");
     }
 
+    function isValidField(text) {
+        if (!text) return false;
+        const clean = String(text).replace(/\s+/g, '').toLowerCase();
+        return clean !== 'n/a' && clean !== 'na';
+    }
+
     function renderAddress(addr, isVA = false) {
-        if (!addr) return '<span style="color:#aaa">-</span>';
+        if (!isValidField(addr)) return '';
         const parts = addr.split(/,\s*/);
 
         let firstLine = parts.shift() || '';
@@ -372,13 +378,13 @@
     }
 
     function renderCopy(text) {
-        if (!text) return '<span style="color:#aaa">-</span>';
+        if (!isValidField(text)) return '';
         const esc = escapeHtml(text);
         return `<span class="copilot-copy" data-copy="${esc}">${esc}</span>`;
     }
 
     function renderName(text) {
-        if (!text) return '<span style="color:#aaa">-</span>';
+        if (!isValidField(text)) return '';
         const esc = escapeHtml(text);
         return `<span class="copilot-copy copilot-name" data-copy="${esc}">${esc}</span>`;
     }
@@ -898,7 +904,7 @@
 
         const addrs = [];
         const pushAddr = (label, addr, name) => {
-            if (!addr || isInternal(name, addr)) return;
+            if (!isValidField(addr) || isInternal(name, addr)) return;
             addrs.push({ label, addr });
         };
         if (company) {
@@ -975,12 +981,11 @@
         if (addrEntries.length) {
             if (summaryParts.length) summaryParts.push('<hr style="border:none;border-top:1px solid #eee;margin:6px 0"/>');
             summaryParts.push(...addrEntries);
+            summaryParts.push('<hr style="border:none;border-top:1px solid #eee;margin:6px 0"/>');
         }
-        summaryParts.push('<div style="height:4px"></div>');
         const raClass = hasRA ? 'copilot-tag copilot-tag-green' : 'copilot-tag copilot-tag-purple';
         const vaClass = hasVA ? 'copilot-tag copilot-tag-green' : 'copilot-tag copilot-tag-purple';
         summaryParts.push(`
-            <br/>
             <div>
                 <span class="${raClass}">RA: ${hasRA ? 'Sí' : 'No'}</span>
                 <span class="${vaClass}">VA: ${hasVA ? 'Sí' : 'No'}</span>
@@ -1030,6 +1035,7 @@
             }
             companyLines.push(addrHtml);
             companyLines.push(`<div class="company-purpose">${renderCopy(company.purpose)}</div>`);
+            companyLines.push(`<div><span class="${raClass}">RA: ${hasRA ? 'Sí' : 'No'}</span> <span class="${vaClass}">VA: ${hasVA ? 'Sí' : 'No'}</span></div>`);
             const compSection = `
             <div class="section-label">COMPANY:</div>
             <div class="white-box" style="margin-bottom:10px">
@@ -1089,11 +1095,13 @@
             const shSection = `
             <div class="section-label">SHAREHOLDERS:</div>
             <div class="white-box" style="margin-bottom:10px">
-                ${shareholders.map(s => `
-                    <div><b>${renderName(s.name)}</b></div>
-                    <div>${renderAddress(s.address, isVAAddress(s.address))}</div>
-                    <div>${renderCopy(s.shares)}</div>
-                `).join('<hr style="border:none; border-top:1px solid #eee; margin:6px 0"/>')}
+                ${shareholders.map(s => {
+                    const name = `<div><b>${renderName(s.name)}</b></div>`;
+                    const addr = `<div>${renderAddress(s.address, isVAAddress(s.address))}</div>`;
+                    const shares = renderCopy(s.shares);
+                    const shareLine = shares ? `<div>Shares: ${shares}</div>` : '';
+                    return `${name}${addr}${shareLine}`;
+                }).join('<hr style="border:none; border-top:1px solid #eee; margin:6px 0"/>')}
             </div>`;
             html += shSection;
             dbSections.push(shSection);

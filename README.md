@@ -112,6 +112,7 @@ information scraped from the current page.
 - Fixed sidebar layering so the DB "View all / Add Issue" modal is not
   obscured.
 - Fixed a crash when the **Refresh** button listener failed to attach on some DB pages.
+- A separator line now appears between addresses and the RA/VA tags in the quick summary, and those tags are repeated at the bottom of the Company section. Fields showing `N/A` or blank values are omitted, and shareholders display their share count prefixed with "Shares:".
 
 ## Known limitations
 
