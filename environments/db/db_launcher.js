@@ -1793,17 +1793,35 @@
         close.addEventListener('click', () => overlay.remove());
         overlay.appendChild(close);
         results.forEach(r => {
-            const card = document.createElement('div');
-            card.className = 'diag-card';
+            const card = document.createElement("div");
+            card.className = "diag-card";
             const cls =
-                /shipped|review|processing/i.test(r.order.status) ? 'copilot-tag copilot-tag-green' :
-                /canceled/i.test(r.order.status) ? 'copilot-tag copilot-tag-red' :
-                /hold/i.test(r.order.status) ? 'copilot-tag copilot-tag-purple' : 'copilot-tag';
-            card.innerHTML =
-                `<div><b>${escapeHtml(r.order.orderId)}</b></div>` +
-                `<div class="ft-type">${escapeHtml(r.order.type).toUpperCase()}</div>` +
-                `<div><span class="${cls}">${escapeHtml(r.order.status)}</span></div>` +
-                `<div>${escapeHtml(r.issue)}</div>`;
+                /shipped|review|processing/i.test(r.order.status) ? "copilot-tag copilot-tag-green" :
+                /canceled/i.test(r.order.status) ? "copilot-tag copilot-tag-red" :
+                /hold/i.test(r.order.status) ? "copilot-tag copilot-tag-purple" : "copilot-tag";
+
+            const idDiv = document.createElement("div");
+            const b = document.createElement("b");
+            b.textContent = r.order.orderId;
+            idDiv.appendChild(b);
+            card.appendChild(idDiv);
+
+            const typeDiv = document.createElement("div");
+            typeDiv.className = "ft-type";
+            typeDiv.textContent = r.order.type.toUpperCase();
+            card.appendChild(typeDiv);
+
+            const statusDiv = document.createElement("div");
+            const statusSpan = document.createElement("span");
+            statusSpan.className = cls;
+            statusSpan.textContent = r.order.status;
+            statusDiv.appendChild(statusSpan);
+            card.appendChild(statusDiv);
+
+            const issueDiv = document.createElement("div");
+            issueDiv.textContent = r.issue;
+            card.appendChild(issueDiv);
+
             overlay.appendChild(card);
         });
         document.body.appendChild(overlay);

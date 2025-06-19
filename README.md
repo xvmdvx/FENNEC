@@ -193,3 +193,5 @@ Reload the extension after editing the manifest.
   properly passing the selected state and order type to the injected script.
 - Fixed sidebar layering so the DB "View all / Add Issue" modal is not
   obscured.
+- Fixed diagnose overlay crash when the `escapeHtml` helper was missing by
+  building the floating cards using DOM methods.
