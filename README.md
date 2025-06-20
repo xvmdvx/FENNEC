@@ -31,6 +31,8 @@ information scraped from the current page.
 - The **OPEN ORDER** button keeps working if you close and reopen the sidebar.
 - The Gmail script now runs in all frames so the sidebar appears even when the
   interface is embedded in nested iframes.
+- The DB script also runs in all frames so the Family Tree icon works when the
+  order page is loaded inside an iframe.
 - When opening an order, the sidebar shows the **latest issue** from the DB page.
   A label indicates whether it is **active** (red) or **resolved** (green). If no
   issue is found, the box still appears with a link to the order. The script
