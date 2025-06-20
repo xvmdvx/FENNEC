@@ -17,44 +17,64 @@
             const order = sessionStorage.getItem('fennec_order');
             if (!order) return;
 
+            function waitForElement(selector, timeout = 10000) {
+                return new Promise(resolve => {
+                    const interval = 250;
+                    let elapsed = 0;
+                    const run = () => {
+                        const el = document.querySelector(selector);
+                        if (el) {
+                            resolve(el);
+                        } else if (elapsed >= timeout) {
+                            resolve(null);
+                        } else {
+                            elapsed += interval;
+                            setTimeout(run, interval);
+                        }
+                    };
+                    run();
+                });
+            }
+
             function fillAndSubmit() {
-                try {
-                    const input = document.querySelector('.header-search__input, input[name="query"]');
-                    if (input) {
+                waitForElement('.header-search__input, input[name="query"]').then(input => {
+                    try {
+                        if (!input) return;
                         input.focus();
                         input.value = order;
                         input.dispatchEvent(new Event('input', { bubbles: true }));
+                        const payments = document.querySelector('input[type="radio"][value="payments"]');
+                        if (payments) payments.click();
+                        waitForElement('button[type="submit"], input[type="submit"], button[aria-label*="search" i]').then(btn => {
+                            if (btn) btn.click();
+                        });
+                    } catch (err) {
+                        console.error('[FENNEC Adyen] Error filling form:', err);
                     }
-                    const payments = document.querySelector('input[type="radio"][value="payments"]');
-                    if (payments) payments.click();
-                    const btn = document.querySelector('button[type="submit"], input[type="submit"], button[aria-label*="search" i]');
-                    if (btn) btn.click();
-                } catch (err) {
-                    console.error('[FENNEC Adyen] Error filling form:', err);
-                }
+                });
             }
 
             function openMostRecent() {
-                try {
-                    const links = Array.from(document.querySelectorAll('a[href*="showTx.shtml?pspReference="]'));
-                    if (links.length) {
-                        links[0].click();
+                waitForElement('a[href*="showTx.shtml?pspReference="]').then(link => {
+                    try {
+                        if (link) link.click();
+                    } catch (err) {
+                        console.error('[FENNEC Adyen] Error opening result:', err);
                     }
-                } catch (err) {
-                    console.error('[FENNEC Adyen] Error opening result:', err);
-                }
+                });
             }
 
             function openDna() {
-                try {
-                    const link = document.querySelector('a[href*="showOilSplashList.shtml"]');
-                    if (link) {
-                        window.open(link.href, '_blank');
-                        sessionStorage.removeItem('fennec_order');
+                waitForElement('a[href*="showOilSplashList.shtml"]').then(link => {
+                    try {
+                        if (link) {
+                            window.open(link.href, '_blank');
+                            sessionStorage.removeItem('fennec_order');
+                        }
+                    } catch (err) {
+                        console.error('[FENNEC Adyen] Error opening DNA:', err);
                     }
-                } catch (err) {
-                    console.error('[FENNEC Adyen] Error opening DNA:', err);
-                }
+                });
             }
 
             const path = window.location.pathname;
