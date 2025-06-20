@@ -245,3 +245,7 @@ Reload the extension after editing the manifest.
 - Escaped quotes in the background script so the service worker loads correctly.
   Buttons like **EMAIL SEARCH** and **OPEN ORDER** now open tabs again.
 - Common helpers moved to `core/utils.js` and shared by Gmail and DB scripts.
+
+### Troubleshooting
+
+If Chrome's console shows `Uncaught SyntaxError: Unexpected end of input` when loading `db_launcher.js`, ensure the file is intact and ends with a closing `})();` line. Reload the extension from `chrome://extensions` after verifying the file.
