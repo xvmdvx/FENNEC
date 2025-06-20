@@ -206,3 +206,5 @@ Reload the extension after editing the manifest.
   only overriding the base URL when the sender tab belongs to `incfile.com`.
 - Fixed stored DB summaries so links and copy icons work correctly on document
   pages by reattaching the sidebar listeners.
+- Fixed the **DIAGNOSE** button being cut off when expanding the Family Tree
+  panel by accounting for the box margin.
