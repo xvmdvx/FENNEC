@@ -268,9 +268,6 @@
         if (msg.action === 'fennecToggle') {
             window.location.reload();
         }
-        if (msg.action === 'sosPermissionError') {
-            alert('Permiso denegado para abrir la búsqueda SOS.');
-        }
         if (msg.action === 'getLastIssue') {
             let attempts = 10;
             const tryExtract = () => {
@@ -366,8 +363,7 @@
         }
     }
 
-    chrome.storage.sync.get({ fennecReviewMode: false, sidebarWidth: 340 }, ({ fennecReviewMode, sidebarWidth }) => {
-        chrome.storage.local.get({ extensionEnabled: true, lightMode: false, bentoMode: false }, ({ extensionEnabled, lightMode, bentoMode }) => {
+    chrome.storage.local.get({ extensionEnabled: true, lightMode: false, bentoMode: false, fennecReviewMode: false }, ({ extensionEnabled, lightMode, bentoMode, fennecReviewMode }) => {
         if (!extensionEnabled) {
             console.log('[FENNEC] Extension disabled, skipping DB launcher.');
             return;
@@ -390,7 +386,7 @@
             if (!document.getElementById('copilot-sidebar')) {
                 console.log("[Copilot] Sidebar no encontrado, inyectando en DB...");
 
-                const SIDEBAR_WIDTH = parseInt(sidebarWidth, 10) || 340;
+                const SIDEBAR_WIDTH = 340;
                 document.body.style.transition = 'margin-right 0.2s';
                 document.body.style.marginRight = SIDEBAR_WIDTH + 'px';
 
@@ -1219,7 +1215,6 @@
 
         const orderItems = Array.from(document.querySelectorAll('.order-items li'))
             .map(li => getText(li).toLowerCase());
-        const hasExpedite = orderItems.some(t => t.includes('expedited'));
 
         // Registered Agent subscription status from #vagent section
         const hasRA = /^yes/i.test(agent.status || '');
@@ -1283,19 +1278,12 @@
         dbSections.push(quickSection);
 
         const client = getClientInfo();
-        const clientRoles = client && client.name ? (roleMap[client.name.trim().toLowerCase()]?.roles || null) : null;
         if (client && (client.id || client.name || client.email)) {
             const lines = [];
             if (client.id) lines.push(`<div><b>${renderCopy(client.id)}</b></div>`);
             if (client.name) lines.push(`<div>${renderCopy(client.name)}</div>`);
-            if (clientRoles && clientRoles.size) {
-                lines.push(`<div>${Array.from(clientRoles).map(r => `<span class="copilot-tag">${escapeHtml(r)}</span>`).join(' ')}</div>`);
-            } else if (client.name) {
-                lines.push('<div><span class="copilot-tag copilot-tag-purple">NOT LISTED</span></div>');
-            }
             if (client.email) lines.push(`<div>${renderCopy(client.email)}</div>`);
-            if (client.phone) lines.push(`<div>${renderCopy(client.phone)}</div>`);
-            if (client.orders) lines.push(`<div>Companies: ${renderCopy(client.orders)}</div>`);
+            if (client.orders) lines.push(`<div>Orders: ${renderCopy(client.orders)}</div>`);
             if (client.ltv) lines.push(`<div>LTV: ${renderCopy(client.ltv)}</div>`);
             const clientSection = `
             <div id="client-section-label" class="section-label">CLIENT:</div>
@@ -1304,27 +1292,6 @@
             </div>`;
             html += clientSection;
             dbSections.push(clientSection);
-        }
-
-        const billing = extractBillingInfo();
-        if (billing && Object.values(billing).some(v => v)) {
-            const lines = [];
-            if (billing.method) lines.push(`<div>Method: ${renderCopy(billing.method)}</div>`);
-            if (billing.cardHolder) lines.push(`<div>${renderCopy(billing.cardHolder)}</div>`);
-            if (billing.cardType) lines.push(`<div>${renderCopy(billing.cardType)}</div>`);
-            if (billing.expiry) lines.push(`<div>${renderCopy(billing.expiry)}</div>`);
-            if (billing.last4) lines.push(`<div>Last 4: ${renderCopy(billing.last4)}</div>`);
-            const addr = [billing.address, billing.cityStateZip].filter(Boolean).join(', ');
-            if (addr) lines.push(`<div>${renderAddress(addr)}</div>`);
-            if (billing.country) lines.push(`<div>${renderCopy(billing.country)}</div>`);
-            if (billing.avs) lines.push(`<div>${renderCopy(billing.avs)}</div>`);
-            const billSection = `
-            <div class="section-label">BILLING:</div>
-            <div class="white-box" style="margin-bottom:10px">
-                ${lines.join('')}
-            </div>`;
-            html += billSection;
-            dbSections.push(billSection);
         }
 
         if (currentOrderType !== 'formation') {
@@ -1491,19 +1458,7 @@
         }
 
         const orderInfo = getBasicOrderInfo();
-        const orderSummaryInfo = {
-            orderId: orderInfo.orderId,
-            type: orderInfo.type,
-            expedited: hasExpedite,
-            companyName: company ? company.name : '',
-            companyId: company ? company.stateId : '',
-            companyState: company ? company.state : ''
-        };
-        chrome.storage.local.set({
-            sidebarDb: dbSections,
-            sidebarOrderId: orderInfo.orderId,
-            sidebarOrderInfo: orderSummaryInfo
-        });
+        chrome.storage.local.set({ sidebarDb: dbSections, sidebarOrderId: orderInfo.orderId });
 
         const body = document.getElementById('copilot-body-content');
         if (body) {
@@ -1663,7 +1618,7 @@
         return m ? m[1] : null;
     }
 
-function getClientInfo() {
+    function getClientInfo() {
         const tab = document.querySelector('#vclient');
         if (tab) {
             const row = tab.querySelector('table tbody tr');
@@ -1676,15 +1631,11 @@ function getClientInfo() {
                 const contactCell = row.querySelector('td[id^="clientContact"]');
                 const name = nameCell ? getText(nameCell).replace(/^\s*✓?\s*/, '') : '';
                 let email = '';
-                let phone = '';
                 if (contactCell) {
-                    const text = getText(contactCell);
-                    const match = text.match(/[\w.+-]+@[\w.-]+/);
+                    const match = getText(contactCell).match(/[\w.+-]+@[\w.-]+/);
                     if (match) email = match[0];
-                    const ph = text.match(/\d{3}[\s.-]?\d{3}[\s.-]?\d{4}/);
-                    if (ph) phone = ph[0];
                 }
-                return { id, orders, ltv, name, email, phone };
+                return { id, orders, ltv, name, email };
             }
         }
         const contactHeader = Array.from(document.querySelectorAll('h3.box-title'))
@@ -1698,36 +1649,10 @@ function getClientInfo() {
                     .find(l => getText(l).toLowerCase().startsWith('email'));
                 const name = nameLabel ? getText(nameLabel.parentElement.querySelector('.form-control-static')) : '';
                 const email = emailLabel ? getText(emailLabel.parentElement.querySelector('.form-control-static')) : '';
-                let phone = '';
-                const phoneLabel = Array.from(body.querySelectorAll('label'))
-                    .find(l => getText(l).toLowerCase().includes('phone'));
-                if (phoneLabel) {
-                    phone = getText(phoneLabel.parentElement.querySelector('.form-control-static'));
-                }
-                return { id: '', orders: '', ltv: '', name, email, phone };
+                return { id: '', orders: '', ltv: '', name, email };
             }
         }
-        return { id: '', orders: '', ltv: '', name: '', email: '', phone: '' };
-    }
-
-    function extractBillingInfo() {
-        const root = document.querySelector('#preferredProfile .form-body');
-        if (!root) return null;
-        const getVal = id => getText(root.querySelector('#' + id));
-        const select = root.querySelector('#selectPaymentMethods');
-        const method = select ? getText(select.options[select.selectedIndex]) : '';
-        return {
-            method,
-            client: getVal('preferredProfileClient'),
-            cardHolder: getVal('preferredProfileCardHolderName'),
-            cardType: getVal('preferredProfileCardType'),
-            expiry: getVal('preferredProfileExpiry'),
-            last4: getVal('preferredProfileLast4'),
-            address: getVal('preferredProfileAddress'),
-            cityStateZip: getVal('preferredProfileCityStateZip'),
-            country: getVal('preferredProfileCountry'),
-            avs: getVal('avsResponse')
-        };
+        return { id: '', orders: '', ltv: '', name: '', email: '' };
     }
 
     function diagnoseHoldOrders(orders) {
@@ -1845,11 +1770,9 @@ function getClientInfo() {
 }
 
 chrome.storage.onChanged.addListener((changes, area) => {
-    if (area === 'sync' && changes.fennecReviewMode) {
+    if (area === 'local' && changes.fennecReviewMode) {
         reviewMode = changes.fennecReviewMode.newValue;
         updateReviewDisplay();
     }
 });
-
-// End IIFE
 })();
