@@ -149,6 +149,8 @@
             const quick = container.querySelector("#quick-summary");
             const orderBox = document.querySelector(".order-summary-box");
             const issueBox = document.getElementById("issue-summary-box");
+            const clientLabel = container.querySelector("#client-section-label");
+            const clientBox = container.querySelector("#client-section-box");
             if (!quick || !orderBox) return;
             if (reviewMode) {
                 const compLabel = Array.from(container.querySelectorAll(".section-label"))
@@ -164,14 +166,16 @@
                 quick.classList.remove("quick-summary-collapsed");
                 quick.style.maxHeight = quick.scrollHeight + "px";
                 Array.from(container.children).forEach(el => {
-                    if (el !== quick) el.style.display = "none";
+                    if (el !== quick && el !== clientLabel && el !== clientBox) el.style.display = "none";
                 });
+                if (clientLabel && clientBox) { clientLabel.style.display = ""; clientBox.style.display = ""; }
                 if (issueBox) issueBox.style.display = "none";
             } else {
                 if (issueBox) issueBox.style.display = "";
                 orderBox.querySelectorAll('[data-review-merged="1"]').forEach(el => el.remove());
                 if (quick.parentElement !== container) container.prepend(quick);
                 showFullDetails();
+                if (clientLabel && clientBox) { clientLabel.style.display = "none"; clientBox.style.display = "none"; }
             }
         }
 
@@ -823,6 +827,11 @@
         chrome.storage.onChanged.addListener((changes, area) => {
             if (area === 'local' && changes.sidebarDb && document.getElementById('db-summary-section')) {
                 loadDbSummary();
+            }
+            if (area === 'local' && changes.fennecReviewMode) {
+                reviewMode = changes.fennecReviewMode.newValue;
+                sessionStorage.setItem("fennecReviewMode", reviewMode ? "true" : "false");
+                applyReviewMode();
             }
         });
 

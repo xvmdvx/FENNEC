@@ -43,6 +43,7 @@
                 body.innerHTML = sidebarDb.join('');
                 if (typeof initQuickSummary === 'function') initQuickSummary();
                 attachCommonListeners(body);
+                updateReviewDisplay();
             } else {
                 body.innerHTML = '<div style="text-align:center; color:#aaa; margin-top:40px">No DB data.</div>';
             }
@@ -531,6 +532,17 @@
         return text;
     }
 
+    function updateReviewDisplay() {
+        const label = document.getElementById('review-mode-label');
+        if (label) label.style.display = reviewMode ? 'block' : 'none';
+        const cLabel = document.getElementById('client-section-label');
+        const cBox = document.getElementById('client-section-box');
+        if (cLabel && cBox) {
+            cLabel.style.display = reviewMode ? '' : 'none';
+            cBox.style.display = reviewMode ? '' : 'none';
+        }
+    }
+
     chrome.storage.local.get({ extensionEnabled: true, lightMode: false, fennecReviewMode: false }, ({ extensionEnabled, lightMode, fennecReviewMode }) => {
         if (!extensionEnabled) {
             console.log('[FENNEC] Extension disabled, skipping DB launcher.');
@@ -587,8 +599,7 @@
                         </div>
                     `;
                     document.body.appendChild(sidebar);
-                    const reviewLabel = sidebar.querySelector('#review-mode-label');
-                    if (reviewLabel) reviewLabel.style.display = reviewMode ? 'block' : 'none';
+                    updateReviewDisplay();
                     const closeBtn = sidebar.querySelector('#copilot-close');
                     if (closeBtn) {
                         closeBtn.onclick = () => {
@@ -647,7 +658,9 @@
                         const qaMenu = document.createElement('div');
                         qaMenu.id = 'quick-actions-menu';
                         qaMenu.style.display = 'none';
-                        qaMenu.innerHTML = '<div class="qa-title">QUICK ACTIONS</div><ul><li id="qa-emails">Emails</li><li id="qa-cancel">Cancel</li></ul>';
+                        qaMenu.innerHTML = '<div class="qa-title">QUICK ACTIONS</div>' +
+                            '<ul><li id="qa-emails">Emails</li><li id="qa-cancel">Cancel</li>' +
+                            '<li><label><input type="checkbox" id="review-mode-toggle"> Review Mode</label></li></ul>';
                         document.body.appendChild(qaMenu);
 
                         function showMenu() {
@@ -704,6 +717,16 @@
                                 chrome.runtime.sendMessage({ action: 'openActiveTab', url });
                             }
                         });
+
+                        const reviewToggle = qaMenu.querySelector('#review-mode-toggle');
+                        if (reviewToggle) {
+                            reviewToggle.checked = reviewMode;
+                            reviewToggle.addEventListener('change', () => {
+                                reviewMode = reviewToggle.checked;
+                                chrome.storage.local.set({ fennecReviewMode: reviewMode });
+                                updateReviewDisplay();
+                            });
+                        }
 
                         qaMenu.querySelector('#qa-cancel').addEventListener('click', () => {
                             hideMenu();
@@ -1448,8 +1471,8 @@
             if (client.orders) lines.push(`<div>Orders: ${renderCopy(client.orders)}</div>`);
             if (client.ltv) lines.push(`<div>LTV: ${renderCopy(client.ltv)}</div>`);
             const clientSection = `
-            <div class="section-label">CLIENT:</div>
-            <div class="white-box" style="margin-bottom:10px">
+            <div id="client-section-label" class="section-label">CLIENT:</div>
+            <div id="client-section-box" class="white-box" style="margin-bottom:10px">
                 ${lines.join('')}
             </div>`;
             html += clientSection;
@@ -1627,6 +1650,7 @@
             body.innerHTML = html;
             if (typeof initQuickSummary === 'function') initQuickSummary();
             attachCommonListeners(body);
+            updateReviewDisplay();
         }
     }
 
@@ -1933,8 +1957,7 @@
 chrome.storage.onChanged.addListener((changes, area) => {
     if (area === 'local' && changes.fennecReviewMode) {
         reviewMode = changes.fennecReviewMode.newValue;
-        const label = document.getElementById('review-mode-label');
-        if (label) label.style.display = reviewMode ? 'block' : 'none';
+        updateReviewDisplay();
     }
 });
 })();
