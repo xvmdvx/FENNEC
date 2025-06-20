@@ -1,4 +1,4 @@
-# FENNEC (v0.2)
+# FENNEC (v0.3)
 
 FENNEC is a small Chrome extension that injects a "copilot" style sidebar into
 Gmail and the internal DB interface. It helps open related tabs and shows order
@@ -230,3 +230,4 @@ Reload the extension after editing the manifest.
 - Always creates the Family Tree container if missing so the panel toggles
   reliably.
 - Fixed Light Mode tags with black backgrounds showing black text.
+- Version number updated to **v0.3** so the interface matches `manifest.json`.
