@@ -91,6 +91,8 @@ information scraped from the current page.
 - Diagnose cards now display the order number in bold on the first line, followed
   by tags for the status and order type. A red **CANCEL** tag below the issue
   text starts the cancel procedure when clicked.
+- Triple-clicking the family tree icon opens the panel and automatically runs
+  **🩺 DIAGNOSE** once the list of orders loads.
 - The family tree panel now slides open with the same animation as the Quick
   Summary and is positioned directly below it. Status labels are color coded
   (green for **SHIPPED**, **REVIEW** or **PROCESSING**, red for **CANCELED**, purple
