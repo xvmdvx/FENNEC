@@ -65,7 +65,8 @@ information scraped from the current page.
   box merges the Company section and the next box is the **QUICK SUMMARY**. On
   DB pages all sections remain but a small **REVIEW MODE** label shows at the
   bottom. The same toggle is also available in the DB sidebar menu and stays in
-  sync across Gmail and DB.
+  sync across Gmail and DB. Review Mode can also be enabled from the extension
+  popup.
 
 ### DB
 - Displays a sidebar on order detail pages.
