@@ -363,7 +363,8 @@
         }
     }
 
-    chrome.storage.local.get({ extensionEnabled: true, lightMode: false, bentoMode: false, fennecReviewMode: false }, ({ extensionEnabled, lightMode, bentoMode, fennecReviewMode }) => {
+    chrome.storage.sync.get({ fennecReviewMode: false, sidebarWidth: 340 }, ({ fennecReviewMode, sidebarWidth }) => {
+        chrome.storage.local.get({ extensionEnabled: true, lightMode: false, bentoMode: false }, ({ extensionEnabled, lightMode, bentoMode }) => {
         if (!extensionEnabled) {
             console.log('[FENNEC] Extension disabled, skipping DB launcher.');
             return;
@@ -386,7 +387,7 @@
             if (!document.getElementById('copilot-sidebar')) {
                 console.log("[Copilot] Sidebar no encontrado, inyectando en DB...");
 
-                const SIDEBAR_WIDTH = 340;
+                const SIDEBAR_WIDTH = parseInt(sidebarWidth, 10) || 340;
                 document.body.style.transition = 'margin-right 0.2s';
                 document.body.style.marginRight = SIDEBAR_WIDTH + 'px';
 
@@ -1770,7 +1771,7 @@
 }
 
 chrome.storage.onChanged.addListener((changes, area) => {
-    if (area === 'local' && changes.fennecReviewMode) {
+    if (area === 'sync' && changes.fennecReviewMode) {
         reviewMode = changes.fennecReviewMode.newValue;
         updateReviewDisplay();
     }
