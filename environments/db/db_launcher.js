@@ -113,8 +113,18 @@
         const ftIcon = document.getElementById('family-tree-icon');
         if (ftIcon) {
             ftIcon.addEventListener('click', () => {
-                const container = document.getElementById('family-tree-orders');
-                if (!container) return;
+                let container = document.getElementById('family-tree-orders');
+                if (!container) {
+                    const qs = document.getElementById('quick-summary');
+                    if (qs) {
+                        container = document.createElement('div');
+                        container.id = 'family-tree-orders';
+                        container.className = 'ft-collapsed';
+                        qs.insertAdjacentElement('afterend', container);
+                    } else {
+                        return;
+                    }
+                }
 
                 if (container.style.maxHeight && container.style.maxHeight !== '0px') {
                     container.style.maxHeight = '0';
