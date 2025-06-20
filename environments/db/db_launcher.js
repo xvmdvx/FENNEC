@@ -551,11 +551,11 @@
                     sidebar.id = 'copilot-sidebar';
                     sidebar.innerHTML = `
                         <div class="copilot-header">
+                            <span id="qa-toggle" class="quick-actions-toggle">☰</span>
                             <div class="copilot-title">
                                 <img src="${chrome.runtime.getURL('fennec_icon.png')}" class="copilot-icon" alt="FENNEC (v0.2)" />
                                 <span>FENNEC (v0.2)</span>
                             </div>
-                            <span id="qa-toggle" class="quick-actions-toggle">☰</span>
                             <button id="copilot-close">✕</button>
                         </div>
                         <div class="order-summary-header"><span id="family-tree-icon" class="family-tree-icon" style="display:none">🌳</span> ORDER SUMMARY <span id="qs-toggle" class="quick-summary-toggle">⚡</span></div>
