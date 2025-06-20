@@ -79,8 +79,96 @@
             }
         }
 
+        function setupReviewMenu(button) {
+            if (!button) return;
+            const menu = document.createElement("div");
+            menu.id = "review-menu";
+            menu.style.display = "none";
+            menu.innerHTML = '<label><input type="checkbox" id="review-mode-toggle"> Review Mode</label>';
+            document.body.appendChild(menu);
+
+            const toggle = menu.querySelector("#review-mode-toggle");
+            toggle.checked = reviewMode;
+            toggle.addEventListener("change", () => {
+                reviewMode = toggle.checked;
+                sessionStorage.setItem("fennecReviewMode", reviewMode ? "true" : "false");
+                applyReviewMode();
+            });
+
+            function showMenu() {
+                menu.style.display = "block";
+                requestAnimationFrame(() => menu.classList.add("show"));
+            }
+
+            function hideMenu() {
+                menu.classList.remove("show");
+                menu.addEventListener("transitionend", function h() {
+                    menu.style.display = "none";
+                    menu.removeEventListener("transitionend", h);
+                }, { once: true });
+            }
+
+            button.addEventListener("click", (e) => {
+                e.stopPropagation();
+                if (menu.style.display === "block") {
+                    hideMenu();
+                } else {
+                    showMenu();
+                    const rect = button.getBoundingClientRect();
+                    const menuWidth = menu.offsetWidth;
+                    let left = rect.left - menuWidth + rect.width;
+                    if (left < 0) left = 0;
+                    if (left + menuWidth > window.innerWidth) {
+                        left = window.innerWidth - menuWidth;
+                    }
+                    menu.style.top = rect.bottom + "px";
+                    menu.style.left = left + "px";
+                }
+            });
+
+            document.addEventListener("click", (e) => {
+                if (!menu.contains(e.target) && e.target !== button && menu.style.display === "block") {
+                    hideMenu();
+                }
+            });
+        }
+
+        function showFullDetails() {
+            const container = document.getElementById("db-summary-section");
+            if (!container) return;
+            Array.from(container.children).forEach(el => el.style.display = "");
+            const btn = document.getElementById("review-details-btn");
+            if (btn) btn.remove();
+        }
+
+        function updateDetailVisibility() {
+            const container = document.getElementById("db-summary-section");
+            if (!container) return;
+            const quick = container.querySelector("#quick-summary");
+            if (!quick) return;
+            if (reviewMode) {
+                quick.classList.remove("quick-summary-collapsed");
+                quick.style.maxHeight = quick.scrollHeight + "px";
+                Array.from(container.children).forEach(el => {
+                    if (el !== quick) el.style.display = "none";
+                });
+                if (!document.getElementById("review-details-btn")) {
+                    const btn = document.createElement("button");
+                    btn.id = "review-details-btn";
+                    btn.textContent = "Details";
+                    btn.className = "copilot-button";
+                    btn.addEventListener("click", showFullDetails);
+                    quick.insertAdjacentElement("afterend", btn);
+                }
+            } else {
+                showFullDetails();
+            }
+        }
+
         function applyReviewMode() {
             const wrapper = document.getElementById("xray-wrapper");
+            const toggle = document.getElementById("review-mode-toggle");
+            if (toggle) toggle.checked = reviewMode;
             if (reviewMode) {
                 if (!wrapper) {
                     const div = document.createElement("div");
@@ -95,11 +183,12 @@
             } else if (wrapper) {
                 wrapper.remove();
             }
+            updateDetailVisibility();
         }
 
         function toggleReviewMode() {
             reviewMode = !reviewMode;
-            sessionStorage.setItem('fennecReviewMode', reviewMode ? 'true' : 'false');
+            sessionStorage.setItem("fennecReviewMode", reviewMode ? "true" : "false");
             applyReviewMode();
         }
 
@@ -533,11 +622,12 @@
             if (!container) return;
             chrome.storage.local.get({ sidebarDb: [], sidebarOrderId: null }, ({ sidebarDb, sidebarOrderId }) => {
                 if (Array.isArray(sidebarDb) && sidebarDb.length && (!expectedId || sidebarOrderId === expectedId)) {
-                    container.innerHTML = sidebarDb.join('');
+                    container.innerHTML = sidebarDb.join("");
                     attachCommonListeners(container);
                 } else {
                     container.innerHTML = '<div style="text-align:center; color:#aaa; font-size:13px;">No DB data.</div>';
                 }
+                updateDetailVisibility();
             });
         }
 
@@ -683,7 +773,7 @@
             // Botón EMAIL SEARCH (listener UNIFICADO)
             document.getElementById("btn-email-search").onclick = handleEmailSearchClick;
             document.getElementById("copilot-refresh").onclick = refreshSidebar;
-            document.getElementById("copilot-menu").onclick = toggleReviewMode;
+            setupReviewMenu(document.getElementById("copilot-menu"));
             setupOpenOrderButton();
             applyReviewMode();
         }
