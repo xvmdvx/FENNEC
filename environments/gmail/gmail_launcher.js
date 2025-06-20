@@ -182,18 +182,19 @@
         function applyReviewMode() {
             const toggle = document.getElementById("review-mode-toggle");
             if (toggle) toggle.checked = reviewMode;
-            const xrayRow = document.querySelector("#copilot-sidebar .copilot-xray");
-            const xrayBtn = document.getElementById("btn-xray");
+            const dnaRow = document.querySelector("#copilot-sidebar .copilot-dna");
+            const dnaBtn = document.getElementById("btn-dna");
             if (reviewMode) {
-                if (xrayRow && !xrayBtn) {
+                if (dnaRow && !dnaBtn) {
                     const btn = document.createElement("button");
-                    btn.id = "btn-xray";
+                    btn.id = "btn-dna";
                     btn.className = "copilot-button";
-                    btn.textContent = "🩻 XRAY";
-                    xrayRow.appendChild(btn);
+                    btn.textContent = "🧬 DNA";
+                    dnaRow.appendChild(btn);
+                    setupDnaButton();
                 }
-            } else if (xrayBtn) {
-                xrayBtn.remove();
+            } else if (dnaBtn) {
+                dnaBtn.remove();
                 refreshSidebar();
             }
             chrome.storage.local.set({ fennecReviewMode: reviewMode });
@@ -764,7 +765,7 @@
                         <button id="btn-email-search" class="copilot-button">📧 EMAIL SEARCH</button>
                         <button id="btn-open-order" class="copilot-button">📂 OPEN ORDER</button>
                     </div>
-                    <div class="copilot-xray"></div>
+                    <div class="copilot-dna"></div>
                     <div class="order-summary-header">ORDER SUMMARY</div>
                     <div class="order-summary-box">
                         <div id="order-summary-content" style="color:#ccc; font-size:13px;">
@@ -886,10 +887,43 @@
             });
         }
 
+        function setupDnaButton() {
+            const button = document.getElementById("btn-dna");
+            if (!button) return;
+            button.addEventListener("click", function () {
+                try {
+                    const bodyNode = document.querySelector(".a3s");
+                    if (!bodyNode) {
+                        alert("No se encontró el cuerpo del correo.");
+                        return;
+                    }
+
+                    const subjectText = document.querySelector('h2.hP')?.innerText || "";
+                    const text = subjectText + "\n" + (bodyNode.innerText || "");
+                    const orderId = extractOrderNumber(text);
+                    if (!orderId) {
+                        alert("No se encontró ningún número de orden válido en el correo.");
+                        return;
+                    }
+                    const url = `https://ca-live.adyen.com/ca/ca/overview/default.shtml?fennec_order=${orderId}`;
+                    chrome.runtime.sendMessage({ action: "openActiveTab", url });
+                } catch (error) {
+                    console.error("Error al intentar buscar en Adyen:", error);
+                    alert("Ocurrió un error al intentar buscar en Adyen.");
+                }
+            });
+        }
+
         waitForElement("#btn-open-order").then(() => {
             setupOpenOrderButton();
         }).catch((err) => {
             console.warn("[OPEN ORDER] No se pudo inyectar el listener:", err);
+        });
+
+        waitForElement("#btn-dna").then(() => {
+            setupDnaButton();
+        }).catch((err) => {
+            console.warn("[DNA] No se pudo inyectar el listener:", err);
         });
 
     } catch (e) {
