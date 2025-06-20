@@ -11,8 +11,11 @@ information scraped from the current page.
 3. Enable **Developer mode** (toggle in the top right).
 4. Click **Load unpacked** and select the project folder. The sidebar will then
    be available when visiting supported pages.
+5. Use the extension popup to enable **Light Mode** for a minimalist black and white style.
 
 ## Sidebar features
+
+- Optional **Light Mode** turns the sidebar black on white for a minimalist look.
 
 ### Gmail
 - Adds a sidebar with **EMAIL SEARCH** and **OPEN ORDER** buttons.
