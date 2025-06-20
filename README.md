@@ -133,9 +133,10 @@ information scraped from the current page.
 - Order type detection now recognizes Business Formation packages, Foreign
   Qualification, Amendments, Registered Agent Change and Annual Report (including
   alternate names like Business Entity Report, Biennial Report or Renewal).
-- Host permissions for every SOS search site are included so the query can be
-  injected automatically when those pages open.
-- Updated the West Virginia SOS link and host permission so searches work again.
+- La búsqueda en los sitios SOS usa el permiso **activeTab**. Chrome
+  solicitará acceso al dominio la primera vez que abras una de estas páginas
+  y luego completará el formulario automáticamente.
+- Updated the West Virginia SOS link so searches work again.
 - Amendment summaries now include an **Amendment Details** section. Addresses in
   this area are clickable with a USPS lookup icon, and names throughout the
   summary now copy to the clipboard when clicked.
