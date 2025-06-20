@@ -11,11 +11,11 @@ information scraped from the current page.
 3. Enable **Developer mode** (toggle in the top right).
 4. Click **Load unpacked** and select the project folder. The sidebar will then
    be available when visiting supported pages.
-5. Use the extension popup to enable **Light Mode** for a minimalist black and white style. All text appears in black with medium gray borders for clarity.
+5. Use the extension popup to enable **Light Mode** for a minimalist black and white style. Summary text is solid black with medium gray borders, the header shows white text on a black bar and the Fennec icon appears inverted.
 
 ## Sidebar features
 
-- Optional **Light Mode** turns the sidebar black on white for a minimalist look, with darker text and medium gray borders.
+- Optional **Light Mode** turns the sidebar black on white for a minimalist look with darker summary text, a black header with white lettering and a white Fennec icon.
 
 ### Gmail
 - Adds a sidebar with **EMAIL SEARCH** and **OPEN ORDER** buttons.
