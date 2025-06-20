@@ -211,3 +211,5 @@ Reload the extension after editing the manifest.
   pages by reattaching the sidebar listeners.
 - Fixed the **DIAGNOSE** button being cut off when expanding the Family Tree
   panel by accounting for the box margin.
+
+- Fixed the Family Tree panel not showing on first click by updating the max-height after adding the orders.
