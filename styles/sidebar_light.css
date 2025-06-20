@@ -48,11 +48,11 @@
 }
 .fennec-light-mode .issue-status-active {
     background-color: #000;
-    color: #fff;
+    color: #fff !important;
 }
 .fennec-light-mode .issue-status-resolved {
     background-color: #444;
-    color: #fff;
+    color: #fff !important;
 }
 .fennec-light-mode .copilot-copy-icon {
     color: #000;
