@@ -227,3 +227,4 @@ Reload the extension after editing the manifest.
   background tabs in the same window.
 - Always creates the Family Tree container if missing so the panel toggles
   reliably.
+- Fixed Light Mode tags with black backgrounds showing black text.
