@@ -17,6 +17,7 @@
         }
         try {
             const SIDEBAR_WIDTH = 340;
+            let reviewMode = sessionStorage.getItem('fennecReviewMode') === 'true';
 
         function applyPaddingToMainPanels() {
             const candidates = [
@@ -71,6 +72,30 @@
                 !document.getElementById("copilot-sidebar")) {
                 showFloatingIcon();
             }
+        }
+
+        function applyReviewMode() {
+            const wrapper = document.getElementById("xray-wrapper");
+            if (reviewMode) {
+                if (!wrapper) {
+                    const div = document.createElement("div");
+                    div.id = "xray-wrapper";
+                    div.className = "copilot-xray";
+                    div.innerHTML = '<button id="btn-xray" class="copilot-button">🩻 XRAY</button>';
+                    const actions = document.querySelector("#copilot-sidebar .copilot-actions");
+                    if (actions && actions.parentNode) {
+                        actions.insertAdjacentElement("afterend", div);
+                    }
+                }
+            } else if (wrapper) {
+                wrapper.remove();
+            }
+        }
+
+        function toggleReviewMode() {
+            reviewMode = !reviewMode;
+            sessionStorage.setItem('fennecReviewMode', reviewMode ? 'true' : 'false');
+            applyReviewMode();
         }
 
 
@@ -606,6 +631,7 @@
             sidebar.id = 'copilot-sidebar';
             sidebar.innerHTML = `
                 <div class="copilot-header">
+                    <button id="copilot-menu" class="copilot-menu">☰</button>
                     <div class="copilot-title">
                         <img src="${chrome.runtime.getURL('fennec_icon.png')}" class="copilot-icon" alt="FENNEC (v0.2)" />
                         <span>FENNEC (v0.2)</span>
@@ -652,7 +678,9 @@
             // Botón EMAIL SEARCH (listener UNIFICADO)
             document.getElementById("btn-email-search").onclick = handleEmailSearchClick;
             document.getElementById("copilot-refresh").onclick = refreshSidebar;
+            document.getElementById("copilot-menu").onclick = toggleReviewMode;
             setupOpenOrderButton();
+            applyReviewMode();
         }
 
         function injectSidebarIfMissing() {
