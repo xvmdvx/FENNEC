@@ -64,6 +64,10 @@
     margin-top: 8px;
 }
 
+.copilot-xray .copilot-button {
+    width: 100%;
+}
+
 .copilot-button {
     background-color: #005a9c;
     color: white;
