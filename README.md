@@ -61,10 +61,11 @@ information scraped from the current page.
   never exceed the sidebar width, and their default color is a softer black.
 - Review Mode can be enabled from the extension popup. When active a **DNA** button
   appears below **EMAIL SEARCH** and **OPEN ORDER**, opening Adyen with the order
-  number prefilled. The **ORDER SUMMARY** box merges the Company section and the
-  next box is the **QUICK SUMMARY**. On DB pages all sections remain but a small
-  **REVIEW MODE** label shows at the bottom. The mode stays in sync across Gmail
-  and DB.
+  number prefilled. The extension now navigates through the Adyen search results
+  and opens the shopper DNA page automatically. The **ORDER SUMMARY** box merges
+  the Company section and the next box is the **QUICK SUMMARY**. On DB pages all
+  sections remain but a small **REVIEW MODE** label shows at the bottom. The
+  mode stays in sync across Gmail and DB.
 
 ### DB
 - Displays a sidebar on order detail pages.
