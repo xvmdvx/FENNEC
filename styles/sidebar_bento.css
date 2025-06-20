@@ -1,0 +1,33 @@
+/* Bento grid inspired theme with soft pastel blocks */
+.fennec-bento-mode #copilot-sidebar {
+    background: #f8f8f8;
+    color: #222;
+}
+.fennec-bento-mode .copilot-header {
+    background: #ffe4b5;
+    color: #000;
+    border-bottom: 1px solid #ddd;
+}
+.fennec-bento-mode .copilot-button {
+    background-color: #ffd1dc;
+    color: #000;
+    border: 1px solid #ccc;
+}
+.fennec-bento-mode .copilot-body {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+}
+.fennec-bento-mode .copilot-body > * {
+    grid-column: span 2;
+}
+.fennec-bento-mode .order-summary-box,
+.fennec-bento-mode .intel-summary-box,
+.fennec-bento-mode .issue-summary-box,
+.fennec-bento-mode #copilot-sidebar .white-box {
+    background: #fff;
+    border: 1px solid #ddd;
+    color: #222;
+    border-radius: 8px;
+    padding: 8px;
+}
