@@ -53,6 +53,8 @@ information scraped from the current page.
   been removed.
 - The **EMAIL SEARCH** and **OPEN ORDER** buttons are now smaller so they
   never exceed the sidebar width, and their default color is a softer black.
+- A new hamburger icon in the header toggles **Review Mode**. When enabled the
+  sidebar shows an extra **XRAY** button centered below **OPEN ORDER**.
 
 ### DB
 - Displays a sidebar on order detail pages.
