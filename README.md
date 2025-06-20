@@ -233,3 +233,4 @@ Reload the extension after editing the manifest.
   reliably.
 - Fixed Light Mode tags with black backgrounds showing black text.
 - Version number updated to **v0.3** so the interface matches `manifest.json`.
+- Fixed Review Mode toggle so Gmail and DB pages stay synchronized.

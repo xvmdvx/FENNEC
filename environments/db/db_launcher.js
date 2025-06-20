@@ -7,6 +7,8 @@
     let currentOrderType = null;
     let currentOrderTypeText = null;
     let initQuickSummary = null;
+    // Tracks whether Review Mode is active across DB pages
+    let reviewMode = false;
 
     function showFloatingIcon() {
         if (document.getElementById("fennec-floating-icon")) return;
@@ -554,7 +556,7 @@
             document.body.classList.remove('fennec-light-mode');
         }
 
-        let reviewMode = fennecReviewMode;
+        reviewMode = fennecReviewMode;
         try {
         function initSidebar() {
             if (sessionStorage.getItem("fennecSidebarClosed") === "true") { showFloatingIcon(); return; }
