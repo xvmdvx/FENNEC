@@ -33,6 +33,8 @@
             const SIDEBAR_WIDTH = parseInt(sidebarWidth, 10) || 340;
             let reviewMode = sessionStorage.getItem('fennecReviewMode');
             reviewMode = reviewMode === null ? fennecReviewMode : reviewMode === 'true';
+            let currentContext = null;
+            let storedOrderInfo = null;
 
         function applyPaddingToMainPanels() {
             const candidates = [
@@ -437,15 +439,29 @@
             const summaryBox = document.getElementById('order-summary-content');
             if (!summaryBox) return;
             const email = context?.email ? context.email.toLowerCase() : null;
-            const orderId = context?.orderNumber || '';
+            const name = context?.name || '';
+            const orderId = context?.orderNumber || (storedOrderInfo && storedOrderInfo.orderId) || '';
             const url = orderId ? `https://db.incfile.com/incfile/order/detail/${orderId}` : '#';
-            summaryBox.innerHTML = `
-                <div style="text-align:center" id="order-summary-link" data-url="${url}">
-                    ${renderCopy(orderId)}<br>
-                    ${renderCopy(email)}<br>
-                    ${renderCopy(context?.name)}
-                </div>
-            `;
+
+            let html = `<div id="order-summary-link" data-url="${url}" style="text-align:center">`;
+            if (orderId) html += `<b>${renderCopy(orderId)} ${renderCopyIcon(orderId)}</b>`;
+            if (reviewMode && storedOrderInfo) {
+                if (storedOrderInfo.type) html += `<div>${escapeHtml(storedOrderInfo.type)}</div>`;
+                if (storedOrderInfo.expedited) html += `<div><span class="copilot-tag">Expedited</span></div>`;
+            }
+            if (name && email && name.toLowerCase() !== email.toLowerCase()) {
+                html += `<div>${renderCopy(name)}</div><div>${renderCopy(email)}</div>`;
+            } else if (name || email) {
+                html += `<div>${renderCopy(name || email)}</div>`;
+            }
+            if (reviewMode && storedOrderInfo) {
+                html += '<hr style="border:none;border-top:1px solid #eee;margin:6px 0"/>';
+                if (storedOrderInfo.companyName) html += `<div><b>${renderCopy(storedOrderInfo.companyName)}</b></div>`;
+                if (storedOrderInfo.companyId) html += `<div>${renderCopy(storedOrderInfo.companyId)}</div>`;
+                if (storedOrderInfo.companyState) html += `<div>${renderCopy(storedOrderInfo.companyState)}</div>`;
+            }
+            html += '</div>';
+            summaryBox.innerHTML = html;
             const link = summaryBox.querySelector('#order-summary-link');
             if (link && orderId) {
                 link.addEventListener('click', (e) => {
@@ -537,12 +553,15 @@
         function loadDbSummary(expectedId) {
             const container = document.getElementById('db-summary-section');
             if (!container) return;
-            chrome.storage.local.get({ sidebarDb: [], sidebarOrderId: null }, ({ sidebarDb, sidebarOrderId }) => {
+            chrome.storage.local.get({ sidebarDb: [], sidebarOrderId: null, sidebarOrderInfo: null }, ({ sidebarDb, sidebarOrderId, sidebarOrderInfo }) => {
                 if (Array.isArray(sidebarDb) && sidebarDb.length && (!expectedId || sidebarOrderId === expectedId)) {
                     container.innerHTML = sidebarDb.join("");
                     attachCommonListeners(container);
+                    storedOrderInfo = sidebarOrderInfo;
+                    fillOrderSummaryBox(currentContext);
                 } else {
                     container.innerHTML = '<div style="text-align:center; color:#aaa; font-size:13px;">No DB data.</div>';
+                    storedOrderInfo = null;
                 }
                 updateDetailVisibility();
             });
@@ -593,6 +612,7 @@
 
         function refreshSidebar() {
             const ctx = extractOrderContextFromEmail();
+            currentContext = ctx;
             fillOrderSummaryBox(ctx);
             loadDbSummary(ctx && ctx.orderNumber);
             if (ctx && ctx.orderNumber) checkLastIssue(ctx.orderNumber);
@@ -600,6 +620,7 @@
 
         function handleEmailSearchClick() {
             const context = extractOrderContextFromEmail();
+            currentContext = context;
             fillOrderSummaryBox(context);
             loadDbSummary(context && context.orderNumber);
 
