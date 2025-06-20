@@ -1,4 +1,4 @@
-
+// Background worker handling tab management and other extension messages
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if (message.action === "openTab" && message.url) {
         console.log("[Copilot] Forzando apertura de una pestaña:", message.url);
@@ -47,7 +47,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         chrome.tabs.query({ windowId: sender.tab.windowId }, (tabs) => {
             const isDbOrGmail = (tab) =>
                 tab.url &&
-                (tab.url.includes('mail.google.com') || tab.url.includes('db.incfile.com'));
+                (tab.url.includes("mail.google.com") || tab.url.includes("db.incfile.com"));
 
             const toClose = tabs
                 .filter(t => t.id !== sender.tab.id && isDbOrGmail(t))
@@ -331,30 +331,30 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
                 chrome.scripting.executeScript({
                     target: { tabId },
                     func: (q, type) => {
-                        const patterns = type === 'id'
-                            ? ['id', 'number', 'document', 'control']
-                            : ['name', 'business', 'entity'];
+                        const patterns = type === "id"
+                            ? ["id", "number", "document", "control"]
+                            : ["name", "business", "entity"];
                         let attempts = 10;
                         const run = () => {
-                            const inputs = Array.from(document.querySelectorAll('input,textarea'));
+                            const inputs = Array.from(document.querySelectorAll("input,textarea"));
                             const field = inputs.find(i => {
-                                const attrs = (i.name || '') + ' ' + (i.id || '') + ' ' + (i.placeholder || '') + ' ' + (i.getAttribute('aria-label') || '');
+                                const attrs = (i.name || "") + " " + (i.id || "") + " " + (i.placeholder || "") + " " + (i.getAttribute("aria-label") || "");
                                 const txt = attrs.toLowerCase();
                                 return patterns.some(p => txt.includes(p));
                             });
                             if (field) {
                                 field.focus();
                                 field.value = q;
-                                field.dispatchEvent(new Event('input', { bubbles: true }));
+                                field.dispatchEvent(new Event("input", { bubbles: true }));
                                 const form = field.form;
-                                const btn = form ? form.querySelector('button[type="submit"],input[type="submit"]') : null;
+                                const btn = form ? form.querySelector("button[type="submit"],input[type="submit"]") : null;
                                 if (btn) {
                                     btn.click();
                                 } else if (form) {
                                     form.submit();
                                 } else {
-                                    field.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
-                                    field.dispatchEvent(new KeyboardEvent('keyup', { key: 'Enter', bubbles: true }));
+                                    field.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", bubbles: true }));
+                                    field.dispatchEvent(new KeyboardEvent("keyup", { key: "Enter", bubbles: true }));
                                 }
                             } else if (attempts-- > 0) {
                                 setTimeout(run, 500);
@@ -366,7 +366,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
                 });
             };
             const listener = (tabId, info) => {
-                if (tabId === tab.id && info.status === 'complete') {
+                if (tabId === tab.id && info.status === "complete") {
                     chrome.tabs.onUpdated.removeListener(listener);
                     inject(tabId);
                 }
@@ -390,14 +390,14 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
                     target: { tabId },
                     func: (state, type) => {
                         function clickExact(txt) {
-                            const nodes = Array.from(document.querySelectorAll('a,button,span,div'));
+                            const nodes = Array.from(document.querySelectorAll("a,button,span,div"));
                             const target = nodes.find(n => n.textContent && n.textContent.trim().toLowerCase() === txt.toLowerCase());
                             if (target) { target.click(); return true; }
                             return false;
                         }
 
                         function clickStateAnchor(stateName) {
-                            const slug = stateName.replace(/\s+/g, '-');
+                            const slug = stateName.replace(/\s+/g, "-");
                             const sel = `a[href*='/${slug}_']`;
                             const el = document.querySelector(sel);
                             if (el) { el.click(); return true; }
@@ -426,7 +426,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
                 });
             };
             const listener = (tabId, info) => {
-                if (tabId === tab.id && info.status === 'complete') {
+                if (tabId === tab.id && info.status === "complete") {
                     chrome.tabs.onUpdated.removeListener(listener);
                     inject(tabId);
                 }
