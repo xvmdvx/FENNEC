@@ -495,11 +495,22 @@
             const summaryBox = document.getElementById('order-summary-content');
             if (!summaryBox) return;
             const email = context?.email ? context.email.toLowerCase() : null;
+            const orderId = context?.orderNumber || '';
+            const url = orderId ? `https://db.incfile.com/incfile/order/detail/${orderId}` : '#';
             summaryBox.innerHTML = `
-                <div><strong>Order:</strong> ${renderCopy(context?.orderNumber)}</div>
-                <div><strong>Email:</strong> ${renderCopy(email)}</div>
-                <div><strong>Name:</strong> ${renderCopy(context?.name)}</div>
+                <div style="text-align:center" id="order-summary-link" data-url="${url}">
+                    ${renderCopy(orderId)}<br>
+                    ${renderCopy(email)}<br>
+                    ${renderCopy(context?.name)}
+                </div>
             `;
+            const link = summaryBox.querySelector('#order-summary-link');
+            if (link && orderId) {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    chrome.runtime.sendMessage({ action: 'openActiveTab', url });
+                });
+            }
             attachCommonListeners(summaryBox);
             console.log("[FENNEC] Order Summary rellenado:", context);
             if (context?.details) {

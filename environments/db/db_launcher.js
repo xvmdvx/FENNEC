@@ -1422,15 +1422,7 @@
         if (addrEntries.length) {
             if (summaryParts.length) summaryParts.push('<hr style="border:none;border-top:1px solid #eee;margin:6px 0"/>');
             summaryParts.push(...addrEntries);
-            summaryParts.push('<hr style="border:none;border-top:1px solid #eee;margin:6px 0"/>');
         }
-        const raClass = hasRA ? 'copilot-tag copilot-tag-green' : 'copilot-tag copilot-tag-purple';
-        const vaClass = hasVA ? 'copilot-tag copilot-tag-green' : 'copilot-tag copilot-tag-purple';
-        summaryParts.push(`
-            <div>
-                <span class="${raClass}">RA: ${hasRA ? 'Sí' : 'No'}</span>
-                <span class="${vaClass}">VA: ${hasVA ? 'Sí' : 'No'}</span>
-            </div>`);
 
         const quickSection = `
             <div class="white-box quick-summary-content" id="quick-summary" style="margin-bottom:10px">
@@ -1439,6 +1431,23 @@
         `;
         html += quickSection;
         dbSections.push(quickSection);
+
+        const client = getClientInfo();
+        if (client && (client.id || client.name || client.email)) {
+            const lines = [];
+            if (client.id) lines.push(`<div><b>${renderCopy(client.id)}</b></div>`);
+            if (client.name) lines.push(`<div>${renderCopy(client.name)}</div>`);
+            if (client.email) lines.push(`<div>${renderCopy(client.email)}</div>`);
+            if (client.orders) lines.push(`<div>Orders: ${renderCopy(client.orders)}</div>`);
+            if (client.ltv) lines.push(`<div>LTV: ${renderCopy(client.ltv)}</div>`);
+            const clientSection = `
+            <div class="section-label">CLIENT:</div>
+            <div class="white-box" style="margin-bottom:10px">
+                ${lines.join('')}
+            </div>`;
+            html += clientSection;
+            dbSections.push(clientSection);
+        }
 
         if (currentOrderType !== 'formation') {
             html += `<div id="family-tree-orders" class="ft-collapsed"></div>`;
@@ -1768,6 +1777,10 @@
         if (tab) {
             const row = tab.querySelector('table tbody tr');
             if (row) {
+                const cells = row.querySelectorAll('td');
+                const id = cells[0] ? getText(cells[0]).trim() : '';
+                const orders = cells[1] ? getText(cells[1]).trim() : '';
+                const ltv = cells[2] ? getText(cells[2]).trim() : '';
                 const nameCell = row.querySelector('td[id^="clientName"]');
                 const contactCell = row.querySelector('td[id^="clientContact"]');
                 const name = nameCell ? getText(nameCell).replace(/^\s*✓?\s*/, '') : '';
@@ -1776,7 +1789,7 @@
                     const match = getText(contactCell).match(/[\w.+-]+@[\w.-]+/);
                     if (match) email = match[0];
                 }
-                return { name, email };
+                return { id, orders, ltv, name, email };
             }
         }
         const contactHeader = Array.from(document.querySelectorAll('h3.box-title'))
@@ -1790,10 +1803,10 @@
                     .find(l => getText(l).toLowerCase().startsWith('email'));
                 const name = nameLabel ? getText(nameLabel.parentElement.querySelector('.form-control-static')) : '';
                 const email = emailLabel ? getText(emailLabel.parentElement.querySelector('.form-control-static')) : '';
-                return { name, email };
+                return { id: '', orders: '', ltv: '', name, email };
             }
         }
-        return { name: '', email: '' };
+        return { id: '', orders: '', ltv: '', name: '', email: '' };
     }
 
     function diagnoseHoldOrders(orders) {
