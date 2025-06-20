@@ -179,7 +179,8 @@
                     container.innerHTML = '';
                     container.appendChild(box);
                     container.dataset.loaded = 'true';
-                    container.style.maxHeight = container.scrollHeight + 'px';
+                    const extra = parseInt(box.style.marginBottom) || 0;
+                    container.style.maxHeight = (container.scrollHeight + extra) + 'px';
                     container.classList.remove('ft-collapsed');
 
                     container.querySelectorAll('.ft-link').forEach(a => {
