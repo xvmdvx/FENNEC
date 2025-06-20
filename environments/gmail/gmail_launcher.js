@@ -10,7 +10,7 @@
             window.location.reload();
         }
     });
-    chrome.storage.local.get({ extensionEnabled: true, lightMode: false, fennecReviewMode: false }, ({ extensionEnabled, lightMode, fennecReviewMode }) => {
+    chrome.storage.local.get({ extensionEnabled: true, lightMode: false, bentoMode: false, fennecReviewMode: false }, ({ extensionEnabled, lightMode, bentoMode, fennecReviewMode }) => {
         if (!extensionEnabled) {
             console.log('[FENNEC] Extension disabled, skipping Gmail launcher.');
             return;
@@ -19,6 +19,11 @@
             document.body.classList.add('fennec-light-mode');
         } else {
             document.body.classList.remove('fennec-light-mode');
+        }
+        if (bentoMode) {
+            document.body.classList.add('fennec-bento-mode');
+        } else {
+            document.body.classList.remove('fennec-bento-mode');
         }
         try {
             const SIDEBAR_WIDTH = 340;

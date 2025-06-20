@@ -12,11 +12,13 @@ information scraped from the current page.
 4. Click **Load unpacked** and select the project folder. The sidebar will then
    be available when visiting supported pages.
 5. Use the extension popup to enable **Light Mode** for a minimalist black and white style. Summary text is solid black with medium gray borders, the header shows white text on a black bar and the Fennec icon appears inverted.
+6. Enable **Bento Mode** from the popup to arrange the sidebar content in a colorful grid layout.
 
 ## Sidebar features
 
 - Optional **Light Mode** turns the sidebar black on white for a minimalist look with darker summary text, a black header with white lettering and a white Fennec icon.
-- In this mode the header and tags now always display white text so they remain readable against the black background.
+- In Light Mode the header and tags always display white text so they remain readable against the black background.
+- **Bento Mode** arranges the summary boxes in a two-column grid with soft pastel colors.
 
 ### Gmail
 - Adds a sidebar with **EMAIL SEARCH** and **OPEN ORDER** buttons.
