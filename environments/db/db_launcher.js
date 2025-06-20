@@ -48,6 +48,15 @@
             }
         });
     }
+    function escapeHtml(text) {
+        return text
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/\"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+    }
+
 
     function attachCommonListeners(rootEl) {
         if (!rootEl) return;
@@ -742,14 +751,6 @@
         return base + sep + 'q=' + encodeURIComponent(query);
     }
 
-    function escapeHtml(text) {
-        return text
-            .replace(/&/g, "&amp;")
-            .replace(/</g, "&lt;")
-            .replace(/>/g, "&gt;")
-            .replace(/\"/g, "&quot;")
-            .replace(/'/g, "&#039;");
-    }
 
     function isValidField(text) {
         if (!text) return false;
