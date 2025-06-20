@@ -3,7 +3,7 @@
 (function persistentSidebar() {
     // Clear the closed flag on full reloads so the sidebar returns
     window.addEventListener('beforeunload', () => {
-        sessionStorage.removeItem('copilotSidebarClosed');
+        sessionStorage.removeItem("fennecSidebarClosed");
     });
     chrome.runtime.onMessage.addListener((msg) => {
         if (msg.action === 'fennecToggle') {
@@ -64,7 +64,7 @@
             icon.alt = "FENNEC";
             icon.addEventListener("click", () => {
                 icon.remove();
-                sessionStorage.removeItem("copilotSidebarClosed");
+                sessionStorage.removeItem("fennecSidebarClosed");
                 const panels = applyPaddingToMainPanels();
                 injectSidebar(panels);
                 refreshSidebar();
@@ -73,7 +73,7 @@
         }
 
         function ensureFloatingIcon() {
-            if (sessionStorage.getItem("copilotSidebarClosed") === "true" &&
+            if (sessionStorage.getItem("fennecSidebarClosed") === "true" &&
                 !document.getElementById("fennec-floating-icon") &&
                 !document.getElementById("copilot-sidebar")) {
                 showFloatingIcon();
@@ -788,7 +788,7 @@
                 sidebar.remove();
                 // Limpiar el margin aplicado a los paneles
                 mainPanels.forEach(el => el.style.marginRight = '');
-                sessionStorage.setItem('copilotSidebarClosed', 'true');
+                sessionStorage.setItem("fennecSidebarClosed", "true");
                 showFloatingIcon();
                 console.log("[Copilot] Sidebar cerrado manualmente en Gmail.");
             };
@@ -802,7 +802,7 @@
         }
 
         function injectSidebarIfMissing() {
-            if (sessionStorage.getItem("copilotSidebarClosed") === "true") { ensureFloatingIcon(); return; }
+            if (sessionStorage.getItem("fennecSidebarClosed") === "true") { ensureFloatingIcon(); return; }
             if (!document.getElementById('copilot-sidebar')) {
                 console.log("[Copilot] Sidebar no encontrado, inyectando en Gmail...");
                 const mainPanels = applyPaddingToMainPanels();
