@@ -1765,19 +1765,6 @@
     }
 
     function diagnoseHoldOrders(orders) {
-        const promises = orders.map(o => new Promise(res => {
-            chrome.runtime.sendMessage({ action: 'fetchLastIssue', orderId: o.orderId }, resp => {
-                if (resp && resp.issueInfo) {
-                    res({ order: o, issue: resp.issueInfo.text, active: resp.issueInfo.active });
-                } else {
-                    res({ order: o, issue: 'On hold', active: true });
-                }
-            });
-        }));
-        Promise.all(promises).then(showDiagnoseResults);
-    }
-
-    function showDiagnoseResults(results) {
         let overlay = document.getElementById('fennec-diagnose-overlay');
         if (overlay) overlay.remove();
         overlay = document.createElement('div');
@@ -1787,41 +1774,61 @@
         close.textContent = '✕';
         close.addEventListener('click', () => overlay.remove());
         overlay.appendChild(close);
-        results.forEach(r => {
-            const card = document.createElement("div");
-            card.className = "diag-card";
-            const cls =
-                /shipped|review|processing/i.test(r.order.status) ? "copilot-tag copilot-tag-green" :
-                /canceled/i.test(r.order.status) ? "copilot-tag copilot-tag-red" :
-                /hold/i.test(r.order.status) ? "copilot-tag copilot-tag-purple" : "copilot-tag";
+        const loading = document.createElement('div');
+        loading.className = 'diag-loading';
+        loading.textContent = 'Gathering order info...';
+        overlay.appendChild(loading);
+        document.body.appendChild(overlay);
 
-            const line = document.createElement("div");
-            const link = document.createElement("a");
+        const addCard = (r) => {
+            const card = document.createElement('div');
+            card.className = 'diag-card';
+            const cls =
+                /shipped|review|processing/i.test(r.order.status) ? 'copilot-tag copilot-tag-green' :
+                /canceled/i.test(r.order.status) ? 'copilot-tag copilot-tag-red' :
+                /hold/i.test(r.order.status) ? 'copilot-tag copilot-tag-purple' : 'copilot-tag';
+
+            const line = document.createElement('div');
+            const link = document.createElement('a');
             link.href = `${location.origin}/incfile/order/detail/${r.order.orderId}`;
-            link.target = "_blank";
+            link.target = '_blank';
             link.textContent = r.order.orderId;
             line.appendChild(link);
-            const typeSpan = document.createElement("span");
-            typeSpan.className = "ft-type";
+            const typeSpan = document.createElement('span');
+            typeSpan.className = 'ft-type';
             typeSpan.textContent = ` (${r.order.type.toUpperCase()})`;
             line.appendChild(typeSpan);
             card.appendChild(line);
 
-            const statusDiv = document.createElement("div");
-            const statusSpan = document.createElement("span");
+            const statusDiv = document.createElement('div');
+            const statusSpan = document.createElement('span');
             statusSpan.className = cls;
             statusSpan.textContent = r.order.status;
             statusDiv.appendChild(statusSpan);
             card.appendChild(statusDiv);
 
-            const issueDiv = document.createElement("div");
-            issueDiv.className = "diag-issue";
+            const issueDiv = document.createElement('div');
+            issueDiv.className = 'diag-issue';
             issueDiv.textContent = r.issue;
             card.appendChild(issueDiv);
 
             overlay.appendChild(card);
-        });
-        document.body.appendChild(overlay);
+        };
+
+        const promises = orders.map(o => new Promise(res => {
+            chrome.runtime.sendMessage({ action: 'fetchLastIssue', orderId: o.orderId }, resp => {
+                const result = resp && resp.issueInfo
+                    ? { order: o, issue: resp.issueInfo.text, active: resp.issueInfo.active }
+                    : { order: o, issue: 'On hold', active: true };
+                addCard(result);
+                res(result);
+            });
+        }));
+        Promise.all(promises).then(() => loading.remove());
+    }
+
+    function showDiagnoseResults() {
+        // legacy function kept for compatibility
     }
 
     function getLastHoldUser() {
