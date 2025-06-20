@@ -2,7 +2,7 @@
 (function main() {
     // Clear the closed flag on reloads so the sidebar reappears
     window.addEventListener('beforeunload', () => {
-        sessionStorage.removeItem('copilotSidebarClosed');
+        sessionStorage.removeItem("fennecSidebarClosed");
     });
     let currentOrderType = null;
     let currentOrderTypeText = null;
@@ -16,14 +16,14 @@
         icon.alt = "FENNEC";
         icon.addEventListener("click", () => {
             icon.remove();
-            sessionStorage.removeItem("copilotSidebarClosed");
+            sessionStorage.removeItem("fennecSidebarClosed");
             initSidebar();
         });
         document.body.appendChild(icon);
     }
 
     function ensureFloatingIcon() {
-        if (sessionStorage.getItem("copilotSidebarClosed") === "true" &&
+        if (sessionStorage.getItem("fennecSidebarClosed") === "true" &&
             !document.getElementById("copilot-sidebar") &&
             !document.getElementById("fennec-floating-icon")) {
             showFloatingIcon();
@@ -545,7 +545,7 @@
         let reviewMode = fennecReviewMode;
         try {
         function initSidebar() {
-            if (sessionStorage.getItem("copilotSidebarClosed") === "true") { showFloatingIcon(); return; }
+            if (sessionStorage.getItem("fennecSidebarClosed") === "true") { showFloatingIcon(); return; }
             if (!document.getElementById('copilot-sidebar')) {
                 console.log("[Copilot] Sidebar no encontrado, inyectando en DB...");
 
@@ -596,7 +596,7 @@
                             document.body.style.marginRight = '';
                             const style = document.getElementById('copilot-db-padding');
                             if (style) style.remove();
-                            sessionStorage.setItem('copilotSidebarClosed', 'true');
+                            sessionStorage.setItem("fennecSidebarClosed", "true");
                             console.log("[Copilot] Sidebar cerrado manualmente en DB.");
                             showFloatingIcon();
                         };
