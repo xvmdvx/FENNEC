@@ -823,7 +823,8 @@
 
         function setupDnaButton() {
             const button = document.getElementById("btn-dna");
-            if (!button) return;
+            if (!button || button.dataset.listenerAttached) return;
+            button.dataset.listenerAttached = "true";
             button.addEventListener("click", function () {
                 try {
                     const bodyNode = document.querySelector(".a3s");
