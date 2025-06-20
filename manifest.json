@@ -76,7 +76,8 @@
         "environments/gmail/gmail_launcher.js"
       ],
       "css": [
-        "styles/sidebar.css"
+        "styles/sidebar.css",
+        "styles/sidebar_light.css"
       ]
     },
     {
@@ -88,7 +89,8 @@
         "environments/db/db_launcher.js"
       ],
       "css": [
-        "styles/sidebar.css"
+        "styles/sidebar.css",
+        "styles/sidebar_light.css"
       ]
     },
     {

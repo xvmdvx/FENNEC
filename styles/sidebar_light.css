@@ -1,0 +1,35 @@
+/* Overrides for minimal black and white light mode */
+.fennec-light-mode #copilot-sidebar {
+    background: #fff;
+    color: #000;
+}
+.fennec-light-mode .copilot-header {
+    background: #000;
+    color: #fff;
+    border-bottom: 1px solid #aaa;
+}
+.fennec-light-mode .copilot-button {
+    background-color: #fff;
+    color: #000;
+    border-color: #000;
+}
+.fennec-light-mode .order-summary-box,
+.fennec-light-mode .intel-summary-box,
+.fennec-light-mode .issue-summary-box,
+.fennec-light-mode #copilot-sidebar .white-box,
+.fennec-light-mode #fennec-diagnose-overlay,
+.fennec-light-mode #fennec-diagnose-overlay .diag-card,
+.fennec-light-mode #fennec-diagnose-overlay .diag-issue {
+    background: #fff;
+    color: #000;
+}
+.fennec-light-mode .copilot-tag {
+    background-color: #000;
+    color: #fff;
+}
+.fennec-light-mode .issue-status-active {
+    background-color: #000;
+}
+.fennec-light-mode .issue-status-resolved {
+    background-color: #444;
+}

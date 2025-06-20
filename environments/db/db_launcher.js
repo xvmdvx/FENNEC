@@ -348,10 +348,15 @@
         return text;
     }
 
-    chrome.storage.local.get({ extensionEnabled: true }, ({ extensionEnabled }) => {
+    chrome.storage.local.get({ extensionEnabled: true, lightMode: false }, ({ extensionEnabled, lightMode }) => {
         if (!extensionEnabled) {
             console.log('[FENNEC] Extension disabled, skipping DB launcher.');
             return;
+        }
+        if (lightMode) {
+            document.body.classList.add('fennec-light-mode');
+        } else {
+            document.body.classList.remove('fennec-light-mode');
         }
 
         try {
