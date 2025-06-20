@@ -313,14 +313,6 @@
             return Array.from(namesMap.values());
         }
 
-        function escapeHtml(text) {
-            return text
-                .replace(/&/g, "&amp;")
-                .replace(/</g, "&lt;")
-                .replace(/>/g, "&gt;")
-                .replace(/\"/g, "&quot;")
-                .replace(/'/g, "&#039;");
-        }
 
         function renderAddress(addr) {
             if (!addr) return '<span style="color:#aaa">-</span>';
@@ -537,53 +529,6 @@
             attachCommonListeners(intelBox);
         }
 
-        function attachCommonListeners(rootEl) {
-            if (!rootEl) return;
-            rootEl.querySelectorAll('.copilot-address').forEach(el => {
-                el.addEventListener('click', e => {
-                    e.preventDefault();
-                    const addr = el.dataset.address;
-                    if (!addr) return;
-                    navigator.clipboard.writeText(addr).catch(err => console.warn('[Copilot] Clipboard', err));
-                    window.open('https://www.google.com/search?q=' + encodeURIComponent(addr), '_blank');
-                });
-            });
-            rootEl.querySelectorAll('.copilot-usps').forEach(el => {
-                el.addEventListener('click', e => {
-                    e.preventDefault();
-                    const addr = el.dataset.address;
-                    if (!addr) return;
-                    const url = 'https://tools.usps.com/zip-code-lookup.htm?byaddress&fennec_addr=' + encodeURIComponent(addr);
-                    window.open(url, '_blank');
-                });
-            });
-            rootEl.querySelectorAll('.copilot-copy, .copilot-copy-icon').forEach(el => {
-                el.addEventListener('click', () => {
-                    const text = el.dataset.copy;
-                    if (!text) return;
-                    navigator.clipboard.writeText(text).catch(err => console.warn('[Copilot] Clipboard', err));
-                });
-            });
-            rootEl.querySelectorAll('.copilot-sos').forEach(el => {
-                el.addEventListener('click', e => {
-                    e.preventDefault();
-                    const url = el.dataset.url;
-                    const query = el.dataset.query;
-                    const type = el.dataset.type || 'name';
-                    if (!url || !query) return;
-                    chrome.runtime.sendMessage({ action: 'sosSearch', url, query, searchType: type });
-                });
-            });
-            rootEl.querySelectorAll('.copilot-kb').forEach(el => {
-                el.addEventListener('click', e => {
-                    e.preventDefault();
-                    const state = el.dataset.state;
-                    const otype = el.dataset.otype || '';
-                    if (!state) return;
-                    chrome.runtime.sendMessage({ action: 'openKnowledgeBase', state, orderType: otype });
-                });
-            });
-        }
 
         function loadDbSummary(expectedId) {
             const container = document.getElementById('db-summary-section');

@@ -74,6 +74,7 @@
       ],
       "all_frames": true,
       "js": [
+        "core/utils.js",
         "environments/gmail/gmail_launcher.js"
       ],
       "css": [
@@ -89,6 +90,7 @@
       ],
       "all_frames": true,
       "js": [
+        "core/utils.js",
         "environments/db/db_launcher.js"
       ],
       "css": [
