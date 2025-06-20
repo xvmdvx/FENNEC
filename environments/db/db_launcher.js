@@ -180,8 +180,10 @@
                     container.appendChild(box);
                     container.dataset.loaded = 'true';
                     const extra = parseInt(box.style.marginBottom) || 0;
-                    container.style.maxHeight = (container.scrollHeight + extra) + 'px';
-                    container.classList.remove('ft-collapsed');
+                    requestAnimationFrame(() => {
+                        container.style.maxHeight = (container.scrollHeight + extra) + 'px';
+                        container.classList.remove('ft-collapsed');
+                    });
 
                     container.querySelectorAll('.ft-link').forEach(a => {
                         a.addEventListener('click', e => {
