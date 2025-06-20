@@ -217,3 +217,5 @@ Reload the extension after editing the manifest.
   panel by accounting for the box margin.
 
 - Fixed the Family Tree panel not showing on first click by updating the max-height after adding the orders.
+- Improved Family Tree reliability on non-formation orders by opening
+  background tabs in the same window.
