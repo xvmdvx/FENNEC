@@ -1850,4 +1850,6 @@ chrome.storage.onChanged.addListener((changes, area) => {
         updateReviewDisplay();
     }
 });
+
+// End IIFE
 })();
