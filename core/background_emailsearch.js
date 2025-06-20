@@ -70,7 +70,10 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         let base = "https://db.incfile.com";
         if (sender && sender.tab && sender.tab.url) {
             try {
-                base = new URL(sender.tab.url).origin;
+                const url = new URL(sender.tab.url);
+                if (url.hostname.endsWith("incfile.com")) {
+                    base = url.origin;
+                }
             } catch (err) {
                 console.warn("[Copilot] Invalid sender URL", sender.tab.url);
             }
@@ -123,7 +126,10 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         let base = "https://db.incfile.com";
         if (sender && sender.tab && sender.tab.url) {
             try {
-                base = new URL(sender.tab.url).origin;
+                const url = new URL(sender.tab.url);
+                if (url.hostname.endsWith("incfile.com")) {
+                    base = url.origin;
+                }
             } catch (err) {
                 console.warn("[Copilot] Invalid sender URL", sender.tab.url);
             }
@@ -176,7 +182,10 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         let base = "https://db.incfile.com";
         if (sender && sender.tab && sender.tab.url) {
             try {
-                base = new URL(sender.tab.url).origin;
+                const url = new URL(sender.tab.url);
+                if (url.hostname.endsWith("incfile.com")) {
+                    base = url.origin;
+                }
             } catch (err) {
                 console.warn("[Copilot] Invalid sender URL", sender.tab.url);
             }
@@ -235,7 +244,10 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         let base = "https://db.incfile.com";
         if (sender && sender.tab && sender.tab.url) {
             try {
-                base = new URL(sender.tab.url).origin;
+                const url = new URL(sender.tab.url);
+                if (url.hostname.endsWith("incfile.com")) {
+                    base = url.origin;
+                }
             } catch (err) {
                 console.warn("[Copilot] Invalid sender URL", sender.tab.url);
             }
