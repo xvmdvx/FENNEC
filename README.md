@@ -69,7 +69,7 @@ information scraped from the current page.
 - The company purpose also opens a Google search. Addresses and the purpose text are only underlined on hover.
 - Hides the agent subscription status line when RA service is not provided by Incfile.
 - Provides a Quick Actions menu with **Emails** and **Cancel** options. **Emails** now opens a Gmail search for the order number, client email and name while **Cancel** resolves active issues and opens the cancellation dialog with the reason preselected.
-- The Quick Actions icon now sits in the header next to the close button and the menu fades in and out.
+- The Quick Actions icon now appears at the start of the header like in Gmail and the menu fades in and out.
 - A **REFRESH** button at the end of the summary reloads the data.
  - Closing the sidebar leaves a floating Fennec icon in the upper right corner to reopen it. Reopening refreshes the sidebar with the current order.
 - Cancel automation now detects the "Cancel / Refund" link even when spaces surround the slash.
