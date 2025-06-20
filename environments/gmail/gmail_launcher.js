@@ -750,8 +750,8 @@
                 <div class="copilot-header">
                     <button id="copilot-menu" class="copilot-menu">☰</button>
                     <div class="copilot-title">
-                        <img src="${chrome.runtime.getURL('fennec_icon.png')}" class="copilot-icon" alt="FENNEC (v0.2)" />
-                        <span>FENNEC (v0.2)</span>
+                        <img src="${chrome.runtime.getURL('fennec_icon.png')}" class="copilot-icon" alt="FENNEC (v0.3)" />
+                        <span>FENNEC (v0.3)</span>
                     </div>
                     <button id="copilot-close">✕</button>
                 </div>
