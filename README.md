@@ -158,6 +158,7 @@ information scraped from the current page.
   remain fully visible.
 - Fixed a crash when the **Refresh** button listener failed to attach on some DB pages.
 - Stored DB summaries now include the order number so the sidebar on storage pages only displays matching data.
+- Resolved a crash in the DB sidebar that showed "Error loading summary" by defining the RA/VA tag classes.
 - A separator line now appears between addresses and the RA/VA tags in the quick summary, and those tags are repeated at the bottom of the Company section. Fields showing `N/A` or blank values are omitted, and shareholders display their share count prefixed with "Shares:".
 - Sections lacking meaningful details now show **NO INFO** instead of being hidden.
 - Officer and Shareholder sections are omitted for LLC orders.

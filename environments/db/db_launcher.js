@@ -1399,6 +1399,13 @@
                 hasVA = txt.includes('active');
             }
         }
+
+        const raClass = hasRA
+            ? 'copilot-tag copilot-tag-green'
+            : 'copilot-tag copilot-tag-purple';
+        const vaClass = hasVA
+            ? 'copilot-tag copilot-tag-green'
+            : 'copilot-tag copilot-tag-purple';
         const isVAAddress = addr => hasVA && /#\s*\d{3,}/.test(addr);
 
         const addrEntries = Object.values(addrMap)
