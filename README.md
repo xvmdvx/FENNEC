@@ -59,14 +59,12 @@ information scraped from the current page.
   been removed.
 - The **EMAIL SEARCH** and **OPEN ORDER** buttons are now smaller so they
   never exceed the sidebar width, and their default color is a softer black.
-- The hamburger icon in the header now opens a small menu with a **Review Mode**
-  toggle. When active a **DNA** button appears below **EMAIL SEARCH** and
-  **OPEN ORDER**, opening Adyen with the order number prefilled. The **ORDER SUMMARY**
-  box merges the Company section and the next box is the **QUICK SUMMARY**. On
-  DB pages all sections remain but a small **REVIEW MODE** label shows at the
-  bottom. The same toggle is also available in the DB sidebar menu and stays in
-  sync across Gmail and DB. Review Mode can also be enabled from the extension
-  popup.
+- Review Mode can be enabled from the extension popup. When active a **DNA** button
+  appears below **EMAIL SEARCH** and **OPEN ORDER**, opening Adyen with the order
+  number prefilled. The **ORDER SUMMARY** box merges the Company section and the
+  next box is the **QUICK SUMMARY**. On DB pages all sections remain but a small
+  **REVIEW MODE** label shows at the bottom. The mode stays in sync across Gmail
+  and DB.
 
 ### DB
 - Displays a sidebar on order detail pages.
@@ -76,7 +74,7 @@ information scraped from the current page.
 - Hides the agent subscription status line when RA service is not provided by Incfile.
 - Provides a Quick Actions menu with **Emails** and **Cancel** options. **Emails** now opens a Gmail search for the order number, client email and name while **Cancel** resolves active issues and opens the cancellation dialog with the reason preselected.
 - The Quick Actions icon now appears at the start of the header like in Gmail and the menu fades in and out.
-- The menu also includes a **Review Mode** checkbox that mirrors the Gmail toggle.
+- Review Mode is controlled only from the extension popup.
 - A **REFRESH** button at the end of the summary reloads the data.
  - Closing the sidebar leaves a floating Fennec icon in the upper right corner to reopen it. Reopening refreshes the sidebar with the current order.
 - Cancel automation now detects the "Cancel / Refund" link even when spaces surround the slash.
@@ -234,4 +232,4 @@ Reload the extension after editing the manifest.
   reliably.
 - Fixed Light Mode tags with black backgrounds showing black text.
 - Version number updated to **v0.3** so the interface matches `manifest.json`.
-- Fixed Review Mode toggle so Gmail and DB pages stay synchronized.
+  - Fixed Review Mode setting so Gmail and DB pages stay synchronized.
