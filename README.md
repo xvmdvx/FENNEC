@@ -66,6 +66,8 @@ information scraped from the current page.
   the Company section and the next box is the **QUICK SUMMARY**. On DB pages all
   sections remain but a small **REVIEW MODE** label shows at the bottom. The
   mode stays in sync across Gmail and DB.
+- The Adyen helper now waits for the shopper DNA link to appear before opening
+  it so slow pages still navigate correctly.
 
 ### DB
 - Displays a sidebar on order detail pages.
