@@ -202,3 +202,5 @@ Reload the extension after editing the manifest.
   obscured.
 - Fixed diagnose overlay crash when the `escapeHtml` helper was missing by
   building the floating cards using DOM methods.
+- Fixed issue lookup failing on Gmail when DB was open on a sandbox domain by
+  only overriding the base URL when the sender tab belongs to `incfile.com`.
