@@ -512,7 +512,7 @@
         return text;
     }
 
-    chrome.storage.local.get({ extensionEnabled: true, lightMode: false }, ({ extensionEnabled, lightMode }) => {
+    chrome.storage.local.get({ extensionEnabled: true, lightMode: false, fennecReviewMode: false }, ({ extensionEnabled, lightMode, fennecReviewMode }) => {
         if (!extensionEnabled) {
             console.log('[FENNEC] Extension disabled, skipping DB launcher.');
             return;
@@ -523,6 +523,7 @@
             document.body.classList.remove('fennec-light-mode');
         }
 
+        let reviewMode = fennecReviewMode;
         try {
         function initSidebar() {
             if (sessionStorage.getItem("copilotSidebarClosed") === "true") { showFloatingIcon(); return; }
@@ -563,9 +564,12 @@
                             <div class="copilot-footer">
                                 <button id="copilot-refresh" class="copilot-button">🔄 REFRESH</button>
                             </div>
+                            <div id="review-mode-label" class="review-mode-label" style="display:none; margin-top:4px; text-align:center; font-size:11px;">REVIEW MODE</div>
                         </div>
                     `;
                     document.body.appendChild(sidebar);
+                    const reviewLabel = sidebar.querySelector('#review-mode-label');
+                    if (reviewLabel) reviewLabel.style.display = reviewMode ? 'block' : 'none';
                     const closeBtn = sidebar.querySelector('#copilot-close');
                     if (closeBtn) {
                         closeBtn.onclick = () => {
@@ -1878,18 +1882,26 @@
             }
             return null;
         };
-        return new Promise(resolve => {
-            const check = () => {
-                const user = parse();
-                if (user || attempts-- <= 0) {
-                    const closeBtn = document.querySelector('#modalTrackOrderHistory .close');
-                    if (closeBtn) closeBtn.click();
-                    resolve(user);
-                } else {
-                    setTimeout(check, 500);
-                }
-            };
-            check();
-        });
+    return new Promise(resolve => {
+        const check = () => {
+            const user = parse();
+            if (user || attempts-- <= 0) {
+                const closeBtn = document.querySelector('#modalTrackOrderHistory .close');
+                if (closeBtn) closeBtn.click();
+                resolve(user);
+            } else {
+                setTimeout(check, 500);
+            }
+        };
+        check();
+    });
+}
+
+chrome.storage.onChanged.addListener((changes, area) => {
+    if (area === 'local' && changes.fennecReviewMode) {
+        reviewMode = changes.fennecReviewMode.newValue;
+        const label = document.getElementById('review-mode-label');
+        if (label) label.style.display = reviewMode ? 'block' : 'none';
     }
+});
 })();
