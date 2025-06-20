@@ -85,6 +85,7 @@
         "https://*.incfile.com/incfile/order/detail/*",
         "https://*.incfile.com/storage/incfile/*"
       ],
+      "all_frames": true,
       "js": [
         "environments/db/db_launcher.js"
       ],
