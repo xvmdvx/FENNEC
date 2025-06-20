@@ -3,15 +3,18 @@
     background: #fff;
     color: #000;
 }
+.fennec-light-mode #copilot-sidebar * {
+    color: #000;
+}
 .fennec-light-mode .copilot-header {
     background: #000;
     color: #fff;
-    border-bottom: 1px solid #aaa;
+    border-bottom: 1px solid #777;
 }
 .fennec-light-mode .copilot-button {
     background-color: #fff;
     color: #000;
-    border-color: #000;
+    border: 1px solid #777;
 }
 .fennec-light-mode .order-summary-box,
 .fennec-light-mode .intel-summary-box,
@@ -22,6 +25,7 @@
 .fennec-light-mode #fennec-diagnose-overlay .diag-issue {
     background: #fff;
     color: #000;
+    border: 1px solid #777;
 }
 .fennec-light-mode .copilot-tag {
     background-color: #000;
@@ -29,7 +33,12 @@
 }
 .fennec-light-mode .issue-status-active {
     background-color: #000;
+    color: #fff;
 }
 .fennec-light-mode .issue-status-resolved {
     background-color: #444;
+    color: #fff;
+}
+.fennec-light-mode .copilot-copy-icon {
+    color: #000;
 }
