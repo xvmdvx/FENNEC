@@ -204,3 +204,5 @@ Reload the extension after editing the manifest.
   building the floating cards using DOM methods.
 - Fixed issue lookup failing on Gmail when DB was open on a sandbox domain by
   only overriding the base URL when the sender tab belongs to `incfile.com`.
+- Fixed stored DB summaries so links and copy icons work correctly on document
+  pages by reattaching the sidebar listeners.
