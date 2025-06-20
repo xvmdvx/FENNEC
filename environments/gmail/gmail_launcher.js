@@ -9,6 +9,9 @@
         if (msg.action === 'fennecToggle') {
             window.location.reload();
         }
+        if (msg.action === 'sosPermissionError') {
+            alert('Permiso denegado para abrir la búsqueda SOS.');
+        }
     });
     chrome.storage.local.get({ extensionEnabled: true, lightMode: false, bentoMode: false, fennecReviewMode: false }, ({ extensionEnabled, lightMode, bentoMode, fennecReviewMode }) => {
         if (!extensionEnabled) {

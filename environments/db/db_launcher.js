@@ -450,6 +450,9 @@
         if (msg.action === 'fennecToggle') {
             window.location.reload();
         }
+        if (msg.action === 'sosPermissionError') {
+            alert('Permiso denegado para abrir la búsqueda SOS.');
+        }
         if (msg.action === 'getLastIssue') {
             let attempts = 10;
             const tryExtract = () => {
