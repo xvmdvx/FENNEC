@@ -2,7 +2,13 @@
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if (message.action === "openTab" && message.url) {
         console.log("[Copilot] Forzando apertura de una pestaña:", message.url);
-        chrome.tabs.create({ url: message.url, active: false }, (tab) => {
+        const opts = { url: message.url, active: false };
+        if (message.windowId) {
+            opts.windowId = message.windowId;
+        } else if (sender && sender.tab) {
+            opts.windowId = sender.tab.windowId;
+        }
+        chrome.tabs.create(opts, (tab) => {
             if (chrome.runtime.lastError) {
                 console.error("[Copilot] Error (openTab):", chrome.runtime.lastError.message);
             }
@@ -20,8 +26,15 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
     if (message.action === "openTabs" && Array.isArray(message.urls)) {
         console.log("[Copilot] Forzando apertura de múltiples pestañas:", message.urls);
+        const optsBase = { active: false };
+        if (message.windowId) {
+            optsBase.windowId = message.windowId;
+        } else if (sender && sender.tab) {
+            optsBase.windowId = sender.tab.windowId;
+        }
         message.urls.forEach((url, i) => {
-            chrome.tabs.create({ url, active: false }, (tab) => {
+            const opts = Object.assign({ url }, optsBase);
+            chrome.tabs.create(opts, (tab) => {
                 if (chrome.runtime.lastError) {
                     console.error("[Copilot] Error (openTabs) para URL", url, ":", chrome.runtime.lastError.message);
                 }
@@ -203,7 +216,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
                     if (!tab || tab.status !== "complete") {
                         if (attempts > 0) {
                             if (!tab) {
-                            chrome.tabs.create({ url, active: false }, t => {
+                            chrome.tabs.create({ url, active: false, windowId: sender.tab ? sender.tab.windowId : undefined }, t => {
                                 tab = t;
                                 createdTabId = t.id;
                             });
@@ -265,7 +278,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
                     if (!tab || tab.status !== "complete") {
                         if (attempts > 0) {
                             if (!tab) {
-                                chrome.tabs.create({ url, active: false }, t => {
+                                chrome.tabs.create({ url, active: false, windowId: sender.tab ? sender.tab.windowId : undefined }, t => {
                                     tab = t;
                                     createdTabId = t.id;
                                 });
