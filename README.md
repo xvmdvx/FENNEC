@@ -60,10 +60,11 @@ information scraped from the current page.
 - The **EMAIL SEARCH** and **OPEN ORDER** buttons are now smaller so they
   never exceed the sidebar width, and their default color is a softer black.
 - The hamburger icon in the header now opens a small menu with a **Review Mode**
-  toggle. When active an **XRAY** button appears next to **EMAIL SEARCH** and
-  **OPEN ORDER**. The **ORDER SUMMARY** box merges the Company section and the
-  following box is the **QUICK SUMMARY**. On DB pages all sections remain but a
-  small **REVIEW MODE** label shows at the bottom.
+  toggle. When active an **XRAY** button appears below **EMAIL SEARCH** and
+  **OPEN ORDER**, giving two buttons on top and one below. The **ORDER SUMMARY**
+  box merges the Company section and the next box is the **QUICK SUMMARY**. On
+  DB pages all sections remain but a small **REVIEW MODE** label shows at the
+  bottom.
 
 ### DB
 - Displays a sidebar on order detail pages.

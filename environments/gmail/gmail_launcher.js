@@ -178,15 +178,15 @@
         function applyReviewMode() {
             const toggle = document.getElementById("review-mode-toggle");
             if (toggle) toggle.checked = reviewMode;
-            const actions = document.querySelector("#copilot-sidebar .copilot-actions");
+            const xrayRow = document.querySelector("#copilot-sidebar .copilot-xray");
             const xrayBtn = document.getElementById("btn-xray");
             if (reviewMode) {
-                if (actions && !xrayBtn) {
+                if (xrayRow && !xrayBtn) {
                     const btn = document.createElement("button");
                     btn.id = "btn-xray";
                     btn.className = "copilot-button";
                     btn.textContent = "🩻 XRAY";
-                    actions.appendChild(btn);
+                    xrayRow.appendChild(btn);
                 }
             } else if (xrayBtn) {
                 xrayBtn.remove();
@@ -749,6 +749,7 @@
                         <button id="btn-email-search" class="copilot-button">📧 EMAIL SEARCH</button>
                         <button id="btn-open-order" class="copilot-button">📂 OPEN ORDER</button>
                     </div>
+                    <div class="copilot-xray"></div>
                     <div class="order-summary-header">ORDER SUMMARY</div>
                     <div class="order-summary-box">
                         <div id="order-summary-content" style="color:#ccc; font-size:13px;">
