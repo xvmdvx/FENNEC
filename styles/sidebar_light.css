@@ -58,9 +58,8 @@
     color: #000;
 }
 
-/* Ensure header icons stay visible */
-.fennec-light-mode #copilot-close,
-.fennec-light-mode #copilot-menu {
+/* Ensure header icon stays visible */
+.fennec-light-mode #copilot-close {
     color: #fff;
 }
 

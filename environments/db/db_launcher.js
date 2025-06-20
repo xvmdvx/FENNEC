@@ -661,8 +661,7 @@
                         qaMenu.id = 'quick-actions-menu';
                         qaMenu.style.display = 'none';
                         qaMenu.innerHTML = '<div class="qa-title">QUICK ACTIONS</div>' +
-                            '<ul><li id="qa-emails">Emails</li><li id="qa-cancel">Cancel</li>' +
-                            '<li><label><input type="checkbox" id="review-mode-toggle"> Review Mode</label></li></ul>';
+                            '<ul><li id="qa-emails">Emails</li><li id="qa-cancel">Cancel</li></ul>';
                         document.body.appendChild(qaMenu);
 
                         function showMenu() {
@@ -720,15 +719,6 @@
                             }
                         });
 
-                        const reviewToggle = qaMenu.querySelector('#review-mode-toggle');
-                        if (reviewToggle) {
-                            reviewToggle.checked = reviewMode;
-                            reviewToggle.addEventListener('change', () => {
-                                reviewMode = reviewToggle.checked;
-                                chrome.storage.local.set({ fennecReviewMode: reviewMode });
-                                updateReviewDisplay();
-                            });
-                        }
 
                         qaMenu.querySelector('#qa-cancel').addEventListener('click', () => {
                             hideMenu();

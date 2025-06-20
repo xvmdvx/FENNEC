@@ -80,60 +80,6 @@
             }
         }
 
-        function setupReviewMenu(button) {
-            if (!button) return;
-            const menu = document.createElement("div");
-            menu.id = "review-menu";
-            menu.style.display = "none";
-            menu.innerHTML = '<label><input type="checkbox" id="review-mode-toggle"> Review Mode</label>';
-            document.body.appendChild(menu);
-
-            const toggle = menu.querySelector("#review-mode-toggle");
-            toggle.checked = reviewMode;
-            toggle.addEventListener("change", () => {
-                reviewMode = toggle.checked;
-                sessionStorage.setItem("fennecReviewMode", reviewMode ? "true" : "false");
-                chrome.storage.local.set({ fennecReviewMode: reviewMode });
-                applyReviewMode();
-            });
-
-            function showMenu() {
-                menu.style.display = "block";
-                requestAnimationFrame(() => menu.classList.add("show"));
-            }
-
-            function hideMenu() {
-                menu.classList.remove("show");
-                menu.addEventListener("transitionend", function h() {
-                    menu.style.display = "none";
-                    menu.removeEventListener("transitionend", h);
-                }, { once: true });
-            }
-
-            button.addEventListener("click", (e) => {
-                e.stopPropagation();
-                if (menu.style.display === "block") {
-                    hideMenu();
-                } else {
-                    showMenu();
-                    const rect = button.getBoundingClientRect();
-                    const menuWidth = menu.offsetWidth;
-                    let left = rect.left - menuWidth + rect.width;
-                    if (left < 0) left = 0;
-                    if (left + menuWidth > window.innerWidth) {
-                        left = window.innerWidth - menuWidth;
-                    }
-                    menu.style.top = rect.bottom + "px";
-                    menu.style.left = left + "px";
-                }
-            });
-
-            document.addEventListener("click", (e) => {
-                if (!menu.contains(e.target) && e.target !== button && menu.style.display === "block") {
-                    hideMenu();
-                }
-            });
-        }
 
         function showFullDetails() {
             const container = document.getElementById("db-summary-section");
@@ -180,8 +126,6 @@
         }
 
         function applyReviewMode() {
-            const toggle = document.getElementById("review-mode-toggle");
-            if (toggle) toggle.checked = reviewMode;
             const dnaRow = document.querySelector("#copilot-sidebar .copilot-dna");
             const dnaBtn = document.getElementById("btn-dna");
             if (reviewMode) {
@@ -200,14 +144,6 @@
             chrome.storage.local.set({ fennecReviewMode: reviewMode });
             updateDetailVisibility();
         }
-
-        function toggleReviewMode() {
-            reviewMode = !reviewMode;
-            sessionStorage.setItem("fennecReviewMode", reviewMode ? "true" : "false");
-            chrome.storage.local.set({ fennecReviewMode: reviewMode });
-            applyReviewMode();
-        }
-
 
         function extractOrderNumber(text) {
             if (!text) return null;
@@ -753,7 +689,6 @@
             sidebar.id = 'copilot-sidebar';
             sidebar.innerHTML = `
                 <div class="copilot-header">
-                    <button id="copilot-menu" class="copilot-menu">☰</button>
                     <div class="copilot-title">
                         <img src="${chrome.runtime.getURL('fennec_icon.png')}" class="copilot-icon" alt="FENNEC (v0.3)" />
                         <span>FENNEC (v0.3)</span>
@@ -801,7 +736,6 @@
             // Botón EMAIL SEARCH (listener UNIFICADO)
             document.getElementById("btn-email-search").onclick = handleEmailSearchClick;
             document.getElementById("copilot-refresh").onclick = refreshSidebar;
-            setupReviewMenu(document.getElementById("copilot-menu"));
             setupOpenOrderButton();
             applyReviewMode();
         }

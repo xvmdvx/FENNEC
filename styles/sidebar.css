@@ -39,11 +39,6 @@
     cursor: pointer; outline: none;
     margin-left: 8px;
 }
-#copilot-menu {
-    background: none; border: none; color: #000; font-size: 20px;
-    cursor: pointer; outline: none;
-    margin-right: 8px;
-}
 .copilot-body {
     flex: 1;
     padding: 12px 18px;
@@ -366,29 +361,6 @@
     text-decoration: underline;
 }
 
-#review-menu {
-    position: fixed;
-    background: #fff;
-    color: #000;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    padding: 8px;
-    z-index: 1035;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-    font-size: 13px;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.15s ease;
-}
-
-#review-menu.show {
-    opacity: 0.95;
-    pointer-events: auto;
-}
-
-#review-menu label {
-    cursor: pointer;
-}
 
 /* Family tree layout */
 #family-tree-orders .ft-grid {
