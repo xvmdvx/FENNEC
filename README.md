@@ -13,6 +13,7 @@ information scraped from the current page.
    be available when visiting supported pages.
 5. Use the extension popup to enable **Light Mode** for a minimalist black and white style. Summary text is solid black with medium gray borders, the header shows white text on a black bar and the Fennec icon appears inverted.
 6. Enable **Bento Mode** from the popup to arrange the sidebar content in a colorful grid layout.
+7. Open the extension **Options** from the menu or the Extensions page to set a default sidebar width and Review Mode.
 
 ## Sidebar features
 
@@ -79,7 +80,7 @@ information scraped from the current page.
 - Hides the agent subscription status line when RA service is not provided by Incfile.
 - Provides a Quick Actions menu with **Emails** and **Cancel** options. **Emails** now opens a Gmail search for the order number, client email and name while **Cancel** resolves active issues and opens the cancellation dialog with the reason preselected.
 - The Quick Actions icon now appears at the start of the header like in Gmail and the menu fades in and out.
-- Review Mode is controlled only from the extension popup.
+- Review Mode can be toggled from the popup or configured as a default in the Options page.
 - A **REFRESH** button at the end of the summary reloads the data.
  - Closing the sidebar leaves a floating Fennec icon in the upper right corner to reopen it. Reopening refreshes the sidebar with the current order.
 - Cancel automation now detects the "Cancel / Refund" link even when spaces surround the slash.

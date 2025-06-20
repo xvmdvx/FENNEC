@@ -137,6 +137,7 @@
       "128": "fennec_icon.png"
     }
   },
+  "options_page": "options.html",
   "background": {
     "service_worker": "core/background_emailsearch.js",
     "type": "module"
