@@ -80,6 +80,8 @@ information scraped from the current page.
   child order in a temporary tab, gathers the latest issue or hold user and
   then closes the tab. A centered floating summary appears on the parent order
   with a clickable order number, the colored status tag and the retrieved text.
+- The diagnose overlay now shows immediately with a loading message and updates
+  each card as soon as the details are fetched.
 - The family tree panel now slides open with the same animation as the Quick
   Summary and is positioned directly below it. Status labels are color coded
   (green for **SHIPPED**, **REVIEW** or **PROCESSING**, red for **CANCELED**, purple

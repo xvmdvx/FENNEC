@@ -437,6 +437,11 @@
     color: #fff;
 }
 
+#fennec-diagnose-overlay .diag-loading {
+    margin: 12px;
+    font-style: italic;
+}
+
 #fennec-diagnose-overlay .diag-card {
     display: inline-block;
     vertical-align: top;
