@@ -16,6 +16,7 @@ information scraped from the current page.
 ## Sidebar features
 
 - Optional **Light Mode** turns the sidebar black on white for a minimalist look with darker summary text, a black header with white lettering and a white Fennec icon.
+- In this mode the header and tags now always display white text so they remain readable against the black background.
 
 ### Gmail
 - Adds a sidebar with **EMAIL SEARCH** and **OPEN ORDER** buttons.

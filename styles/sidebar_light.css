@@ -11,6 +11,11 @@
     color: #fff !important;
     border-bottom: 1px solid #777;
 }
+/* Ensure all header text stays white on the black bar */
+.fennec-light-mode .copilot-header,
+.fennec-light-mode .copilot-header * {
+    color: #fff !important;
+}
 .fennec-light-mode .copilot-button {
     background-color: #fff;
     color: #000;
@@ -29,12 +34,12 @@
 }
 .fennec-light-mode .copilot-tag {
     background-color: #000;
-    color: #fff;
+    color: #fff !important;
 }
 
 .fennec-light-mode .copilot-tag-white {
     background-color: #fff;
-    color: #000;
+    color: #000 !important;
     border: 1px solid #777;
 }
 
