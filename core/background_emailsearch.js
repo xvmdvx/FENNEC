@@ -347,7 +347,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
                                 field.value = q;
                                 field.dispatchEvent(new Event("input", { bubbles: true }));
                                 const form = field.form;
-                                const btn = form ? form.querySelector("button[type="submit"],input[type="submit"]") : null;
+                                const btn = form ? form.querySelector("button[type=\"submit\"],input[type=\"submit\"]") : null;
                                 if (btn) {
                                     btn.click();
                                 } else if (form) {
