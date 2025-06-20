@@ -31,6 +31,16 @@
     background-color: #000;
     color: #fff;
 }
+
+.fennec-light-mode .copilot-tag-white {
+    background-color: #fff;
+    color: #000;
+    border: 1px solid #777;
+}
+
+.fennec-light-mode #fennec-diagnose-overlay .diag-order {
+    color: #000;
+}
 .fennec-light-mode .issue-status-active {
     background-color: #000;
     color: #fff;

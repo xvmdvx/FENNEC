@@ -1801,29 +1801,35 @@
                 /canceled/i.test(r.order.status) ? 'copilot-tag copilot-tag-red' :
                 /hold/i.test(r.order.status) ? 'copilot-tag copilot-tag-purple' : 'copilot-tag';
 
-            const line = document.createElement('div');
             const link = document.createElement('a');
             link.href = `${location.origin}/incfile/order/detail/${r.order.orderId}`;
             link.target = '_blank';
             link.textContent = r.order.orderId;
-            line.appendChild(link);
-            const typeSpan = document.createElement('span');
-            typeSpan.className = 'ft-type';
-            typeSpan.textContent = ` (${r.order.type.toUpperCase()})`;
-            line.appendChild(typeSpan);
-            card.appendChild(line);
+            link.className = 'diag-order';
+            card.appendChild(link);
 
-            const statusDiv = document.createElement('div');
+            const tagsDiv = document.createElement('div');
+            tagsDiv.className = 'diag-tags';
             const statusSpan = document.createElement('span');
             statusSpan.className = cls;
             statusSpan.textContent = r.order.status;
-            statusDiv.appendChild(statusSpan);
-            card.appendChild(statusDiv);
+            tagsDiv.appendChild(statusSpan);
+            const typeSpan = document.createElement('span');
+            typeSpan.className = 'copilot-tag copilot-tag-white';
+            typeSpan.textContent = r.order.type.toUpperCase();
+            tagsDiv.appendChild(typeSpan);
+            card.appendChild(tagsDiv);
 
             const issueDiv = document.createElement('div');
             issueDiv.className = 'diag-issue';
             issueDiv.textContent = r.issue;
             card.appendChild(issueDiv);
+
+            const cancel = document.createElement('span');
+            cancel.className = 'copilot-tag copilot-tag-red diag-cancel';
+            cancel.textContent = 'CANCEL';
+            cancel.addEventListener('click', startCancelProcedure);
+            card.appendChild(cancel);
 
             overlay.appendChild(card);
         };
