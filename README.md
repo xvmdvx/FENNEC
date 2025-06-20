@@ -88,6 +88,9 @@ information scraped from the current page.
   with a clickable order number, the colored status tag and the retrieved text.
 - The diagnose overlay now shows immediately with a loading message and updates
   each card as soon as the details are fetched.
+- Diagnose cards now display the order number in bold on the first line, followed
+  by tags for the status and order type. A red **CANCEL** tag below the issue
+  text starts the cancel procedure when clicked.
 - The family tree panel now slides open with the same animation as the Quick
   Summary and is positioned directly below it. Status labels are color coded
   (green for **SHIPPED**, **REVIEW** or **PROCESSING**, red for **CANCELED**, purple

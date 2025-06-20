@@ -489,6 +489,23 @@
     text-align: center;
 }
 
+#fennec-diagnose-overlay .diag-order {
+    color: #fff;
+    font-weight: bold;
+    display: block;
+    margin-bottom: 4px;
+}
+
+#fennec-diagnose-overlay .diag-tags {
+    margin-bottom: 4px;
+}
+
+#fennec-diagnose-overlay .diag-cancel {
+    cursor: pointer;
+    margin-top: 6px;
+    display: inline-block;
+}
+
 #fennec-diagnose-overlay .diag-issue {
     background: #2e2e2e;
     border-radius: 6px;
