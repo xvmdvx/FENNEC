@@ -246,3 +246,6 @@ Reload the extension after editing the manifest.
   Buttons like **EMAIL SEARCH** and **OPEN ORDER** now open tabs again.
 - Common helpers moved to `core/utils.js` and shared by Gmail and DB scripts.
 
+
+### Troubleshooting
+If the DB sidebar fails to load and the console shows `Unexpected end of input` from `db_launcher.js`, reload the extension on `chrome://extensions` to ensure Chrome picks up the full script.
