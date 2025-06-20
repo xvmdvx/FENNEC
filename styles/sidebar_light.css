@@ -37,6 +37,17 @@
     color: #fff !important;
 }
 
+/* Keep tags readable inside white boxes */
+.fennec-light-mode #copilot-sidebar .copilot-tag {
+    color: #fff !important;
+}
+
+/* Ensure status labels remain visible */
+.fennec-light-mode #copilot-sidebar .issue-status-label,
+.fennec-light-mode #copilot-sidebar .review-mode-label {
+    color: #fff !important;
+}
+
 .fennec-light-mode .copilot-tag-white {
     background-color: #fff;
     color: #000 !important;
