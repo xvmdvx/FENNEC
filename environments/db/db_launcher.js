@@ -1432,11 +1432,13 @@
                 <span class="${vaClass}">VA: ${hasVA ? 'Sí' : 'No'}</span>
             </div>`);
 
-        html += `
+        const quickSection = `
             <div class="white-box quick-summary-content" id="quick-summary" style="margin-bottom:10px">
                 ${summaryParts.join('')}
             </div>
         `;
+        html += quickSection;
+        dbSections.push(quickSection);
 
         if (currentOrderType !== 'formation') {
             html += `<div id="family-tree-orders" class="ft-collapsed"></div>`;
