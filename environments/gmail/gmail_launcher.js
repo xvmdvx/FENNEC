@@ -10,7 +10,7 @@
             window.location.reload();
         }
     });
-    chrome.storage.local.get({ extensionEnabled: true, lightMode: false }, ({ extensionEnabled, lightMode }) => {
+    chrome.storage.local.get({ extensionEnabled: true, lightMode: false, fennecReviewMode: false }, ({ extensionEnabled, lightMode, fennecReviewMode }) => {
         if (!extensionEnabled) {
             console.log('[FENNEC] Extension disabled, skipping Gmail launcher.');
             return;
@@ -22,7 +22,8 @@
         }
         try {
             const SIDEBAR_WIDTH = 340;
-            let reviewMode = sessionStorage.getItem('fennecReviewMode') === 'true';
+            let reviewMode = sessionStorage.getItem('fennecReviewMode');
+            reviewMode = reviewMode === null ? fennecReviewMode : reviewMode === 'true';
 
         function applyPaddingToMainPanels() {
             const candidates = [
@@ -92,6 +93,7 @@
             toggle.addEventListener("change", () => {
                 reviewMode = toggle.checked;
                 sessionStorage.setItem("fennecReviewMode", reviewMode ? "true" : "false");
+                chrome.storage.local.set({ fennecReviewMode: reviewMode });
                 applyReviewMode();
             });
 
@@ -145,50 +147,59 @@
             const container = document.getElementById("db-summary-section");
             if (!container) return;
             const quick = container.querySelector("#quick-summary");
-            if (!quick) return;
+            const orderBox = document.querySelector(".order-summary-box");
+            const issueBox = document.getElementById("issue-summary-box");
+            if (!quick || !orderBox) return;
             if (reviewMode) {
+                const compLabel = Array.from(container.querySelectorAll(".section-label"))
+                    .find(l => l.textContent.trim().startsWith("COMPANY"));
+                const compBox = compLabel ? compLabel.nextElementSibling : null;
+                if (compLabel && compBox) {
+                    compLabel.dataset.reviewMerged = "1";
+                    compBox.dataset.reviewMerged = "1";
+                    orderBox.appendChild(compLabel);
+                    orderBox.appendChild(compBox);
+                }
+                orderBox.insertAdjacentElement("afterend", quick);
                 quick.classList.remove("quick-summary-collapsed");
                 quick.style.maxHeight = quick.scrollHeight + "px";
                 Array.from(container.children).forEach(el => {
                     if (el !== quick) el.style.display = "none";
                 });
-                if (!document.getElementById("review-details-btn")) {
-                    const btn = document.createElement("button");
-                    btn.id = "review-details-btn";
-                    btn.textContent = "Details";
-                    btn.className = "copilot-button";
-                    btn.addEventListener("click", showFullDetails);
-                    quick.insertAdjacentElement("afterend", btn);
-                }
+                if (issueBox) issueBox.style.display = "none";
             } else {
+                if (issueBox) issueBox.style.display = "";
+                orderBox.querySelectorAll('[data-review-merged="1"]').forEach(el => el.remove());
+                if (quick.parentElement !== container) container.prepend(quick);
                 showFullDetails();
             }
         }
 
         function applyReviewMode() {
-            const wrapper = document.getElementById("xray-wrapper");
             const toggle = document.getElementById("review-mode-toggle");
             if (toggle) toggle.checked = reviewMode;
+            const actions = document.querySelector("#copilot-sidebar .copilot-actions");
+            const xrayBtn = document.getElementById("btn-xray");
             if (reviewMode) {
-                if (!wrapper) {
-                    const div = document.createElement("div");
-                    div.id = "xray-wrapper";
-                    div.className = "copilot-xray";
-                    div.innerHTML = '<button id="btn-xray" class="copilot-button">🩻 XRAY</button>';
-                    const actions = document.querySelector("#copilot-sidebar .copilot-actions");
-                    if (actions && actions.parentNode) {
-                        actions.insertAdjacentElement("afterend", div);
-                    }
+                if (actions && !xrayBtn) {
+                    const btn = document.createElement("button");
+                    btn.id = "btn-xray";
+                    btn.className = "copilot-button";
+                    btn.textContent = "🩻 XRAY";
+                    actions.appendChild(btn);
                 }
-            } else if (wrapper) {
-                wrapper.remove();
+            } else if (xrayBtn) {
+                xrayBtn.remove();
+                refreshSidebar();
             }
+            chrome.storage.local.set({ fennecReviewMode: reviewMode });
             updateDetailVisibility();
         }
 
         function toggleReviewMode() {
             reviewMode = !reviewMode;
             sessionStorage.setItem("fennecReviewMode", reviewMode ? "true" : "false");
+            chrome.storage.local.set({ fennecReviewMode: reviewMode });
             applyReviewMode();
         }
 

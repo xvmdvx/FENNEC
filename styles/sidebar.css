@@ -437,6 +437,11 @@
     padding: 4px 10px;
     font-size: 12px;
 }
+
+.review-mode-label {
+    color: #ffb74d;
+    font-weight: bold;
+}
 #fennec-floating-icon {
     position: fixed;
     top: 20px;
