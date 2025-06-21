@@ -182,6 +182,8 @@ information scraped from the current page.
 - Gmail Review Mode removes the **COMPANY** heading in the order summary and
   trims blank agent fields. When no agent details are available the section shows
   **NO RA INFO**.
+- Fixed blank lines after the RA/VA labels in Gmail Review Mode when the agent
+  name was not detected. The AGENT section now shows **NO RA INFO**.
 
 ## Known limitations
 

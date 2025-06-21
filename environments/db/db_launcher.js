@@ -1155,7 +1155,7 @@
 
         const roleMap = {};
         const addRole = (name, role, addr) => {
-            if (!name || isInternal(name, addr)) return;
+            if (!name || !isValidField(name) || isInternal(name, addr)) return;
             const key = name.trim().toLowerCase();
             if (!roleMap[key]) roleMap[key] = { display: name.trim(), roles: new Set() };
             roleMap[key].roles.add(role);
@@ -1260,13 +1260,15 @@
 
         const summaryParts = [];
         const roleEntries = Object.values(roleMap)
-            .map(r => `
-                <div style="margin-left:10px">
-                    <b>${renderCopy(r.display)}</b><br>
-                    ${Array.from(r.roles)
-                        .map(role => `<span class="copilot-tag">${escapeHtml(role)}</span>`)
-                        .join(' ')}
-                </div>`);
+            .map(r => {
+                const name = renderCopy(r.display);
+                if (!name) return null;
+                const tags = Array.from(r.roles)
+                    .map(role => `<span class="copilot-tag">${escapeHtml(role)}</span>`)
+                    .join(' ');
+                return `<div style="margin-left:10px"><b>${name}</b><br>${tags}</div>`;
+            })
+            .filter(Boolean);
         if (roleEntries.length) {
             summaryParts.push(...roleEntries);
         }
