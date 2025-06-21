@@ -1769,9 +1769,11 @@
             if (anchor) {
                 const m = anchor.href.match(/detail\/(\d+)/);
                 if (m) return m[1];
+                const textId = anchor.textContent.replace(/\D/g, '');
+                if (textId) return textId;
             }
-            const digits = compTab.textContent.replace(/\D/g, '');
-            if (digits) return digits;
+            const match = (compTab.textContent || '').match(/parent\s*order[^\d]*(\d{9,})/i);
+            if (match) return match[1];
         }
         return null;
     }

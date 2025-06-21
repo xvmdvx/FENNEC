@@ -277,4 +277,6 @@ Reload the extension after editing the manifest.
 - Fixed detection when the Parent Order information only appears in the `#vcompany` tab.
 - Fixed detection when the Parent Order line sits within a paragraph or list item
   inside the `#vcomp` tab.
+- Fixed detection when the Parent Order link only shows digits inside the
+  `#vcomp` tab so the Family Tree icon opens correctly.
 
