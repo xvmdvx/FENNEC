@@ -444,21 +444,16 @@
             const url = orderId ? `https://db.incfile.com/incfile/order/detail/${orderId}` : '#';
 
             let html = `<div id="order-summary-link" style="text-align:center">`;
-            if (orderId) html += `<b><a href="#" id="order-link">${renderCopy(orderId)}</a> ${renderCopyIcon(orderId)}</b>`;
+            if (orderId) html += `<b><a href="#" id="order-link" class="order-link">${renderCopy(orderId)}</a> ${renderCopyIcon(orderId)}</b>`;
             if (reviewMode && storedOrderInfo) {
-                if (storedOrderInfo.type) html += `<div>${escapeHtml(storedOrderInfo.type)}</div>`;
-                if (storedOrderInfo.expedited) html += `<div><span class="copilot-tag">Expedited</span></div>`;
+                const typeTag = storedOrderInfo.type ? `<span class="copilot-tag">${escapeHtml(storedOrderInfo.type)}</span>` : "";
+                const expTag = `<span class="copilot-tag">${storedOrderInfo.expedited ? 'Expedited' : 'Non Expedited'}</span>`;
+                html += `<div>${typeTag} ${expTag}</div>`;
             }
             if (name && email && name.toLowerCase() !== email.toLowerCase()) {
                 html += `<div>${renderCopy(name)}</div><div>${renderCopy(email)}</div>`;
             } else if (name || email) {
                 html += `<div>${renderCopy(name || email)}</div>`;
-            }
-            if (reviewMode && storedOrderInfo) {
-                html += '<hr style="border:none;border-top:1px solid #eee;margin:6px 0"/>';
-                if (storedOrderInfo.companyName) html += `<div><b>${renderCopy(storedOrderInfo.companyName)}</b></div>`;
-                if (storedOrderInfo.companyId) html += `<div>${renderCopy(storedOrderInfo.companyId)}</div>`;
-                if (storedOrderInfo.companyState) html += `<div>${renderCopy(storedOrderInfo.companyState)}</div>`;
             }
             html += '</div>';
             summaryBox.innerHTML = html;
