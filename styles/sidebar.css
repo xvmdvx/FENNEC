@@ -220,6 +220,15 @@
     text-decoration: none;
 }
 
+.copilot-link {
+    color: inherit;
+    text-decoration: none;
+}
+
+.copilot-link:hover {
+    text-decoration: underline;
+}
+
 .copilot-expired {
     color: #8B0000 !important;
 }
