@@ -1647,9 +1647,21 @@
                 ).toLowerCase();
                 return /(parent|main|formation|original|related)/i.test(area) && area.includes('order');
             });
-        if (!link) return null;
-        const m = link.href.match(/detail\/(\d+)/);
-        return m ? m[1] : null;
+        if (link) {
+            const m = link.href.match(/detail\/(\d+)/);
+            if (m) return m[1];
+        }
+
+        const label = Array.from(document.querySelectorAll('label,td,th,span,strong,b,div'))
+            .find(el => /parent order/i.test(getText(el)));
+        if (label) {
+            const area = label.closest('.form-group') || label.closest('tr') || label.parentElement;
+            if (area) {
+                const digits = area.textContent.replace(/\D/g, '');
+                if (digits) return digits;
+            }
+        }
+        return null;
     }
 
     function getClientInfo() {

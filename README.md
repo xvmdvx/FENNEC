@@ -119,6 +119,9 @@ information scraped from the current page.
 - Works on DB sandbox subdomains by building links from the current origin.
 - Fixed diagnose summary not appearing on sandbox subdomains by using the
   current origin when checking child orders.
+- Fixed parent order detection on miscellaneous orders when the ID appears
+  after a "Parent Order:" label. The floating Fennec icon now stays visible
+  when opening the Family Tree panel.
 - The sidebar also remains visible on document storage pages, reusing the last
   order summary.
 - The company name (and State ID when present) links to the state's SOS business
