@@ -1246,8 +1246,17 @@
             : 'copilot-tag copilot-tag-purple';
         const isVAAddress = addr => hasVA && /#\s*\d{3,}/.test(addr);
 
-        const addrEntries = Object.values(addrMap)
-            .map(a => `<div style="margin-left:10px"><b>${renderAddress(a.addr, isVAAddress(a.addr))}</b><br>${a.labels.map(l => `<span class="copilot-tag">${escapeHtml(l)}</span>`).join(' ')}</div>`);
+        const addrValues = Object.values(addrMap);
+        const hasRAAddr = addrValues.some(a => a.labels.includes('Agent'));
+        const addrEntries = addrValues
+            .map(a => {
+                const br = a.labels.includes('Agent') ? '' : '<br>';
+                const tags = a.labels.map(l => `<span class="copilot-tag">${escapeHtml(l)}</span>`).join(' ');
+                return `<div style="margin-left:10px"><b>${renderAddress(a.addr, isVAAddress(a.addr))}</b>${br}${tags}</div>`;
+            });
+        if (!hasRAAddr) {
+            addrEntries.push('<div><span class="copilot-tag">NO RA INFO</span></div>');
+        }
 
         // Render del HTML
         let html = '';
