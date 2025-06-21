@@ -192,6 +192,10 @@ information scraped from the current page.
   **NO RA INFO**.
 - Fixed blank lines after the RA/VA labels in Gmail Review Mode when the agent
   name was not detected. The AGENT section now shows **NO RA INFO**.
+- Gmail Review Mode hides the **ORDER SUMMARY** heading and reduces the space
+  before the Quick Summary.
+- Names in the Quick Summary now include **CLIENT** and **BILLING** tags when
+  they appear in those sections.
 
 ## Known limitations
 

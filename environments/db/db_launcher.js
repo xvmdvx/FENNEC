@@ -1225,6 +1225,11 @@
             });
         }
 
+        const client = getClientInfo();
+        if (client && client.name) addRole(client.name, 'CLIENT');
+        const billing = getBillingInfo();
+        if (billing && billing.cardholder) addRole(billing.cardholder, 'BILLING');
+
         const addrs = [];
         const pushAddr = (label, addr, name) => {
             if (!isValidField(addr) || isInternal(name, addr)) return;
@@ -1330,7 +1335,6 @@
         html += quickSection;
         dbSections.push(quickSection);
 
-        const client = getClientInfo();
         if (client && (client.id || client.name || client.email)) {
             const lines = [];
             if (client.name) {
@@ -1367,7 +1371,6 @@
             dbSections.push(clientSection);
         }
 
-        const billing = getBillingInfo();
         if (billing) {
             const linesB = [];
             if (billing.cardholder) {
