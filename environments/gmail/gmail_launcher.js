@@ -181,6 +181,17 @@
                 const compBox = compLabel ? compLabel.nextElementSibling : null;
                 if (compBox) {
                     compBox.dataset.reviewMerged = "1";
+                    const purposeEl = compBox.querySelector('.company-purpose');
+                    if (purposeEl) {
+                        let prev = purposeEl.previousElementSibling;
+                        while (prev) {
+                            const toRemove = prev;
+                            prev = prev.previousElementSibling;
+                            toRemove.remove();
+                        }
+                    }
+                    const last = compBox.lastElementChild;
+                    if (last && !last.textContent.trim()) last.remove();
                     orderBox.appendChild(compBox);
                 }
                 if (compLabel) compLabel.remove();
@@ -514,13 +525,13 @@
                 const companyName = escapeHtml(storedOrderInfo.companyName || '');
                 if (companyName) {
                     const cLink = nameBase ? `<a href="#" id="company-link" class="copilot-sos copilot-link" data-url="${nameBase}" data-query="${companyName}" data-type="name">${companyName}</a>` : companyName;
-                    html += `<div><b>${cLink}</b></div>`;
+                    html += `<div class="order-summary-company"><b>${cLink}</b></div>`;
                 }
                 if (storedOrderInfo.companyId) {
                     const idBase = buildSosUrl(storedOrderInfo.companyState, null, 'id');
                     const compId = escapeHtml(storedOrderInfo.companyId);
                     const idLink = idBase ? `<a href="#" class="copilot-sos copilot-link" data-url="${idBase}" data-query="${compId}" data-type="id">${compId}</a>` : compId;
-                    html += `<div>${idLink}</div>`;
+                    html += `<div>${idLink} ${renderCopyIcon(storedOrderInfo.companyId)}</div>`;
                 }
             }
             if (orderId) html += `<div><b><a href="#" id="order-link" class="order-link">${renderCopy(orderId)}</a> ${renderCopyIcon(orderId)}</b></div>`;
