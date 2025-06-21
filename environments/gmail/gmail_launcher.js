@@ -215,6 +215,10 @@
         }
 
         function applyReviewMode() {
+            const header = document.querySelector("#copilot-sidebar .order-summary-header");
+            if (header) header.style.display = reviewMode ? "none" : "";
+            const orderBoxEl = document.querySelector("#copilot-sidebar .order-summary-box");
+            if (orderBoxEl) orderBoxEl.style.marginTop = reviewMode ? "4px" : "12px";
             const dnaRow = document.querySelector("#copilot-sidebar .copilot-dna");
             const dnaBtn = document.getElementById("btn-dna");
             if (reviewMode) {
