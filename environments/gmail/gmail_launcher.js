@@ -356,6 +356,14 @@
             return `<span class="copilot-copy-icon" data-copy="${esc}" title="Copy">⧉</span>`;
         }
 
+        // Renders copyable text as a clickable link
+        function renderCopyLink(text, url, id = '') {
+            if (!text) return '<span style="color:#aaa">-</span>';
+            const esc = escapeHtml(text);
+            const idAttr = id ? ` id="${id}"` : '';
+            return `<a href="#"${idAttr} class="copilot-copy" data-copy="${esc}" data-url="${escapeHtml(url)}">${esc}</a>`;
+        }
+
         function parseOrderDetails(text) {
             const details = {};
 
@@ -443,8 +451,11 @@
             const orderId = context?.orderNumber || (storedOrderInfo && storedOrderInfo.orderId) || '';
             const url = orderId ? `https://db.incfile.com/incfile/order/detail/${orderId}` : '#';
 
-            let html = `<div id="order-summary-link" data-url="${url}" style="text-align:center">`;
-            if (orderId) html += `<b>${renderCopy(orderId)} ${renderCopyIcon(orderId)}</b>`;
+            let html = `<div style="text-align:center">`;
+            if (orderId) {
+                const link = renderCopyLink(orderId, url, "order-summary-link");
+                html += `<div><b>${link} ${renderCopyIcon(orderId)}</b></div>`;
+            }
             if (reviewMode && storedOrderInfo) {
                 if (storedOrderInfo.type) html += `<div>${escapeHtml(storedOrderInfo.type)}</div>`;
                 if (storedOrderInfo.expedited) html += `<div><span class="copilot-tag">Expedited</span></div>`;

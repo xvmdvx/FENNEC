@@ -172,6 +172,7 @@ information scraped from the current page.
 - Officer and Shareholder sections are omitted for LLC orders.
 - Review Mode centers the order info with a clickable link to the order, removes the duplicate RA/VA tags from the Quick Summary and adds a new **CLIENT** box with the client ID, email, order count and LTV. This box is hidden unless Review Mode is active.
 - The ORDER SUMMARY in Review Mode now displays the order type and whether it is **Expedited**, shows the company name and ID beneath the sender details and includes a **BILLING** section pulled from the DB page. The Client box lists any roles held within the company or a purple **NOT LISTED** tag.
+- The Gmail ORDER SUMMARY layout was adjusted. The order number now matches the company heading size, opens the DB page when clicked and includes a copy icon. The order type and Expedited label appear below, followed by the sender name and email.
 
 ## Known limitations
 

@@ -995,6 +995,10 @@
 
     function extractAndShowFormationData(isAmendment = false) {
         const dbSections = [];
+        const completionLi = Array.from(document.querySelectorAll('li')).find(li =>
+            li.querySelector('a') && getText(li.querySelector('a')).toLowerCase() === 'completion date'
+        );
+        const expedited = completionLi && /expedited/i.test(getText(completionLi.querySelector('span')) || '');
         function addEmptySection(label) {
             const section = `
             <div class="section-label">${label}</div>
@@ -1458,7 +1462,12 @@
         }
 
         const orderInfo = getBasicOrderInfo();
-        chrome.storage.local.set({ sidebarDb: dbSections, sidebarOrderId: orderInfo.orderId });
+        orderInfo.type = currentOrderTypeText || orderInfo.type;
+        orderInfo.expedited = expedited;
+        orderInfo.companyName = company && company.name ? company.name : '';
+        orderInfo.companyId = company && company.stateId ? company.stateId : '';
+        orderInfo.companyState = company && company.state ? company.state : '';
+        chrome.storage.local.set({ sidebarDb: dbSections, sidebarOrderId: orderInfo.orderId, sidebarOrderInfo: orderInfo });
 
         const body = document.getElementById('copilot-body-content');
         if (body) {
