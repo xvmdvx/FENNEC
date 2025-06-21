@@ -286,4 +286,6 @@ Reload the extension after editing the manifest.
   icon is clicked.
 - When the parent order cannot be detected the console lists all scanned
   elements with their text for easier debugging.
+- Fixed detection when the parent order number appears in a sibling element
+  next to the label inside the `#vcomp` tab.
 

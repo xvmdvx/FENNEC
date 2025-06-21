@@ -1737,7 +1737,10 @@
             return null;
         }
         console.log("[Copilot] Parent order element text:", getText(parentEl).trim());
-        const anchor = parentEl.querySelector('a[href*="/order/detail/"]');
+        let anchor = parentEl.querySelector('a[href*="/order/detail/"]');
+        if (!anchor && parentEl.nextElementSibling) {
+            anchor = parentEl.nextElementSibling.querySelector('a[href*="/order/detail/"]');
+        }
         if (anchor) {
             console.log("[Copilot] Found parent order link", anchor.href);
             const m = anchor.href.match(/detail\/(\d+)/);
@@ -1752,9 +1755,28 @@
             }
             console.log("[Copilot] No numeric ID in parent link");
         }
-        const digits = parentEl.textContent.replace(/\D/g, '');
+        let digits = parentEl.textContent.replace(/\D/g, '');
+        if (!digits) {
+            let valEl = parentEl.nextElementSibling;
+            const container = parentEl.closest('div');
+            if ((!valEl || !getText(valEl)) && container) {
+                if (container.nextElementSibling && getText(container.nextElementSibling)) {
+                    valEl = container.nextElementSibling;
+                } else {
+                    const siblings = Array.from(container.parentElement.children);
+                    const idx = siblings.indexOf(container);
+                    for (let i = idx + 1; i < siblings.length; i++) {
+                        if (getText(siblings[i])) {
+                            valEl = siblings[i];
+                            break;
+                        }
+                    }
+                }
+            }
+            if (valEl) digits = valEl.textContent.replace(/\D/g, '');
+        }
         if (digits) console.log("[Copilot] Extracted ID from text:", digits);
-        else console.log("[Copilot] No digits found in parent element text");
+        else console.log("[Copilot] No digits found in parent element text or siblings");
         return digits || null;
     }
 
