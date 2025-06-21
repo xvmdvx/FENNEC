@@ -361,6 +361,12 @@
             cLabel.style.display = reviewMode ? '' : 'none';
             cBox.style.display = reviewMode ? '' : 'none';
         }
+        const bLabel = document.getElementById('billing-section-label');
+        const bBox = document.getElementById('billing-section-box');
+        if (bLabel && bBox) {
+            bLabel.style.display = reviewMode ? '' : 'none';
+            bBox.style.display = reviewMode ? '' : 'none';
+        }
     }
 
     chrome.storage.local.get({ extensionEnabled: true, lightMode: false, bentoMode: false, fennecReviewMode: false }, ({ extensionEnabled, lightMode, bentoMode, fennecReviewMode }) => {
@@ -1302,6 +1308,30 @@
             dbSections.push(clientSection);
         }
 
+        const billing = getBillingInfo();
+        if (billing) {
+            const linesB = [];
+            if (billing.cardType && billing.last4) {
+                linesB.push(`<div>${renderCopy(billing.cardType)} \u2022 ${renderCopy(billing.last4)}</div>`);
+            } else {
+                if (billing.cardType) linesB.push(`<div>${renderCopy(billing.cardType)}</div>`);
+                if (billing.last4) linesB.push(`<div>Last 4: ${renderCopy(billing.last4)}</div>`);
+            }
+            if (billing.expiry) linesB.push(`<div>Exp: ${renderCopy(billing.expiry)}</div>`);
+            if (billing.cardholder) linesB.push(`<div>${renderCopy(billing.cardholder)}</div>`);
+            const addr = renderAddress(billing.address, isVAAddress(billing.address));
+            if (addr) linesB.push(`<div>${addr}</div>`);
+            const billingSection = `
+            <div id="billing-section-label" class="section-label">BILLING:</div>
+            <div id="billing-section-box" class="white-box" style="margin-bottom:10px">
+                ${linesB.join('')}
+            </div>`;
+            html += billingSection;
+            dbSections.push(billingSection);
+        } else {
+            addEmptySection('BILLING:');
+        }
+
         if (currentOrderType !== 'formation') {
             html += `<div id="family-tree-orders" class="ft-collapsed"></div>`;
         }
@@ -1727,6 +1757,30 @@
             }
         }
         return { id: '', orders: '', ltv: '', name: '', email: '' };
+    }
+
+    function getBillingInfo() {
+        const raw = extractSingle('#vbilling .form-body', [
+            {name: 'cardholder', label: 'cardholder'},
+            {name: 'cardType', label: 'card type'},
+            {name: 'expiry', label: 'expiration'},
+            {name: 'last4', label: 'last 4'},
+            {name: 'street', label: 'street'},
+            {name: 'street1', label: 'street 1'},
+            {name: 'street2', label: 'street 2'},
+            {name: 'cityStateZipCountry', label: 'city, state, zip, country'},
+            {name: 'cityStateZip', label: 'city, state, zip'},
+            {name: 'country', label: 'country'},
+            {name: 'address', label: 'address'}
+        ]);
+        if (!raw) return null;
+        return {
+            cardholder: raw.cardholder,
+            cardType: raw.cardType,
+            expiry: raw.expiry,
+            last4: raw.last4,
+            address: buildAddress(raw)
+        };
     }
 
     function diagnoseHoldOrders(orders) {
