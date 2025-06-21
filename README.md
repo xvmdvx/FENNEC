@@ -239,6 +239,8 @@ Reload the extension after editing the manifest.
   background tabs in the same window.
 - Always creates the Family Tree container if missing so the panel toggles
   reliably.
+- Fixed the Family Tree icon triggering **🩺 DIAGNOSE** on the first click.
+  Triple-clicking now runs the diagnose overlay once the tree loads.
 - Fixed Light Mode tags with black backgrounds showing black text.
 - Version number updated to **v0.3** so the interface matches `manifest.json`.
   - Fixed Review Mode setting so Gmail and DB pages stay synchronized.
