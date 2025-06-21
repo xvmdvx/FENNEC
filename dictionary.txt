@@ -1,0 +1,13 @@
+Project Reference Dictionary
+===========================
+
+DB - All functions within the DB interface.
+SB - The sidebar shown by the extension.
+DB SB - The sidebar displayed on DB pages.
+GM SB - The sidebar displayed on Gmail pages.
+MAIN - Formation orders (Silver, Gold, Platinum).
+MISC - All non-formation orders.
+REVIEW MODE - The extension's review mode.
+DB SB MAIN - Database sidebar for formation orders.
+DB SB MAIN REVIEW MODE - Database sidebar for formation orders when Review Mode is active.
+DB SB MISC - Database sidebar for miscellaneous (non-formation) orders.

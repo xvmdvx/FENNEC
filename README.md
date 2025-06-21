@@ -192,6 +192,11 @@ information scraped from the current page.
   run under Node.js or outside the browser context.
 - The extension currently supports Gmail plus DB order detail and storage URLs.
 
+## Reference dictionary
+
+A small `dictionary.txt` file in the repository root lists common short forms like **DB**, **SB**, **MAIN**, **MISC** and **REVIEW MODE**.
+
+
 ## Development
 
 This repository now includes a minimal `package.json` to simplify future testing and build automation. The `npm test` command prints manual testing steps:
