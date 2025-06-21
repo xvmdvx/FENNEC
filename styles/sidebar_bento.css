@@ -1,33 +1,80 @@
-/* Bento grid inspired theme with soft pastel blocks */
+/*
+ * Enhanced Bento Mode styling.
+ * Adds animated gradient backgrounds, smooth transitions and
+ * subtle hover effects for a cleaner look.
+ */
+
+@keyframes bento-gradient {
+    0% {
+        background-position: 0% 50%;
+    }
+    100% {
+        background-position: 100% 50%;
+    }
+}
+
 .fennec-bento-mode #copilot-sidebar {
-    background: #f8f8f8;
+    background: linear-gradient(120deg,
+        #ff9a9e,
+        #fad0c4,
+        #fbc2eb,
+        #a6c1ee);
+    background-size: 300% 300%;
+    animation: bento-gradient 12s ease infinite;
     color: #222;
+    font-family: "Segoe UI", Arial, sans-serif;
 }
+
 .fennec-bento-mode .copilot-header {
-    background: #ffe4b5;
+    background: rgba(255, 255, 255, 0.6);
+    backdrop-filter: blur(8px);
     color: #000;
-    border-bottom: 1px solid #ddd;
+    border-bottom: none;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.1);
 }
+
 .fennec-bento-mode .copilot-button {
-    background-color: #ffd1dc;
-    color: #000;
-    border: 1px solid #ccc;
+    background-color: rgba(255, 255, 255, 0.8);
+    color: #333;
+    border: none;
+    border-radius: 8px;
+    padding: 6px 12px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    transition: transform 0.2s, box-shadow 0.2s;
 }
+
+.fennec-bento-mode .copilot-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+}
+
 .fennec-bento-mode .copilot-body {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 8px;
+    gap: 10px;
+    padding: 6px;
 }
+
 .fennec-bento-mode .copilot-body > * {
     grid-column: span 2;
 }
+
 .fennec-bento-mode .order-summary-box,
 .fennec-bento-mode .intel-summary-box,
 .fennec-bento-mode .issue-summary-box,
 .fennec-bento-mode #copilot-sidebar .white-box {
-    background: #fff;
-    border: 1px solid #ddd;
+    background: rgba(255, 255, 255, 0.9);
+    border: none;
     color: #222;
-    border-radius: 8px;
-    padding: 8px;
+    border-radius: 10px;
+    padding: 10px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+    transition: transform 0.2s;
+}
+
+.fennec-bento-mode .order-summary-box:hover,
+.fennec-bento-mode .intel-summary-box:hover,
+.fennec-bento-mode .issue-summary-box:hover,
+.fennec-bento-mode #copilot-sidebar .white-box:hover {
+    transform: translateY(-2px);
 }
