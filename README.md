@@ -179,6 +179,9 @@ information scraped from the current page.
 - The Gmail ORDER SUMMARY shows the order number as a clickable link with a copy icon. The order type and an **Expedited** tag appear below it, followed by the sender name and email, which are combined when identical.
 - The Gmail order link now uses white text that only underlines on hover, and the order type and expedited status appear side by side as labels.
 - The DB quick summary places RA/VA labels closer to the Registered Agent address.
+- Gmail Review Mode removes the **COMPANY** heading in the order summary and
+  trims blank agent fields. When no agent details are available the section shows
+  **NO RA INFO**.
 
 ## Known limitations
 

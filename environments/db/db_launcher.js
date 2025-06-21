@@ -1080,7 +1080,7 @@
             expiration: agentRaw.expiration,
             address: buildAddress(agentRaw)
         } : {};
-        const hasAgentInfo = agent && Object.values(agent).some(v => isValidField(v));
+        const hasAgentInfo = agent && (isValidField(agent.name) || isValidField(agent.address));
 
 
 
@@ -1348,7 +1348,12 @@
                 `<div><span class="${raClass}">RA: ${hasRA ? 'Sí' : 'No'}</span> ` +
                 `<span class="${vaClass}">VA: ${hasVA ? 'Sí' : 'No'}</span></div>`
             );
-            const compSection = `
+            const compSection = reviewMode
+                ? `
+            <div class="white-box" style="margin-bottom:10px">
+                ${companyLines.join('')}
+            </div>`
+                : `
             <div class="section-label">COMPANY:</div>
             <div class="white-box" style="margin-bottom:10px">
                 ${companyLines.join('')}
@@ -1381,15 +1386,23 @@
             }
             const statusHtml = statusDisplay ? `<span class="${statusClass}">${escapeHtml(statusDisplay)}</span>`
                                               : '<span style="color:#aaa">-</span>';
-            const agentSection = `
+            const agentLines = [];
+            const nameHtml = renderName(agent.name);
+            if (nameHtml) agentLines.push(`<div><b>${nameHtml}</b></div>`);
+            const addrHtml2 = renderAddress(agent.address, isVAAddress(agent.address));
+            if (addrHtml2) agentLines.push(`<div>${addrHtml2}</div>`);
+            if (showStatus) agentLines.push(`<div>${statusHtml}</div>`);
+            if (agentLines.length) {
+                const agentSection = `
             <div class="section-label">AGENT:</div>
             <div class="white-box" style="margin-bottom:10px">
-                <div><b>${renderName(agent.name)}</b></div>
-                <div>${renderAddress(agent.address, isVAAddress(agent.address))}</div>
-                ${showStatus ? `<div>${statusHtml}</div>` : ""}
+                ${agentLines.join('')}
             </div>`;
-            html += agentSection;
-            dbSections.push(agentSection);
+                html += agentSection;
+                dbSections.push(agentSection);
+            } else {
+                addEmptySection('AGENT:', 'NO RA INFO');
+            }
         } else {
             addEmptySection('AGENT:', 'NO RA INFO');
         }
