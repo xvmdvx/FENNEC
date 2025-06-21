@@ -1080,6 +1080,7 @@
             expiration: agentRaw.expiration,
             address: buildAddress(agentRaw)
         } : {};
+        const hasAgentInfo = agent && Object.values(agent).some(v => isValidField(v));
 
 
 
@@ -1347,7 +1348,10 @@
             companyLines.push(`<div>${renderKb(company.state)}</div>`);
             companyLines.push(addrHtml);
             companyLines.push(`<div class="company-purpose">${renderCopy(company.purpose)}</div>`);
-            companyLines.push(`<div><span class="${raClass}">RA: ${hasRA ? 'Sí' : 'No'}</span> <span class="${vaClass}">VA: ${hasVA ? 'Sí' : 'No'}</span></div>`);
+            companyLines.push(
+                `<div><span class="${raClass}">RA: ${hasRA ? 'Sí' : 'No'}</span> ` +
+                `<span class="${vaClass}">VA: ${hasVA ? 'Sí' : 'No'}</span>${hasAgentInfo ? '' : ' <span class="copilot-tag">NO RA INFO</span>'}</div>`
+            );
             const compSection = `
             <div class="section-label">COMPANY:</div>
             <div class="white-box" style="margin-bottom:10px">
@@ -1363,7 +1367,6 @@
             addEmptySection('COMPANY:');
         }
         // AGENT
-        const hasAgentInfo = agent && Object.values(agent).some(v => isValidField(v));
         if (hasAgentInfo) {
             const expDate = agent.expiration ? parseDate(agent.expiration) : null;
             const expired = expDate && expDate < new Date();
