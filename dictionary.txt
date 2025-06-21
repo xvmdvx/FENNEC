@@ -1,13 +1,36 @@
-Project Reference Dictionary
-===========================
+FENNEC PROJECT: INTERNAL GLOSSARY
 
-DB - All functions within the DB interface.
-SB - The sidebar shown by the extension.
-DB SB - The sidebar displayed on DB pages.
-GM SB - The sidebar displayed on Gmail pages.
-MAIN - Formation orders (Silver, Gold, Platinum).
-MISC - All non-formation orders.
-REVIEW MODE - The extension's review mode.
-DB SB MAIN - Database sidebar for formation orders.
-DB SB MAIN REVIEW MODE - Database sidebar for formation orders when Review Mode is active.
-DB SB MISC - Database sidebar for miscellaneous (non-formation) orders.
+────────────────────────────
+PREFIXES & CONTEXT INDICATORS
+────────────────────────────
+
+DB        → Refers to the DATABASE SYSTEM context (main interface, logic, orders)
+GM        → Refers to the GMAIL context (inbox, email view, content analysis)
+SB        → Refers to SIDEBAR component (regardless of context, DB or GM)
+REVIEW MODE → Indicates a special visual and functional mode for reviewing data
+MAIN      → Indicates FORMATION orders (Silver, Gold, Platinum tiers)
+MISC      → All NON-formation orders (Annual Reports, Amendments, Dissolutions, etc)
+
+────────────────────────────
+COMBINED REFERENCES & EXAMPLES
+────────────────────────────
+
+DB SB                → DATABASE SIDEBAR (global context - Clasic mode)
+DB SB REVIEW MOD     → DATABASE SIDEBAR (global REVIEW MODE)
+DB SB MAIN           → DATABASE SIDEBAR for FORMATION orders only
+DB SB MISC           → DATABASE SIDEBAR for NON-FORMATION orders
+DB SB MAIN REVIEW MODE → DATABASE SIDEBAR in REVIEW MODE for FORMATION orders
+DB SB ALL REVIEW MODE = DB SB REVIEW MODE → DATABASE SIDEBAR in REVIEW MODE for ALL order types
+DB SB OFFICERS       → Officers section within DB SIDEBAR
+
+GM SB                → GMAIL SIDEBAR (visible during email inspection)
+GM SB REVIEW MODE    → GMAIL SIDEBAR when displaying full REVIEW MODE data
+GM SB XRAY     → The XRAY function/button/box inside the GMAIL SIDEBAR
+GM SB OPEN ORRDER BUTTON     → The OPEN ORDER button inside the GMAIL SIDEBAR in Clasic Mode.
+
+────────────────────────────
+NOTES
+────────────────────────────
+
+- Always use prefixes to ensure clarity when referencing components (e.g., "DB SB XRAY" instead of just "XRAY").
+- REVIEW MODE is a *visual and functional state*, not a component by itself.
