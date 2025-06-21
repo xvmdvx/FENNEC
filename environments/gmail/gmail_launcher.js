@@ -117,7 +117,7 @@
                     compBox.dataset.reviewMerged = "1";
                     orderBox.appendChild(compBox);
                 }
-                if (compLabel) compLabel.style.display = "none";
+                if (compLabel) compLabel.remove();
                 orderBox.insertAdjacentElement("afterend", quick);
                 quick.classList.remove("quick-summary-collapsed");
                 quick.style.maxHeight = quick.scrollHeight + "px";
