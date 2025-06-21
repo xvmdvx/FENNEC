@@ -108,6 +108,8 @@
             const issueBox = document.getElementById("issue-summary-box");
             const clientLabel = container.querySelector("#client-section-label");
             const clientBox = container.querySelector("#client-section-box");
+            const billingLabel = container.querySelector("#billing-section-label");
+            const billingBox = container.querySelector("#billing-section-box");
             if (!quick || !orderBox) return;
             if (reviewMode) {
                 const compLabel = Array.from(container.querySelectorAll(".section-label"))
@@ -122,9 +124,10 @@
                 quick.classList.remove("quick-summary-collapsed");
                 quick.style.maxHeight = quick.scrollHeight + "px";
                 Array.from(container.children).forEach(el => {
-                    if (el !== quick && el !== clientLabel && el !== clientBox) el.style.display = "none";
+                    if (el !== quick && el !== clientLabel && el !== clientBox && el !== billingLabel && el !== billingBox) el.style.display = "none";
                 });
                 if (clientLabel && clientBox) { clientLabel.style.display = ""; clientBox.style.display = ""; }
+                if (billingLabel && billingBox) { billingLabel.style.display = ""; billingBox.style.display = ""; }
                 if (issueBox) issueBox.style.display = "none";
             } else {
                 if (issueBox) issueBox.style.display = "";
@@ -132,6 +135,7 @@
                 if (quick.parentElement !== container) container.prepend(quick);
                 showFullDetails();
                 if (clientLabel && clientBox) { clientLabel.style.display = "none"; clientBox.style.display = "none"; }
+                if (billingLabel && billingBox) { billingLabel.style.display = "none"; billingBox.style.display = "none"; }
             }
         }
 
