@@ -1558,6 +1558,29 @@
         extractAndShowFormationData(true);
     }
 
+    function getBillingInfo() {
+        const raw = extractSingle('#vbilling .form-body', [
+            {name: 'cardholder', label: 'cardholder'},
+            {name: 'cardType', label: 'card type'},
+            {name: 'expiry', label: 'expiration'},
+            {name: 'last4', label: 'last 4'},
+            {name: 'street', label: 'street'},
+            {name: 'street1', label: 'street 1'},
+            {name: 'street2', label: 'street 2'},
+            {name: 'cityStateZipCountry', label: 'city, state, zip, country'},
+            {name: 'cityStateZip', label: 'city, state, zip'},
+            {name: 'country', label: 'country'},
+            {name: 'address', label: 'address'}
+        ]);
+        if (!raw) return null;
+        return {
+            cardholder: raw.cardholder,
+            cardType: raw.cardType,
+            expiry: raw.expiry,
+            last4: raw.last4,
+            address: buildAddress(raw)
+        };
+    }
     });
 
     function openCancelPopup() {
@@ -1786,29 +1809,6 @@
         return { id: '', orders: '', ltv: '', name: '', email: '', phone: '' };
     }
 
-    function getBillingInfo() {
-        const raw = extractSingle('#vbilling .form-body', [
-            {name: 'cardholder', label: 'cardholder'},
-            {name: 'cardType', label: 'card type'},
-            {name: 'expiry', label: 'expiration'},
-            {name: 'last4', label: 'last 4'},
-            {name: 'street', label: 'street'},
-            {name: 'street1', label: 'street 1'},
-            {name: 'street2', label: 'street 2'},
-            {name: 'cityStateZipCountry', label: 'city, state, zip, country'},
-            {name: 'cityStateZip', label: 'city, state, zip'},
-            {name: 'country', label: 'country'},
-            {name: 'address', label: 'address'}
-        ]);
-        if (!raw) return null;
-        return {
-            cardholder: raw.cardholder,
-            cardType: raw.cardType,
-            expiry: raw.expiry,
-            last4: raw.last4,
-            address: buildAddress(raw)
-        };
-    }
 
     function diagnoseHoldOrders(orders) {
         let overlay = document.getElementById('fennec-diagnose-overlay');
