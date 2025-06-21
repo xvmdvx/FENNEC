@@ -1295,7 +1295,7 @@
         if (client && (client.id || client.name || client.email)) {
             const lines = [];
             if (client.id) {
-                const url = `${location.origin}/incfile/order/users/get-user/${client.id}?ownerID=${client.id}`;
+                const url = `${location.origin}/incfile/companies/${client.id}`;
                 lines.push(`<div><b><a href="${url}" target="_blank">${escapeHtml(client.id)}</a></b></div>`);
             }
             if (client.name) {
@@ -1317,8 +1317,10 @@
                 const digits = client.phone.replace(/[^\d]/g, '');
                 lines.push(`<div><a href="tel:${digits}">${escapeHtml(client.phone)}</a></div>`);
             }
-            if (client.orders) lines.push(`<div>Companies: ${renderCopy(client.orders)}</div>`);
-            if (client.ltv) lines.push(`<div>LTV: ${renderCopy(client.ltv)}</div>`);
+            const counts = [];
+            if (client.orders) counts.push(`Companies: ${renderCopy(client.orders)}`);
+            if (client.ltv) counts.push(`LTV: ${renderCopy(client.ltv)}`);
+            if (counts.length) lines.push(`<div>${counts.join(' \u2022 ')}</div>`);
             const clientSection = `
             <div id="client-section-label" class="section-label">CLIENT:</div>
             <div id="client-section-box" class="white-box" style="margin-bottom:10px">
@@ -1801,10 +1803,14 @@
                 let email = '';
                 let phone = '';
                 if (contactCell) {
+                    const mailEl = contactCell.querySelector('a[href^="mailto:"]');
+                    if (mailEl) email = getText(mailEl);
                     const text = getText(contactCell);
-                    const em = text.match(/[\w.+-]+@[\w.-]+/);
-                    const ph = text.match(/\(?\d{3}\)?[-\s]?\d{3}[-\s]?\d{4}/);
-                    if (em) email = em[0];
+                    if (!email) {
+                        const em = text.match(/[\w.+-]+@[\w.-]+/);
+                        if (em) email = em[0];
+                    }
+                    const ph = text.match(/\(?\d{3}\)?[-\s.]?\d{3}[-\s.]?\d{4}/);
                     if (ph) phone = ph[0];
                 }
                 return { id, orders, ltv, name, email, phone };
