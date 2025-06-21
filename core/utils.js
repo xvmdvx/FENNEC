@@ -74,6 +74,7 @@ function attachCommonListeners(rootEl) {
     const ftIcon = document.getElementById('family-tree-icon');
     if (ftIcon) {
         ftIcon.addEventListener('click', () => {
+            console.log('[Copilot] Family Tree icon clicked');
             let container = document.getElementById('family-tree-orders');
             if (!container) {
                 const qs = document.getElementById('quick-summary');
@@ -99,7 +100,9 @@ function attachCommonListeners(rootEl) {
                 return;
             }
             const parentId = typeof getParentOrderId === 'function' ? getParentOrderId() : null;
+            console.log('[Copilot] Detected parent order ID:', parentId);
             if (!parentId) {
+                console.warn('[Copilot] Parent order not found');
                 alert('Parent order not found');
                 return;
             }
