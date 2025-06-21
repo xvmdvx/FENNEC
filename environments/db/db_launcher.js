@@ -1762,6 +1762,17 @@
                 if (digits) return digits;
             }
         }
+
+        const compTab = document.querySelector('#vcomp, #vcompany');
+        if (compTab && /parent order/i.test(compTab.textContent)) {
+            const anchor = compTab.querySelector('a[href*="/order/detail/"]');
+            if (anchor) {
+                const m = anchor.href.match(/detail\/(\d+)/);
+                if (m) return m[1];
+            }
+            const digits = compTab.textContent.replace(/\D/g, '');
+            if (digits) return digits;
+        }
         return null;
     }
 
