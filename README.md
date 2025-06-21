@@ -183,7 +183,7 @@ information scraped from the current page.
 - The ORDER SUMMARY in Review Mode now displays the order type and whether it is **Expedited**, shows the company name and ID beneath the sender details and includes a **BILLING** section pulled from the DB page. The Client box lists any roles held within the company or a purple **NOT LISTED** tag.
 - In Gmail Review Mode a **BILLING** box appears below the Client section using data from the DB billing tab.
 - The Client box now lists the name first in bold, shows the client ID as a plain clickable link and combines the email and phone on a single line. The Billing box displays the cardholder first, then the card type, last four digits and expiration on one line and formats the address in two lines.
-- The Gmail ORDER SUMMARY shows the order number as a clickable link with a copy icon. The order type and an **Expedited** tag appear below it, followed by the sender name and email, which are combined when identical.
+- The Gmail ORDER SUMMARY in Review Mode now begins with the company name as a bold clickable link, shows the state ID on the next line when available, then lists the order number with type and **Expedited** labels. Sender name and email are omitted.
 - The Gmail order link now uses white text that only underlines on hover, and the order type and expedited status appear side by side as labels.
 - The DB quick summary places RA/VA labels closer to the Registered Agent address.
 - Gmail Review Mode removes the **COMPANY** heading in the order summary and
