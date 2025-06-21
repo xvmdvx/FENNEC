@@ -1294,10 +1294,30 @@
         const client = getClientInfo();
         if (client && (client.id || client.name || client.email)) {
             const lines = [];
-            if (client.id) lines.push(`<div><b>${renderCopy(client.id)}</b></div>`);
-            if (client.name) lines.push(`<div>${renderCopy(client.name)}</div>`);
-            if (client.email) lines.push(`<div>${renderCopy(client.email)}</div>`);
-            if (client.orders) lines.push(`<div>Orders: ${renderCopy(client.orders)}</div>`);
+            if (client.id) {
+                const url = `${location.origin}/incfile/order/users/get-user/${client.id}?ownerID=${client.id}`;
+                lines.push(`<div><b><a href="${url}" target="_blank">${escapeHtml(client.id)}</a></b></div>`);
+            }
+            if (client.name) {
+                lines.push(`<div>${renderCopy(client.name)}</div>`);
+                const r = roleMap[client.name.trim().toLowerCase()];
+                if (r && r.roles && r.roles.size) {
+                    const tags = Array.from(r.roles)
+                        .map(role => `<span class="copilot-tag">${escapeHtml(role)}</span>`)
+                        .join(' ');
+                    lines.push(`<div>${tags}</div>`);
+                } else {
+                    lines.push(`<div><span class="copilot-tag copilot-tag-purple">NOT LISTED</span></div>`);
+                }
+            }
+            if (client.email) {
+                lines.push(`<div><a href="mailto:${encodeURIComponent(client.email)}">${escapeHtml(client.email)}</a></div>`);
+            }
+            if (client.phone) {
+                const digits = client.phone.replace(/[^\d]/g, '');
+                lines.push(`<div><a href="tel:${digits}">${escapeHtml(client.phone)}</a></div>`);
+            }
+            if (client.orders) lines.push(`<div>Companies: ${renderCopy(client.orders)}</div>`);
             if (client.ltv) lines.push(`<div>LTV: ${renderCopy(client.ltv)}</div>`);
             const clientSection = `
             <div id="client-section-label" class="section-label">CLIENT:</div>
@@ -1735,11 +1755,15 @@
                 const contactCell = row.querySelector('td[id^="clientContact"]');
                 const name = nameCell ? getText(nameCell).replace(/^\s*✓?\s*/, '') : '';
                 let email = '';
+                let phone = '';
                 if (contactCell) {
-                    const match = getText(contactCell).match(/[\w.+-]+@[\w.-]+/);
-                    if (match) email = match[0];
+                    const text = getText(contactCell);
+                    const em = text.match(/[\w.+-]+@[\w.-]+/);
+                    const ph = text.match(/\(?\d{3}\)?[-\s]?\d{3}[-\s]?\d{4}/);
+                    if (em) email = em[0];
+                    if (ph) phone = ph[0];
                 }
-                return { id, orders, ltv, name, email };
+                return { id, orders, ltv, name, email, phone };
             }
         }
         const contactHeader = Array.from(document.querySelectorAll('h3.box-title'))
@@ -1753,10 +1777,13 @@
                     .find(l => getText(l).toLowerCase().startsWith('email'));
                 const name = nameLabel ? getText(nameLabel.parentElement.querySelector('.form-control-static')) : '';
                 const email = emailLabel ? getText(emailLabel.parentElement.querySelector('.form-control-static')) : '';
-                return { id: '', orders: '', ltv: '', name, email };
+                const phoneLabel = Array.from(body.querySelectorAll('label'))
+                    .find(l => getText(l).toLowerCase().startsWith('phone'));
+                const phone = phoneLabel ? getText(phoneLabel.parentElement.querySelector('.form-control-static')) : '';
+                return { id: '', orders: '', ltv: '', name, email, phone };
             }
         }
-        return { id: '', orders: '', ltv: '', name: '', email: '' };
+        return { id: '', orders: '', ltv: '', name: '', email: '', phone: '' };
     }
 
     function getBillingInfo() {
