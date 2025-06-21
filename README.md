@@ -258,4 +258,6 @@ Reload the extension after editing the manifest.
 - Common helpers moved to `core/utils.js` and shared by Gmail and DB scripts.
 - Improved parent order detection in the Family Tree view so miscellaneous
   orders load correctly.
+- Further improved detection when the parent order link sits inside the
+  company tab on SB non-formation orders.
 
