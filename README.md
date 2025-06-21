@@ -250,4 +250,6 @@ Reload the extension after editing the manifest.
 - Escaped quotes in the background script so the service worker loads correctly.
   Buttons like **EMAIL SEARCH** and **OPEN ORDER** now open tabs again.
 - Common helpers moved to `core/utils.js` and shared by Gmail and DB scripts.
+- Improved parent order detection in the Family Tree view so miscellaneous
+  orders load correctly.
 
