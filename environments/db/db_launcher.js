@@ -1724,10 +1724,19 @@
             console.log("[Copilot] #vcomp tab not found");
             return null;
         }
-        const parentEl = Array.from(tab.querySelectorAll('label, div, p, li, span, td, strong'))
-            .find(el => /parent order/i.test(getText(el)));
+        const candidates = Array.from(tab.querySelectorAll('label, div, p, li, span, td, strong'));
+        const parentEl = candidates.find(el => /parent order/i.test(getText(el)));
         if (!parentEl) {
             console.log("[Copilot] Parent order element not found");
+            const scanned = candidates
+                .map(el => getText(el).trim())
+                .filter(Boolean)
+                .slice(0, 20);
+            if (scanned.length) {
+                console.log("[Copilot] Scanned sections:", scanned);
+            } else {
+                console.log("[Copilot] No text found in scanned sections");
+            }
             return null;
         }
         console.log("[Copilot] Parent order element text:", getText(parentEl).trim());
