@@ -608,6 +608,23 @@
             });
         }
 
+        function showLoadingState() {
+            currentContext = null;
+            storedOrderInfo = null;
+            const orderBox = document.getElementById('order-summary-content');
+            const dbBox = document.getElementById('db-summary-section');
+            const issueContent = document.getElementById('issue-summary-content');
+            const issueLabel = document.getElementById('issue-status-label');
+            const icon = `<img src="${chrome.runtime.getURL('fennec_icon.png')}" class="loading-fennec"/>`;
+            if (orderBox) orderBox.innerHTML = icon;
+            if (dbBox) dbBox.innerHTML = icon;
+            if (issueContent) issueContent.innerHTML = icon;
+            if (issueLabel) {
+                issueLabel.textContent = '';
+                issueLabel.className = 'issue-status-label';
+            }
+        }
+
         function refreshSidebar() {
             const ctx = extractOrderContextFromEmail();
             currentContext = ctx;
@@ -617,6 +634,8 @@
         }
 
         function handleEmailSearchClick() {
+            showLoadingState();
+
             const context = extractOrderContextFromEmail();
             currentContext = context;
             fillOrderSummaryBox(context);

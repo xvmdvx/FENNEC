@@ -412,6 +412,7 @@
     width: 20px;
     animation: fennec-blink 1s linear infinite;
     vertical-align: middle;
+    filter: brightness(0) invert(1);
 }
 .copilot-footer {
     margin-top: 10px;
