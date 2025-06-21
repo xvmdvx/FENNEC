@@ -1755,10 +1755,10 @@
             }
             console.log("[Copilot] No numeric ID in parent link");
         }
-        let digits = parentEl.textContent.replace(/\D/g, '');
+        let digits = parentEl.textContent.replace(/\D/g, "");
         if (!digits) {
             let valEl = parentEl.nextElementSibling;
-            const container = parentEl.closest('div');
+            const container = parentEl.closest("div");
             if ((!valEl || !getText(valEl)) && container) {
                 if (container.nextElementSibling && getText(container.nextElementSibling)) {
                     valEl = container.nextElementSibling;
@@ -1773,10 +1773,16 @@
                     }
                 }
             }
-            if (valEl) digits = valEl.textContent.replace(/\D/g, '');
+            if (valEl) {
+                console.log("[Copilot] Checked sibling text:", getText(valEl).trim());
+                digits = valEl.textContent.replace(/\D/g, "");
+            }
         }
         if (digits) console.log("[Copilot] Extracted ID from text:", digits);
-        else console.log("[Copilot] No digits found in parent element text or siblings");
+        else {
+            console.log("[Copilot] No digits found in parent element text or siblings");
+            console.log("[Copilot] Parent text scanned:", getText(parentEl).trim());
+        }
         return digits || null;
     }
 
