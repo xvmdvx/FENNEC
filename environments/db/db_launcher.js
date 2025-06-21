@@ -1904,7 +1904,7 @@
         // legacy function kept for compatibility
     }
 
-    function getLastHoldUser() {
+function getLastHoldUser() {
         const trigger = document.querySelector("a[onclick*='modalTrackOrderHistory']");
         if (trigger) trigger.click();
         let attempts = 10;
@@ -1944,6 +1944,10 @@
         check();
     });
 }
+
+    // Expose helpers so core/utils.js can access them
+    window.getParentOrderId = getParentOrderId;
+    window.diagnoseHoldOrders = diagnoseHoldOrders;
 
 chrome.storage.onChanged.addListener((changes, area) => {
     if (area === 'local' && changes.fennecReviewMode) {
