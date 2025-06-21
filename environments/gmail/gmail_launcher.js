@@ -443,8 +443,8 @@
             const orderId = context?.orderNumber || (storedOrderInfo && storedOrderInfo.orderId) || '';
             const url = orderId ? `https://db.incfile.com/incfile/order/detail/${orderId}` : '#';
 
-            let html = `<div id="order-summary-link" data-url="${url}" style="text-align:center">`;
-            if (orderId) html += `<b>${renderCopy(orderId)} ${renderCopyIcon(orderId)}</b>`;
+            let html = `<div id="order-summary-link" style="text-align:center">`;
+            if (orderId) html += `<b><a href="#" id="order-link">${renderCopy(orderId)}</a> ${renderCopyIcon(orderId)}</b>`;
             if (reviewMode && storedOrderInfo) {
                 if (storedOrderInfo.type) html += `<div>${escapeHtml(storedOrderInfo.type)}</div>`;
                 if (storedOrderInfo.expedited) html += `<div><span class="copilot-tag">Expedited</span></div>`;
@@ -462,7 +462,7 @@
             }
             html += '</div>';
             summaryBox.innerHTML = html;
-            const link = summaryBox.querySelector('#order-summary-link');
+            const link = summaryBox.querySelector('#order-link');
             if (link && orderId) {
                 link.addEventListener('click', (e) => {
                     e.preventDefault();
