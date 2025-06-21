@@ -635,6 +635,45 @@
         return `<span class="address-wrapper"><a href="#" class="copilot-address" data-address="${escFull}">${display}</a>${extra}</span>`;
     }
 
+    function renderBillingAddress(info) {
+        if (!info) return '';
+        const parts1 = [];
+        if (isValidField(info.street1)) parts1.push(info.street1.trim());
+        if (isValidField(info.street2)) parts1.push(info.street2.trim());
+        const line1 = parts1.join(' ');
+
+        let line2 = '';
+        if (isValidField(info.cityStateZipCountry)) {
+            line2 = info.cityStateZipCountry.trim();
+        } else {
+            const seg = [];
+            if (isValidField(info.cityStateZip)) seg.push(info.cityStateZip.trim());
+            if (isValidField(info.country) && (!info.cityStateZip || !info.cityStateZip.includes(info.country))) {
+                seg.push(info.country.trim());
+            }
+            line2 = seg.join(', ');
+        }
+
+        const displayLines = [];
+        if (line1) displayLines.push(escapeHtml(line1));
+        if (line2) displayLines.push(escapeHtml(line2));
+        if (!displayLines.length) return '';
+        const full = [line1, line2].filter(Boolean).join(', ');
+        const escFull = escapeHtml(full);
+        return `<span class="address-wrapper"><a href="#" class="copilot-address" data-address="${escFull}">${displayLines.join('<br>')}</a><span class="copilot-usps" data-address="${escFull}" title="USPS Lookup"> ✉️</span></span>`;
+    }
+
+    function formatExpiry(text) {
+        if (!isValidField(text)) return '';
+        const digits = text.replace(/[^0-9]/g, '');
+        if (digits.length >= 4) {
+            const month = digits.slice(0, 2).padStart(2, '0');
+            const year = digits.slice(-2);
+            return `${month}/${year}`;
+        }
+        return text.trim();
+    }
+
     function renderCopy(text) {
         if (!isValidField(text)) return '';
         const esc = escapeHtml(text);
@@ -1294,12 +1333,8 @@
         const client = getClientInfo();
         if (client && (client.id || client.name || client.email)) {
             const lines = [];
-            if (client.id) {
-                const url = `${location.origin}/incfile/companies/${client.id}`;
-                lines.push(`<div><b><a href="${url}" target="_blank">${escapeHtml(client.id)}</a></b></div>`);
-            }
             if (client.name) {
-                lines.push(`<div>${renderCopy(client.name)}</div>`);
+                lines.push(`<div><b>${renderName(client.name)}</b></div>`);
                 const r = roleMap[client.name.trim().toLowerCase()];
                 if (r && r.roles && r.roles.size) {
                     const tags = Array.from(r.roles)
@@ -1310,12 +1345,14 @@
                     lines.push(`<div><span class="copilot-tag copilot-tag-purple">NOT LISTED</span></div>`);
                 }
             }
-            if (client.email) {
-                lines.push(`<div><a href="mailto:${encodeURIComponent(client.email)}">${escapeHtml(client.email)}</a></div>`);
+            if (client.id) {
+                const url = `${location.origin}/incfile/companies/${client.id}`;
+                lines.push(`<div><a href="${url}" class="copilot-link" target="_blank">${escapeHtml(client.id)}</a></div>`);
             }
-            if (client.phone) {
-                const digits = client.phone.replace(/[^\d]/g, '');
-                lines.push(`<div><a href="tel:${digits}">${escapeHtml(client.phone)}</a></div>`);
+            if (client.email || client.phone) {
+                const emailHtml = client.email ? `<a href="mailto:${encodeURIComponent(client.email)}" class="copilot-link">${escapeHtml(client.email)}</a>` : '';
+                const phoneText = client.phone ? ` ${escapeHtml(client.phone)}` : '';
+                lines.push(`<div>${emailHtml}${phoneText}</div>`);
             }
             const counts = [];
             if (client.orders) counts.push(`Companies: ${renderCopy(client.orders)}`);
@@ -1333,15 +1370,15 @@
         const billing = getBillingInfo();
         if (billing) {
             const linesB = [];
-            if (billing.cardType && billing.last4) {
-                linesB.push(`<div>${renderCopy(billing.cardType)} \u2022 ${renderCopy(billing.last4)}</div>`);
-            } else {
-                if (billing.cardType) linesB.push(`<div>${renderCopy(billing.cardType)}</div>`);
-                if (billing.last4) linesB.push(`<div>Last 4: ${renderCopy(billing.last4)}</div>`);
+            if (billing.cardholder) {
+                linesB.push(`<div><b>${renderCopy(billing.cardholder)}</b></div>`);
             }
-            if (billing.expiry) linesB.push(`<div>Exp: ${renderCopy(billing.expiry)}</div>`);
-            if (billing.cardholder) linesB.push(`<div>${renderCopy(billing.cardholder)}</div>`);
-            const addr = renderAddress(billing.address, isVAAddress(billing.address));
+            const cardParts = [];
+            if (billing.cardType) cardParts.push(renderCopy(billing.cardType));
+            if (billing.last4) cardParts.push(renderCopy(billing.last4));
+            if (billing.expiry) cardParts.push(renderCopy(formatExpiry(billing.expiry)));
+            if (cardParts.length) linesB.push(`<div>${cardParts.join(' \u2022 ')}</div>`);
+            const addr = renderBillingAddress(billing);
             if (addr) linesB.push(`<div>${addr}</div>`);
             const billingSection = `
             <div id="billing-section-label" class="section-label">BILLING:</div>
@@ -1580,7 +1617,12 @@
             cardType: raw.cardType,
             expiry: raw.expiry,
             last4: raw.last4,
-            address: buildAddress(raw)
+            address: buildAddress(raw),
+            street1: raw.street1 || raw.street,
+            street2: raw.street2,
+            cityStateZipCountry: raw.cityStateZipCountry,
+            cityStateZip: raw.cityStateZip,
+            country: raw.country
         };
     }
     });
