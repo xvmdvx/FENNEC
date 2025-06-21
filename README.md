@@ -282,4 +282,6 @@ Reload the extension after editing the manifest.
 - Simplified parent order lookup to only search within the `#vcomp` tab.
 - Fixed missing parent order on SB miscellaneous orders when the label is not
   inside a `.form-group` container.
+- Added console logs to help trace parent order detection when the Family Tree
+  icon is clicked.
 

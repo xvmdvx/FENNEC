@@ -1718,19 +1718,37 @@
     }
 
     function getParentOrderId() {
+        console.log("[Copilot] Scanning for parent order in #vcomp");
         const tab = document.querySelector('#vcomp') || document.querySelector('#vcompany');
-        if (!tab) return null;
+        if (!tab) {
+            console.log("[Copilot] #vcomp tab not found");
+            return null;
+        }
         const parentEl = Array.from(tab.querySelectorAll('label, div, p, li, span, td, strong'))
             .find(el => /parent order/i.test(getText(el)));
-        if (!parentEl) return null;
+        if (!parentEl) {
+            console.log("[Copilot] Parent order element not found");
+            return null;
+        }
+        console.log("[Copilot] Parent order element text:", getText(parentEl).trim());
         const anchor = parentEl.querySelector('a[href*="/order/detail/"]');
         if (anchor) {
+            console.log("[Copilot] Found parent order link", anchor.href);
             const m = anchor.href.match(/detail\/(\d+)/);
-            if (m) return m[1];
+            if (m) {
+                console.log("[Copilot] Extracted ID from href:", m[1]);
+                return m[1];
+            }
             const textId = anchor.textContent.replace(/\D/g, '');
-            if (textId) return textId;
+            if (textId) {
+                console.log("[Copilot] Extracted ID from link text:", textId);
+                return textId;
+            }
+            console.log("[Copilot] No numeric ID in parent link");
         }
         const digits = parentEl.textContent.replace(/\D/g, '');
+        if (digits) console.log("[Copilot] Extracted ID from text:", digits);
+        else console.log("[Copilot] No digits found in parent element text");
         return digits || null;
     }
 
