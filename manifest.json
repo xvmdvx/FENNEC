@@ -17,6 +17,9 @@
     "https://coda.io/*",
     "https://ca-live.adyen.com/*"
   ],
+  "optional_host_permissions": [
+    "https://*/*"
+  ],
   "content_scripts": [
     {
       "matches": [

@@ -139,6 +139,9 @@ information scraped from the current page.
 - La búsqueda en los sitios SOS usa el permiso **activeTab**. Chrome
   solicitará acceso al dominio la primera vez que abras una de estas páginas
   y luego completará el formulario automáticamente.
+- El manifiesto ahora declara permisos opcionales para cualquier sitio HTTPS,
+  por lo que Chrome pedirá acceso al abrir una búsqueda SOS y la pestaña se
+  abrirá correctamente.
 - Updated the West Virginia SOS link so searches work again.
 - Amendment summaries now include an **Amendment Details** section. Addresses in
   this area are clickable with a USPS lookup icon, and names throughout the
