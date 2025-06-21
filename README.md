@@ -27,6 +27,8 @@ information scraped from the current page.
 - The order number parser is tolerant to common formats (e.g. with `#`, parentheses or spaces).
 - Displays a small order summary only after you click **EMAIL SEARCH** or
   **OPEN ORDER**, so old details no longer appear automatically.
+- Clicking **EMAIL SEARCH** clears any previous order details and shows a
+  blinking white Fennec icon while the new data loads.
 - Opens Gmail search and the DB order page in new tabs when clicking the buttons.
 - Uses `margin-right` to ensure Gmail navigation controls stay visible.
 - The top header bar shifts left along with the main panels so account menus remain accessible.
