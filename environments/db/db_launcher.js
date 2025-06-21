@@ -1248,16 +1248,12 @@
         const isVAAddress = addr => hasVA && /#\s*\d{3,}/.test(addr);
 
         const addrValues = Object.values(addrMap);
-        const hasRAAddr = addrValues.some(a => a.labels.includes('Agent'));
         const addrEntries = addrValues
             .map(a => {
                 const br = a.labels.includes('Agent') ? '' : '<br>';
                 const tags = a.labels.map(l => `<span class="copilot-tag">${escapeHtml(l)}</span>`).join(' ');
                 return `<div style="margin-left:10px"><b>${renderAddress(a.addr, isVAAddress(a.addr))}</b>${br}${tags}</div>`;
             });
-        if (!hasRAAddr) {
-            addrEntries.push('<div><span class="copilot-tag">NO RA INFO</span></div>');
-        }
 
         // Render del HTML
         let html = '';
@@ -1350,7 +1346,7 @@
             companyLines.push(`<div class="company-purpose">${renderCopy(company.purpose)}</div>`);
             companyLines.push(
                 `<div><span class="${raClass}">RA: ${hasRA ? 'Sí' : 'No'}</span> ` +
-                `<span class="${vaClass}">VA: ${hasVA ? 'Sí' : 'No'}</span>${hasAgentInfo ? '' : ' <span class="copilot-tag">NO RA INFO</span>'}</div>`
+                `<span class="${vaClass}">VA: ${hasVA ? 'Sí' : 'No'}</span></div>`
             );
             const compSection = `
             <div class="section-label">COMPANY:</div>
