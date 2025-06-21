@@ -1458,7 +1458,19 @@
         }
 
         const orderInfo = getBasicOrderInfo();
-        chrome.storage.local.set({ sidebarDb: dbSections, sidebarOrderId: orderInfo.orderId });
+        const sidebarOrderInfo = {
+            orderId: orderInfo.orderId,
+            type: currentOrderTypeText || orderInfo.type,
+            expedited: isExpeditedOrder(),
+            companyName: company ? company.name : null,
+            companyId: company ? company.stateId : null,
+            companyState: company ? company.state : null
+        };
+        chrome.storage.local.set({
+            sidebarDb: dbSections,
+            sidebarOrderId: orderInfo.orderId,
+            sidebarOrderInfo
+        });
 
         const body = document.getElementById('copilot-body-content');
         if (body) {
@@ -1596,6 +1608,17 @@
         const date = formatDateLikeParent(dateRaw);
         const status = getText(document.querySelector('.btn-status-text')) || '';
         return { orderId, type, date, status };
+    }
+
+    function isExpeditedOrder() {
+        const li = Array.from(document.querySelectorAll('li')).find(li => {
+            const icon = li.querySelector('i.mdi.mdi-truck');
+            const link = li.querySelector('a');
+            return icon && link && /completion date/i.test(getText(link));
+        });
+        if (!li) return false;
+        const span = li.querySelector('span.pull-right');
+        return span && /expedited/i.test(getText(span));
     }
 
     function getParentOrderId() {
