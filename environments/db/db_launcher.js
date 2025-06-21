@@ -1666,6 +1666,11 @@
         if (label) {
             const area = label.closest('.form-group') || label.closest('tr') || label.parentElement;
             if (area) {
+                const anchor = area.querySelector('a[href*="/order/detail/"]');
+                if (anchor) {
+                    const m = anchor.href.match(/detail\/(\d+)/);
+                    if (m) return m[1];
+                }
                 const digits = area.textContent.replace(/\D/g, '');
                 if (digits) return digits;
             }
