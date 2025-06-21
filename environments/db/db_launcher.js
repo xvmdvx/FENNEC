@@ -1718,64 +1718,23 @@
     }
 
     function getParentOrderId() {
-        const selectors = [
-            '#currentMainOrder',
-            'input[name*=parent][type=hidden]',
-            'input[id*=parent][type=hidden]',
-            '[data-parent-order]'
-        ];
-        for (const sel of selectors) {
-            const el = document.querySelector(sel);
-            if (el) {
-                const val = el.value || el.textContent || '';
-                const id = val.replace(/\D/g, '');
-                if (id) return id;
-            }
-        }
-
-        const link = Array.from(document.querySelectorAll('a[href*="/order/detail/"]'))
-            .find(a => {
-                const area = (
-                    getText(a.closest('li')) ||
-                    getText(a.closest('tr')) ||
-                    getText(a.closest('.form-group')) ||
-                    getText(a.parentElement) || ''
-                ).toLowerCase();
-                return /(parent|main|formation|original|related)/i.test(area) && area.includes('order');
+        const compTab = document.querySelector('#vcomp');
+        if (!compTab) return null;
+        const group = Array.from(compTab.querySelectorAll('.col-md-12 .form-group'))
+            .find(g => {
+                const lbl = g.querySelector('label');
+                return lbl && /parent order/i.test(getText(lbl));
             });
-        if (link) {
-            const m = link.href.match(/detail\/(\d+)/);
+        if (!group) return null;
+        const anchor = group.querySelector('a[href*="/order/detail/"]');
+        if (anchor) {
+            const m = anchor.href.match(/detail\/(\d+)/);
             if (m) return m[1];
+            const textId = anchor.textContent.replace(/\D/g, '');
+            if (textId) return textId;
         }
-
-        const labels = Array.from(document.querySelectorAll('label,td,th,span,strong,b,div,p,li'))
-            .filter(el => /parent order/i.test(getText(el)));
-        for (const label of labels) {
-            const area = label.closest('.form-group') || label.closest('tr') || label.parentElement;
-            if (area) {
-                const anchor = area.querySelector('a[href*="/order/detail/"]');
-                if (anchor) {
-                    const m = anchor.href.match(/detail\/(\d+)/);
-                    if (m) return m[1];
-                }
-                const digits = area.textContent.replace(/\D/g, '');
-                if (digits) return digits;
-            }
-        }
-
-        const compTab = document.querySelector('#vcomp, #vcompany');
-        if (compTab && /parent order/i.test(compTab.textContent)) {
-            const anchor = compTab.querySelector('a[href*="/order/detail/"]');
-            if (anchor) {
-                const m = anchor.href.match(/detail\/(\d+)/);
-                if (m) return m[1];
-                const textId = anchor.textContent.replace(/\D/g, '');
-                if (textId) return textId;
-            }
-            const match = (compTab.textContent || '').match(/parent\s*order[^\d]*(\d{9,})/i);
-            if (match) return match[1];
-        }
-        return null;
+        const digits = group.textContent.replace(/\D/g, '');
+        return digits || null;
     }
 
     function getClientInfo() {
