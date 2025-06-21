@@ -36,6 +36,70 @@
             let currentContext = null;
             let storedOrderInfo = null;
 
+            // Map of US states to their SOS business search pages
+            const SOS_URLS = {
+                "Alabama": { name: "https://arc-sos.state.al.us/CGI/CORPNAME.MBR/INPUT", id: "https://arc-sos.state.al.us/CGI/corpnumber.mbr/input" },
+                "Alaska": { name: "https://www.commerce.alaska.gov/cbp/main/search/entities", id: "https://www.commerce.alaska.gov/cbp/main/search/entities" },
+                "Arizona": { name: "https://ecorp.azcc.gov/EntitySearch/Index", id: "https://ecorp.azcc.gov/EntitySearch/Index" },
+                "Arkansas": { name: "https://www.ark.org/corp-search/", id: "https://www.ark.org/corp-search/" },
+                "California": { name: "https://bizfileonline.sos.ca.gov/search/business", id: "https://bizfileonline.sos.ca.gov/search/business" },
+                "Colorado": { name: "https://www.sos.state.co.us/biz/BusinessEntityCriteriaExt.do", id: "https://www.sos.state.co.us/biz/BusinessEntityCriteriaExt.do" },
+                "Connecticut": { name: "https://service.ct.gov/business/s/onlinebusinesssearch?language=en_US", id: "https://service.ct.gov/business/s/onlinebusinesssearch?language=en_US" },
+                "Delaware": { name: "https://icis.corp.delaware.gov/Ecorp/EntitySearch/NameSearch.aspx", id: "https://icis.corp.delaware.gov/Ecorp/EntitySearch/NameSearch.aspx" },
+                "District of Columbia": { name: "https://os.dc.gov/", id: "https://os.dc.gov/" },
+                "Florida": { name: "https://search.sunbiz.org/Inquiry/CorporationSearch/ByName", id: "https://search.sunbiz.org/Inquiry/CorporationSearch/ByDocumentNumber" },
+                "Georgia": { name: "https://ecorp.sos.ga.gov/BusinessSearch", id: "https://ecorp.sos.ga.gov/BusinessSearch" },
+                "Hawaii": { name: "https://hbe.ehawaii.gov/documents/search.html", id: "https://hbe.ehawaii.gov/documents/search.html" },
+                "Idaho": { name: "https://sosbiz.idaho.gov/search/business", id: "https://sosbiz.idaho.gov/search/business" },
+                "Illinois": { name: "https://apps.ilsos.gov/businessentitysearch/", id: "https://apps.ilsos.gov/businessentitysearch/" },
+                "Indiana": { name: "https://bsd.sos.in.gov/publicbusinesssearch", id: "https://bsd.sos.in.gov/publicbusinesssearch" },
+                "Iowa": { name: "https://sos.iowa.gov/search/business/search.aspx", id: "https://sos.iowa.gov/search/business/search.aspx" },
+                "Kansas": { name: "https://www.sos.ks.gov/eforms/BusinessEntity/Search.aspx", id: "https://www.sos.ks.gov/eforms/BusinessEntity/Search.aspx" },
+                "Kentucky": { name: "https://sosbes.sos.ky.gov/BusSearchNProfile/Search.aspx?na=true", id: "https://sosbes.sos.ky.gov/BusSearchNProfile/Search.aspx?na=true" },
+                "Louisiana": { name: "https://coraweb.sos.la.gov/commercialsearch/commercialsearch.aspx", id: "https://coraweb.sos.la.gov/commercialsearch/commercialsearch.aspx" },
+                "Maine": { name: "https://apps3.web.maine.gov/nei-sos-icrs/ICRS?MainPage=", id: "https://apps3.web.maine.gov/nei-sos-icrs/ICRS?MainPage=" },
+                "Maryland": { name: "https://egov.maryland.gov/businessexpress/entitysearch", id: "https://egov.maryland.gov/businessexpress/entitysearch" },
+                "Massachusetts": { name: "https://corp.sec.state.ma.us/corpweb/CorpSearch/CorpSearch.aspx", id: "https://corp.sec.state.ma.us/corpweb/CorpSearch/CorpSearch.aspx" },
+                "Michigan": { name: "https://www.michigan.gov/lara/online-services/business-entity-search", id: "https://www.michigan.gov/lara/online-services/business-entity-search" },
+                "Minnesota": { name: "https://mblsportal.sos.mn.gov/Business/Search", id: "https://mblsportal.sos.mn.gov/Business/Search" },
+                "Mississippi": { name: "https://corp.sos.ms.gov/corp/portal/c/page/corpBusinessIdSearch/portal.aspx", id: "https://corp.sos.ms.gov/corp/portal/c/page/corpBusinessIdSearch/portal.aspx" },
+                "Missouri": { name: "https://bsd.sos.mo.gov/BusinessEntity/BESearch.aspx?SearchType=0", id: "https://bsd.sos.mo.gov/BusinessEntity/BESearch.aspx?SearchType=0" },
+                "Montana": { name: "https://biz.sosmt.gov/search/business/1000", id: "https://biz.sosmt.gov/search/business/1000" },
+                "Nebraska": { name: "https://www.nebraska.gov/sos/corp/corpsearch.cgi?nav=search", id: "https://www.nebraska.gov/sos/corp/corpsearch.cgi?nav=search" },
+                "Nevada": { name: "https://esos.nv.gov/EntitySearch/OnlineEntitySearch", id: "https://esos.nv.gov/EntitySearch/OnlineEntitySearch" },
+                "New Hampshire": { name: "https://quickstart.sos.nh.gov/online/BusinessInquire", id: "https://quickstart.sos.nh.gov/online/BusinessInquire" },
+                "New Jersey": { name: "https://www.njportal.com/DOR/BusinessNameSearch/Search/BusinessName", id: "https://www.njportal.com/DOR/BusinessNameSearch/Search/EntityId" },
+                "New Mexico": { name: "https://enterprise.sos.nm.gov/search", id: "https://enterprise.sos.nm.gov/search" },
+                "New York": { name: "https://apps.dos.ny.gov/publicInquiry/", id: "https://apps.dos.ny.gov/publicInquiry/" },
+                "North Carolina": { name: "https://www.sosnc.gov/online_services/search/by_title/_Business_Registration", id: "https://www.sosnc.gov/online_services/search/by_title/_Business_Registration" },
+                "North Dakota": { name: "https://firststop.sos.nd.gov/search", id: "https://firststop.sos.nd.gov/search" },
+                "Ohio": { name: "https://businesssearch.ohiosos.gov/", id: "https://businesssearch.ohiosos.gov/" },
+                "Oklahoma": { name: "https://www.sos.ok.gov/corp/corpInquiryFind.aspx", id: "https://www.sos.ok.gov/corp/corpInquiryFind.aspx" },
+                "Oregon": { name: "https://sos.oregon.gov/business/Pages/find.aspx", id: "https://sos.oregon.gov/business/Pages/find.aspx" },
+                "Pennsylvania": { name: "https://file.dos.pa.gov/search/business", id: "https://file.dos.pa.gov/search/business" },
+                "Rhode Island": { name: "https://business.sos.ri.gov/corp/CorpSearch/CorpSearchInput.asp", id: "https://business.sos.ri.gov/corp/CorpSearch/CorpSearchInput.asp" },
+                "South Carolina": { name: "https://businessfilings.sc.gov/BusinessFiling/Entity/NewFiling", id: "https://businessfilings.sc.gov/BusinessFiling/Entity/NewFiling" },
+                "South Dakota": { name: "https://sosenterprise.sd.gov/BusinessServices/Business/FilingSearch.aspx", id: "https://sosenterprise.sd.gov/BusinessServices/Business/FilingSearch.aspx" },
+                "Tennessee": { name: "https://tncab.tnsos.gov/business-entity-search", id: "https://tncab.tnsos.gov/business-entity-search" },
+                "Texas": { name: "https://comptroller.texas.gov/taxes/franchise/account-status/search", id: "https://comptroller.texas.gov/taxes/franchise/account-status/search" },
+                "Utah": { name: "https://businessregistration.utah.gov/NameAvailabilitySearch", id: "https://businessregistration.utah.gov/EntitySearch/OnlineEntitySearch" },
+                "Vermont": { name: "https://www.vermontbusinessregistry.com/BusinessSearch.aspx", id: "https://www.vermontbusinessregistry.com/BusinessSearch.aspx" },
+                "Virginia": { name: "https://cis.scc.virginia.gov/EntitySearch/Index", id: "https://cis.scc.virginia.gov/EntitySearch/Index" },
+                "Washington": { name: "https://ccfs.sos.wa.gov/#/", id: "https://ccfs.sos.wa.gov/#/" },
+                "West Virginia": { name: "https://apps.sos.wv.gov/business/corporations/", id: "https://apps.sos.wv.gov/business/corporations/" },
+                "Wisconsin": { name: "https://apps.dfi.wi.gov/apps/corpsearch/search.aspx", id: "https://apps.dfi.wi.gov/apps/corpsearch/search.aspx" },
+                "Wyoming": { name: "https://wyobiz.wyo.gov/business/filingsearch.aspx", id: "https://wyobiz.wyo.gov/business/filingsearch.aspx" }
+            };
+
+            function buildSosUrl(state, query, type = 'name') {
+                const rec = SOS_URLS[state];
+                if (!rec) return null;
+                const base = rec[type] || rec.name;
+                if (!query) return base;
+                const sep = base.includes('?') ? '&' : '?';
+                return base + sep + 'q=' + encodeURIComponent(query);
+            }
+
         function applyPaddingToMainPanels() {
             const candidates = [
                 ...Array.from(document.body.querySelectorAll(':scope > .nH')),
@@ -441,22 +505,29 @@
         function fillOrderSummaryBox(context) {
             const summaryBox = document.getElementById('order-summary-content');
             if (!summaryBox) return;
-            const email = context?.email ? context.email.toLowerCase() : null;
-            const name = context?.name || '';
             const orderId = context?.orderNumber || (storedOrderInfo && storedOrderInfo.orderId) || '';
             const url = orderId ? `https://db.incfile.com/incfile/order/detail/${orderId}` : '#';
 
             let html = `<div id="order-summary-link" style="text-align:center">`;
-            if (orderId) html += `<b><a href="#" id="order-link" class="order-link">${renderCopy(orderId)}</a> ${renderCopyIcon(orderId)}</b>`;
+            if (reviewMode && storedOrderInfo) {
+                const nameBase = buildSosUrl(storedOrderInfo.companyState, null, 'name');
+                const companyName = escapeHtml(storedOrderInfo.companyName || '');
+                if (companyName) {
+                    const cLink = nameBase ? `<a href="#" id="company-link" class="copilot-sos copilot-link" data-url="${nameBase}" data-query="${companyName}" data-type="name">${companyName}</a>` : companyName;
+                    html += `<div><b>${cLink}</b></div>`;
+                }
+                if (storedOrderInfo.companyId) {
+                    const idBase = buildSosUrl(storedOrderInfo.companyState, null, 'id');
+                    const compId = escapeHtml(storedOrderInfo.companyId);
+                    const idLink = idBase ? `<a href="#" class="copilot-sos copilot-link" data-url="${idBase}" data-query="${compId}" data-type="id">${compId}</a>` : compId;
+                    html += `<div>${idLink}</div>`;
+                }
+            }
+            if (orderId) html += `<div><b><a href="#" id="order-link" class="order-link">${renderCopy(orderId)}</a> ${renderCopyIcon(orderId)}</b></div>`;
             if (reviewMode && storedOrderInfo) {
                 const typeTag = storedOrderInfo.type ? `<span class="copilot-tag">${escapeHtml(storedOrderInfo.type)}</span>` : "";
                 const expTag = `<span class="copilot-tag">${storedOrderInfo.expedited ? 'Expedited' : 'Non Expedited'}</span>`;
                 html += `<div>${typeTag} ${expTag}</div>`;
-            }
-            if (name && email && name.toLowerCase() !== email.toLowerCase()) {
-                html += `<div>${renderCopy(name)}</div><div>${renderCopy(email)}</div>`;
-            } else if (name || email) {
-                html += `<div>${renderCopy(name || email)}</div>`;
             }
             html += '</div>';
             summaryBox.innerHTML = html;
