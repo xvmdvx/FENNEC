@@ -1622,19 +1622,30 @@
     }
 
     function getParentOrderId() {
-        const hidden = document.getElementById('currentMainOrder');
-        if (hidden && hidden.value) {
-            const id = hidden.value.replace(/\D/g, '');
-            if (id) return id;
+        const selectors = [
+            '#currentMainOrder',
+            'input[name*=parent][type=hidden]',
+            'input[id*=parent][type=hidden]',
+            '[data-parent-order]'
+        ];
+        for (const sel of selectors) {
+            const el = document.querySelector(sel);
+            if (el) {
+                const val = el.value || el.textContent || '';
+                const id = val.replace(/\D/g, '');
+                if (id) return id;
+            }
         }
 
         const link = Array.from(document.querySelectorAll('a[href*="/order/detail/"]'))
             .find(a => {
-                const area =
+                const area = (
                     getText(a.closest('li')) ||
+                    getText(a.closest('tr')) ||
                     getText(a.closest('.form-group')) ||
-                    getText(a.parentElement) || '';
-                return /(parent|main|formation|original) order/i.test(area);
+                    getText(a.parentElement) || ''
+                ).toLowerCase();
+                return /(parent|main|formation|original|related)/i.test(area) && area.includes('order');
             });
         if (!link) return null;
         const m = link.href.match(/detail\/(\d+)/);
