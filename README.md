@@ -265,4 +265,6 @@ Reload the extension after editing the manifest.
   orders load correctly.
 - Further improved detection when the parent order link sits inside the
   company tab on SB non-formation orders.
+- Fixed a crash showing "Error loading summary" when the DB sidebar looked up
+  billing details.
 
