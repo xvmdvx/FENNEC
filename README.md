@@ -267,4 +267,6 @@ Reload the extension after editing the manifest.
   company tab on SB non-formation orders.
 - Fixed a crash showing "Error loading summary" when the DB sidebar looked up
   billing details.
+- Fixed parent order detection when multiple sections contain "Parent Order" so
+  the Family Tree icon works on SB pages.
 
