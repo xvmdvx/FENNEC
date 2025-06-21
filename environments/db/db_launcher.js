@@ -1748,7 +1748,7 @@
             if (m) return m[1];
         }
 
-        const labels = Array.from(document.querySelectorAll('label,td,th,span,strong,b,div'))
+        const labels = Array.from(document.querySelectorAll('label,td,th,span,strong,b,div,p,li'))
             .filter(el => /parent order/i.test(getText(el)));
         for (const label of labels) {
             const area = label.closest('.form-group') || label.closest('tr') || label.parentElement;

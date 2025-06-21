@@ -270,4 +270,6 @@ Reload the extension after editing the manifest.
 - Fixed parent order detection when multiple sections contain "Parent Order" so
   the Family Tree icon works on SB pages.
 - Fixed detection when the Parent Order information only appears in the `#vcompany` tab.
+- Fixed detection when the Parent Order line sits within a paragraph or list item
+  inside the `#vcomp` tab.
 
