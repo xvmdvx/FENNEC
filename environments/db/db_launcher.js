@@ -1718,22 +1718,19 @@
     }
 
     function getParentOrderId() {
-        const compTab = document.querySelector('#vcomp');
-        if (!compTab) return null;
-        const group = Array.from(compTab.querySelectorAll('.col-md-12 .form-group'))
-            .find(g => {
-                const lbl = g.querySelector('label');
-                return lbl && /parent order/i.test(getText(lbl));
-            });
-        if (!group) return null;
-        const anchor = group.querySelector('a[href*="/order/detail/"]');
+        const tab = document.querySelector('#vcomp') || document.querySelector('#vcompany');
+        if (!tab) return null;
+        const parentEl = Array.from(tab.querySelectorAll('label, div, p, li, span, td, strong'))
+            .find(el => /parent order/i.test(getText(el)));
+        if (!parentEl) return null;
+        const anchor = parentEl.querySelector('a[href*="/order/detail/"]');
         if (anchor) {
             const m = anchor.href.match(/detail\/(\d+)/);
             if (m) return m[1];
             const textId = anchor.textContent.replace(/\D/g, '');
             if (textId) return textId;
         }
-        const digits = group.textContent.replace(/\D/g, '');
+        const digits = parentEl.textContent.replace(/\D/g, '');
         return digits || null;
     }
 

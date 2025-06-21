@@ -280,4 +280,6 @@ Reload the extension after editing the manifest.
 - Fixed detection when the Parent Order link only shows digits inside the
   `#vcomp` tab so the Family Tree icon opens correctly.
 - Simplified parent order lookup to only search within the `#vcomp` tab.
+- Fixed missing parent order on SB miscellaneous orders when the label is not
+  inside a `.form-group` container.
 
