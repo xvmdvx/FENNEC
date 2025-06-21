@@ -284,4 +284,6 @@ Reload the extension after editing the manifest.
   inside a `.form-group` container.
 - Added console logs to help trace parent order detection when the Family Tree
   icon is clicked.
+- When the parent order cannot be detected the console lists all scanned
+  elements with their text for easier debugging.
 
