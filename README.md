@@ -290,4 +290,6 @@ Reload the extension after editing the manifest.
   when no parent ID is found.
 - Fixed detection when the parent order number appears in a sibling element
   next to the label inside the `#vcomp` tab.
+- Exposed the `getParentOrderId` and `diagnoseHoldOrders` helpers globally so the
+  Family Tree icon works consistently.
 
