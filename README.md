@@ -279,4 +279,5 @@ Reload the extension after editing the manifest.
   inside the `#vcomp` tab.
 - Fixed detection when the Parent Order link only shows digits inside the
   `#vcomp` tab so the Family Tree icon opens correctly.
+- Simplified parent order lookup to only search within the `#vcomp` tab.
 
