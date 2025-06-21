@@ -169,6 +169,7 @@ information scraped from the current page.
 - Resolved a crash in the DB sidebar that showed "Error loading summary" by defining the RA/VA tag classes.
 - A separator line now appears between addresses and the RA/VA tags in the quick summary, and those tags are repeated at the bottom of the Company section. Fields showing `N/A` or blank values are omitted, and shareholders display their share count prefixed with "Shares:".
 - Sections lacking meaningful details now show **NO INFO** instead of being hidden.
+- The AGENT section now displays **NO RA INFO** when Registered Agent details are missing.
 - Officer and Shareholder sections are omitted for LLC orders.
 - Review Mode centers the order info with a clickable link to the order, removes the duplicate RA/VA tags from the Quick Summary and adds a new **CLIENT** box with the client ID, email, order count and LTV. This box is hidden unless Review Mode is active.
 - The ORDER SUMMARY in Review Mode now displays the order type and whether it is **Expedited**, shows the company name and ID beneath the sender details and includes a **BILLING** section pulled from the DB page. The Client box lists any roles held within the company or a purple **NOT LISTED** tag.
