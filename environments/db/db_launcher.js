@@ -995,11 +995,11 @@
 
     function extractAndShowFormationData(isAmendment = false) {
         const dbSections = [];
-        function addEmptySection(label) {
+        function addEmptySection(label, text = "NO INFO") {
             const section = `
             <div class="section-label">${label}</div>
             <div class="white-box" style="margin-bottom:10px">
-                <div style="color:#aaa">NO INFO</div>
+                <div style="color:#aaa">${text}</div>
             </div>`;
             html += section;
             dbSections.push(section);
@@ -1383,7 +1383,7 @@
             html += agentSection;
             dbSections.push(agentSection);
         } else {
-            addEmptySection('AGENT:');
+            addEmptySection('AGENT:', 'NO RA INFO');
         }
         // DIRECTORS / MEMBERS
         if (directors.length) {
