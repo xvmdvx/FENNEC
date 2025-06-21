@@ -73,8 +73,7 @@ function attachCommonListeners(rootEl) {
     });
     const ftIcon = document.getElementById('family-tree-icon');
     if (ftIcon) {
-        ftIcon.addEventListener('click', (e) => {
-            const autoDiagnose = e.detail >= 3;
+        ftIcon.addEventListener('click', () => {
             let container = document.getElementById('family-tree-orders');
             if (!container) {
                 const qs = document.getElementById('quick-summary');
@@ -171,7 +170,6 @@ function attachCommonListeners(rootEl) {
                         }
                         diagnoseHoldOrders(holds);
                     });
-                    if (autoDiagnose) diagBtn.click();
                 }
             });
         });

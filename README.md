@@ -104,8 +104,8 @@ information scraped from the current page.
 - Diagnose cards now display the order number in bold on the first line, followed
   by tags for the status and order type. A red **CANCEL** tag below the issue
   text starts the cancel procedure when clicked.
-- Triple-clicking the family tree icon opens the panel and automatically runs
-  **🩺 DIAGNOSE** once the list of orders loads.
+- Click the **🩺 DIAGNOSE** button inside the Family Tree panel to run the
+  diagnostic after the orders load.
 - The family tree panel now slides open with the same animation as the Quick
   Summary and is positioned directly below it. Status labels are color coded
   (green for **SHIPPED**, **REVIEW** or **PROCESSING**, red for **CANCELED**, purple
@@ -240,7 +240,8 @@ Reload the extension after editing the manifest.
 - Always creates the Family Tree container if missing so the panel toggles
   reliably.
 - Fixed the Family Tree icon triggering **🩺 DIAGNOSE** on the first click.
-  Triple-clicking now runs the diagnose overlay once the tree loads.
+- The diagnose overlay now only starts when the button inside the panel is
+  pressed.
 - Fixed Light Mode tags with black backgrounds showing black text.
 - Version number updated to **v0.3** so the interface matches `manifest.json`.
   - Fixed Review Mode setting so Gmail and DB pages stay synchronized.
