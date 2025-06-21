@@ -113,12 +113,11 @@
                 const compLabel = Array.from(container.querySelectorAll(".section-label"))
                     .find(l => l.textContent.trim().startsWith("COMPANY"));
                 const compBox = compLabel ? compLabel.nextElementSibling : null;
-                if (compLabel && compBox) {
-                    compLabel.dataset.reviewMerged = "1";
+                if (compBox) {
                     compBox.dataset.reviewMerged = "1";
-                    orderBox.appendChild(compLabel);
                     orderBox.appendChild(compBox);
                 }
+                if (compLabel) compLabel.style.display = "none";
                 orderBox.insertAdjacentElement("afterend", quick);
                 quick.classList.remove("quick-summary-collapsed");
                 quick.style.maxHeight = quick.scrollHeight + "px";
