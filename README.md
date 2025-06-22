@@ -65,17 +65,20 @@ information scraped from the current page.
 - The **EMAIL SEARCH** and **OPEN ORDER** buttons are now smaller so they
   never exceed the sidebar width, and their default color is a softer black.
 - Review Mode can be enabled from the extension popup. When active a **DNA** button
-  appears below **EMAIL SEARCH** and **OPEN ORDER**, opening Adyen with the order
-  number prefilled. The extension now navigates through the Adyen search results
-  and opens the shopper DNA page automatically. The **ORDER SUMMARY** box merges
+  appears below **EMAIL SEARCH** and **OPEN ORDER**. Clicking it opens Adyen with
+  the order number prefilled and automatically navigates to the payment details
+  and shopper DNA pages, leaving both tabs open. The **ORDER SUMMARY** box merges
   the Company section and the next box is the **QUICK SUMMARY**. On DB pages all
   sections remain but a small **REVIEW MODE** label shows at the bottom. The
   mode stays in sync across Gmail and DB.
-- The Adyen helper now waits for the shopper DNA link to appear before opening
-  it so slow pages still navigate correctly.
-- When both the Payment details and Shopper DNA pages finish loading, their
-  information is collected and shown in a new **ADYEN'S DNA** section of the
-  Gmail sidebar.
+- The Adyen helper waits for the DNA link to appear before opening it so slow
+  pages still navigate correctly. Once both tabs finish loading, the extension
+  extracts the payment method, card holder, last four digits of the card number,
+  expiry date, funding source, issuer details, shopper IP, name, phone,
+  billing address and processing data (CVC/CVV, AVS and fraud scoring). It also
+  reads transaction totals such as Authorised, Refused and Chargebacked from the
+  DNA page. All of this information is displayed in a new **ADYEN'S DNA** section
+  of the Gmail sidebar.
 
 ### DB
 - Displays a sidebar on order detail pages.

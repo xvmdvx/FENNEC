@@ -91,6 +91,11 @@
 
             function handlePaymentPage() {
                 const card = extractSection('Card details') || {};
+                if (card['Card number']) {
+                    card['Card number'] = card['Card number']
+                        .replace(/\D+/g, '')
+                        .slice(-4);
+                }
                 const shopper = extractSection('Shopper details') || {};
                 const processing = extractSection('Processing') || {};
                 saveData({ payment: { card, shopper, processing } });
