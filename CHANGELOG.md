@@ -3,6 +3,7 @@
 ## v0.3
 
 - Fixed Bento Mode positioning so the sidebar displays correctly on Gmail and DB.
+- Fixed Bento Mode layering so headers and boxes appear above the video background.
 - Fixed a race condition where the "Family Tree" view failed to load if the
   background script queried the page before helper functions finished
   initializing.
