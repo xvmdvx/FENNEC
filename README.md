@@ -146,12 +146,8 @@ information scraped from the current page.
 - Order type detection now recognizes Business Formation packages, Foreign
   Qualification, Amendments, Registered Agent Change and Annual Report (including
   alternate names like Business Entity Report, Biennial Report or Renewal).
-- La búsqueda en los sitios SOS usa el permiso **activeTab**. Chrome
-  solicitará acceso al dominio la primera vez que abras una de estas páginas
-  y luego completará el formulario automáticamente.
-- El manifiesto ahora declara permisos opcionales para cualquier sitio HTTPS,
-  por lo que Chrome pedirá acceso al abrir una búsqueda SOS y la pestaña se
-  abrirá correctamente.
+- Searching SOS sites now uses the **activeTab** permission. Chrome will request access to the domain the first time you open one of these pages and then fill in the form automatically.
+- The manifest declares optional permissions for all HTTPS sites so Chrome prompts for access when launching an SOS search and the tab opens correctly.
 - Updated the West Virginia SOS link so searches work again.
 - Amendment summaries now include an **Amendment Details** section. Addresses in
   this area are clickable with a USPS lookup icon, and names throughout the
@@ -220,7 +216,7 @@ information scraped from the current page.
 
 ## Reference dictionary
 
-A small `dictionary.txt` file in the repository root lists common short forms like **DB**, **SB**, **MAIN**, **MISC** and **REVIEW MODE**.
+A small [dictionary.txt](dictionary.txt) file explains the abbreviations and shorthand terms used throughout the extension, such as **DB**, **SB**, **MAIN**, **MISC** and **REVIEW MODE**.
 
 
 ## Development
@@ -232,6 +228,11 @@ npm test
 ```
 
 This will display instructions for manually verifying the extension inside Chrome.
+
+### Manual testing
+
+For a complete checklist see [manual-test.js](manual-test.js). Running `npm test` prints these steps to the console.
+
 
 ## Testing the example pages
 
