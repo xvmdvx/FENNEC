@@ -438,11 +438,12 @@
                         vid.autoplay = true;
                         vid.playsInline = true;
                         vid.loop = false;
+                        vid.playbackRate = 0.2;
                         sidebar.prepend(vid);
                         let reverse = false;
                         vid.addEventListener('ended', () => {
                             reverse = !reverse;
-                            vid.playbackRate = reverse ? -1 : 1;
+                            vid.playbackRate = reverse ? -0.2 : 0.2;
                             vid.currentTime = reverse ? vid.duration - 0.01 : 0.01;
                             vid.play();
                         });
