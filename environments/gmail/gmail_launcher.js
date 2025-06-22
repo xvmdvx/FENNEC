@@ -697,7 +697,7 @@
         }
 
         function loadDnaSummary() {
-            const container = document.querySelector('.copilot-dna');
+            const container = document.getElementById('dna-summary');
             if (!container) return;
             chrome.storage.local.get({ adyenDnaInfo: null }, ({ adyenDnaInfo }) => {
                 const html = buildDnaHtml(adyenDnaInfo);
@@ -840,7 +840,9 @@
                         <button id="btn-email-search" class="copilot-button">📧 EMAIL SEARCH</button>
                         <button id="btn-open-order" class="copilot-button">📂 OPEN ORDER</button>
                     </div>
-                    <div class="copilot-dna"></div>
+                    <div class="copilot-dna">
+                        <div id="dna-summary" style="margin-top:6px"></div>
+                    </div>
                     <div class="section-label" style="margin:6px 0">COMPANY:</div>
                     <div class="order-summary-header">ORDER SUMMARY</div>
                     <div class="order-summary-box">
