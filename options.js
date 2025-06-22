@@ -14,8 +14,10 @@ document.addEventListener("DOMContentLoaded", () => {
         const width = parseInt(widthInput.value, 10) || 340;
         chrome.storage.sync.set({
             defaultReviewMode: reviewBox.checked,
-            sidebarWidth: width
+            sidebarWidth: width,
+            fennecReviewMode: reviewBox.checked
         });
+        chrome.storage.local.set({ fennecReviewMode: reviewBox.checked });
     }
 
     saveBtn.addEventListener("click", save);
