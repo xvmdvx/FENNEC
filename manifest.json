@@ -72,7 +72,8 @@
   "web_accessible_resources": [
     {
       "resources": [
-        "fennec_icon.png"
+        "fennec_icon.png",
+        "BG_HOLO.mp4"
       ],
       "matches": [
         "<all_urls>"

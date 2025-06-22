@@ -14,7 +14,7 @@
 }
 
 .fennec-bento-mode #copilot-sidebar {
-    position: relative;
+    position: fixed;
     overflow: hidden;
     background: #000;
     color: #fff;
