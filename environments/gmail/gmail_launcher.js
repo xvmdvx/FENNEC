@@ -767,6 +767,20 @@
             });
         }
 
+        function showDnaLoading() {
+            const dnaBox = document.querySelector('.copilot-dna');
+            if (!dnaBox) return;
+            let summary = dnaBox.querySelector('#dna-summary');
+            if (!summary) {
+                summary = document.createElement('div');
+                summary.id = 'dna-summary';
+                summary.style.marginTop = '6px';
+                dnaBox.appendChild(summary);
+            }
+            summary.innerHTML = `<img src="${chrome.runtime.getURL('fennec_icon.png')}" class="loading-fennec"/>`;
+            chrome.storage.local.set({ adyenDnaInfo: null });
+        }
+
         function showLoadingState() {
             currentContext = null;
             storedOrderInfo = null;
@@ -779,16 +793,7 @@
             if (orderBox) orderBox.innerHTML = icon;
             if (dbBox) dbBox.innerHTML = icon;
             if (issueContent) issueContent.innerHTML = icon;
-            if (dnaBox) {
-                let summary = dnaBox.querySelector('#dna-summary');
-                if (!summary) {
-                    summary = document.createElement('div');
-                    summary.id = 'dna-summary';
-                    summary.style.marginTop = '6px';
-                    dnaBox.appendChild(summary);
-                }
-                summary.innerHTML = '';
-            }
+            if (dnaBox) showDnaLoading();
             if (issueLabel) {
                 issueLabel.textContent = '';
                 issueLabel.className = 'issue-status-label';
@@ -1012,7 +1017,8 @@
                     }
                     console.log('[Copilot] Opening Adyen for order', orderId);
                     const url = `https://ca-live.adyen.com/ca/ca/overview/default.shtml?fennec_order=${orderId}`;
-                    chrome.runtime.sendMessage({ action: "openActiveTab", url });
+                    showDnaLoading();
+                    chrome.runtime.sendMessage({ action: "openTab", url });
                 } catch (error) {
                     console.error("Error al intentar buscar en Adyen:", error);
                     alert("Ocurrió un error al intentar buscar en Adyen.");

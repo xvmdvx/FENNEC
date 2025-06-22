@@ -67,10 +67,12 @@ information scraped from the current page.
 - Review Mode can be enabled from the extension popup. When active a **DNA** button
   appears below **EMAIL SEARCH** and **OPEN ORDER**. Clicking it opens Adyen with
   the order number prefilled and automatically navigates to the payment details
-  and shopper DNA pages, leaving both tabs open. The **ORDER SUMMARY** box merges
+  and shopper DNA pages, leaving both tabs open in the background. The **ORDER SUMMARY** box merges
   the Company section and the next box is the **QUICK SUMMARY**. On DB pages all
   sections remain but a small **REVIEW MODE** label shows at the bottom. The
   mode stays in sync across Gmail and DB.
+- The DNA button shows a blinking Fennec below the Billing section while the
+  Adyen pages load and information is retrieved.
 - The Adyen helper waits for the DNA link to appear before opening it so slow
   pages still navigate correctly. Once both tabs finish loading, the extension
   extracts the payment method, card holder, last four digits of the card number,
