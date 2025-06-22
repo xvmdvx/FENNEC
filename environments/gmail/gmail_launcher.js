@@ -779,6 +779,7 @@
                         <button id="btn-open-order" class="copilot-button">📂 OPEN ORDER</button>
                     </div>
                     <div class="copilot-dna"></div>
+                    <hr style="border:none;border-top:1px solid #eee;margin:6px 0"/>
                     <div class="order-summary-header">ORDER SUMMARY</div>
                     <div class="order-summary-box">
                         <div id="order-summary-content" style="color:#ccc; font-size:13px;">
