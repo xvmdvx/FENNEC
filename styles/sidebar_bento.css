@@ -48,6 +48,10 @@
     box-shadow: 0 4px 6px rgba(0,0,0,0.2);
 }
 
+#dna-summary:empty {
+    display: none;
+}
+
 .fennec-bento-mode .copilot-body {
     display: grid;
     grid-template-columns: 1fr 1fr;

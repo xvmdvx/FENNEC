@@ -59,6 +59,10 @@
     margin-top: 8px;
 }
 
+#dna-summary:empty {
+    display: none;
+}
+
 .copilot-dna .copilot-button {
     width: 100%;
 }
