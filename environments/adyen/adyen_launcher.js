@@ -37,6 +37,7 @@
             }
 
             function fillAndSubmit() {
+                console.log('[FENNEC Adyen] Filling search form for order', order);
                 waitForElement('.header-search__input, input[name="query"]').then(input => {
                     try {
                         if (!input) return;
@@ -57,7 +58,10 @@
             function openMostRecent() {
                 waitForElement('a[href*="showTx.shtml?pspReference="]').then(link => {
                     try {
-                        if (link) link.click();
+                        if (link) {
+                            console.log('[FENNEC Adyen] Opening most recent transaction');
+                            link.click();
+                        }
                     } catch (err) {
                         console.error('[FENNEC Adyen] Error opening result:', err);
                     }
@@ -68,6 +72,7 @@
                 chrome.storage.local.get({ adyenDnaInfo: {} }, ({ adyenDnaInfo }) => {
                     const updated = Object.assign({}, adyenDnaInfo, part);
                     chrome.storage.local.set({ adyenDnaInfo: updated });
+                    console.log('[FENNEC Adyen] Data saved', part);
                 });
             }
 
@@ -90,6 +95,7 @@
             }
 
             function handlePaymentPage() {
+                console.log('[FENNEC Adyen] Extracting payment page details');
                 const card = extractSection('Card details') || {};
                 if (card['Card number']) {
                     card['Card number'] = card['Card number']
@@ -105,6 +111,7 @@
                 waitForElement('a[href*="showOilSplashList.shtml"]').then(link => {
                     try {
                         if (link) {
+                            console.log('[FENNEC Adyen] Opening DNA tab');
                             window.open(link.href, '_blank');
                             sessionStorage.removeItem('fennec_order');
                         }
@@ -115,6 +122,7 @@
             }
 
             function handleDnaPage() {
+                console.log('[FENNEC Adyen] Extracting DNA page stats');
                 const stats = {};
                 document.querySelectorAll('.stats-bar-item').forEach(item => {
                     const label = item.querySelector('.stats-bar-item__label');
@@ -127,9 +135,11 @@
                     };
                 });
                 saveData({ transactions: stats, updated: Date.now() });
+                console.log('[FENNEC Adyen] DNA stats stored');
             }
 
             const path = window.location.pathname;
+            console.log('[FENNEC Adyen] Path:', path);
             const ready = document.readyState === 'loading' ? 'DOMContentLoaded' : null;
 
             if (path.includes('/overview/default.shtml')) {
