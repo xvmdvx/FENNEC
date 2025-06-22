@@ -315,4 +315,6 @@ Reload the extension after editing the manifest.
   next to the label inside the `#vcomp` tab.
 - Exposed the `getParentOrderId` and `diagnoseHoldOrders` helpers globally so the
   Family Tree icon works consistently.
+- Fixed EMAIL SEARCH removing the DNA button by keeping the summary container
+  intact while loading.
 

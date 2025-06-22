@@ -765,7 +765,16 @@
             if (orderBox) orderBox.innerHTML = icon;
             if (dbBox) dbBox.innerHTML = icon;
             if (issueContent) issueContent.innerHTML = icon;
-            if (dnaBox) dnaBox.innerHTML = icon;
+            if (dnaBox) {
+                let summary = dnaBox.querySelector('#dna-summary');
+                if (!summary) {
+                    summary = document.createElement('div');
+                    summary.id = 'dna-summary';
+                    summary.style.marginTop = '6px';
+                    dnaBox.appendChild(summary);
+                }
+                summary.innerHTML = icon;
+            }
             if (issueLabel) {
                 issueLabel.textContent = '';
                 issueLabel.className = 'issue-status-label';
