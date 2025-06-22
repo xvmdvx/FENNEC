@@ -19,7 +19,9 @@ information scraped from the current page.
 
 - Sidebar appears on Gmail and DB order pages.
 - Quick buttons open Gmail searches and order pages.
-- Light Mode offers a minimalist look and Bento Mode adds a holographic video background.
+- Light Mode offers a minimalist look.
+- Bento Mode uses a holographic video background and displays all headers and
+  summary boxes in black containers with 95% opacity and white text.
 - Family Tree panel shows related orders and can diagnose holds.
 - Review Mode merges order details and fetches Adyen DNA data.
 - The DNA summary is inserted below the Billing section once data is available.
