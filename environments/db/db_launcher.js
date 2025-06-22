@@ -430,6 +430,23 @@
                         </div>
                     `;
                     document.body.appendChild(sidebar);
+                    if (document.body.classList.contains('fennec-bento-mode')) {
+                        const vid = document.createElement('video');
+                        vid.id = 'bento-video';
+                        vid.src = chrome.runtime.getURL('BG_HOLO.mp4');
+                        vid.muted = true;
+                        vid.autoplay = true;
+                        vid.playsInline = true;
+                        vid.loop = false;
+                        sidebar.prepend(vid);
+                        let reverse = false;
+                        vid.addEventListener('ended', () => {
+                            reverse = !reverse;
+                            vid.playbackRate = reverse ? -1 : 1;
+                            vid.currentTime = reverse ? vid.duration - 0.01 : 0.01;
+                            vid.play();
+                        });
+                    }
                     updateReviewDisplay();
                     const closeBtn = sidebar.querySelector('#copilot-close');
                     if (closeBtn) {

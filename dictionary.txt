@@ -39,6 +39,6 @@ NOTES
 ADDITIONAL FEATURES
 ────────────────────────────
 
-Bento Mode → Colorful grid layout with animated backgrounds for the sidebar
+Bento Mode → Colorful grid layout with looping video background for the sidebar
 Light Mode → Minimalist black-on-white style with an inverted Fennec icon
 DNA        → Shortcut button that opens Adyen payment details and shopper DNA
