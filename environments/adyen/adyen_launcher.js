@@ -155,7 +155,15 @@
                     openMostRecent();
                 }
             } else if (path.includes('/accounts/showTx.shtml')) {
-                const run = () => { openDna(); handlePaymentPage(); };
+                const run = () => {
+                    Promise.all([
+                        waitForElement('h3.adl-heading'),
+                        waitForElement('a[href*="showOilSplashList.shtml"]')
+                    ]).then(() => {
+                        handlePaymentPage();
+                        openDna();
+                    });
+                };
                 if (ready) {
                     document.addEventListener('DOMContentLoaded', run);
                 } else {

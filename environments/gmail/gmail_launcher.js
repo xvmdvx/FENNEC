@@ -658,18 +658,24 @@
                     storedOrderInfo = null;
                 }
 
-                const dna = document.getElementById('dna-summary');
-                if (dna) {
-                    const billing = container.querySelector('#billing-section-box');
-                    if (billing && billing.parentElement) {
-                        billing.parentElement.insertAdjacentElement('afterend', dna);
-                    } else {
-                        container.appendChild(dna);
-                    }
-                }
+
+                repositionDnaSummary();
 
                 updateDetailVisibility();
             });
+        }
+
+        function repositionDnaSummary() {
+            const summary = document.getElementById('dna-summary');
+            if (!summary) return;
+            const container = document.getElementById('db-summary-section');
+            if (!container) return;
+            const billing = container.querySelector('#billing-section-box');
+            if (billing && billing.parentElement) {
+                billing.parentElement.insertAdjacentElement('afterend', summary);
+            } else {
+                container.appendChild(summary);
+            }
         }
 
         function buildDnaHtml(info) {
@@ -721,6 +727,7 @@
                     container.innerHTML = '';
                 }
                 attachCommonListeners(container);
+                repositionDnaSummary();
             });
         }
 
@@ -779,6 +786,7 @@
             }
             summary.innerHTML = `<img src="${chrome.runtime.getURL('fennec_icon.png')}" class="loading-fennec"/>`;
             chrome.storage.local.set({ adyenDnaInfo: null });
+            repositionDnaSummary();
         }
 
         function showLoadingState() {
