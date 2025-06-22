@@ -42,6 +42,10 @@
     color: #fff !important;
 }
 
+#dna-summary:empty {
+    display: none;
+}
+
 /* Ensure status labels remain visible */
 .fennec-light-mode #copilot-sidebar .issue-status-label,
 .fennec-light-mode #copilot-sidebar .review-mode-label {

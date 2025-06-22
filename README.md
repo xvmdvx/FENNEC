@@ -320,4 +320,6 @@ Reload the extension after editing the manifest.
   Family Tree icon works consistently.
 - Fixed EMAIL SEARCH removing the DNA button by keeping the summary container
   intact while loading.
+- The DNA summary now stays hidden until Adyen data is available and is
+  displayed below the Billing section in Gmail Review Mode.
 

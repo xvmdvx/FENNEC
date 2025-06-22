@@ -657,6 +657,17 @@
                     container.innerHTML = '<div style="text-align:center; color:#aaa; font-size:13px;">No DB data.</div>';
                     storedOrderInfo = null;
                 }
+
+                const dna = document.getElementById('dna-summary');
+                if (dna) {
+                    const billing = container.querySelector('#billing-section-box');
+                    if (billing && billing.parentElement) {
+                        billing.parentElement.insertAdjacentElement('afterend', dna);
+                    } else {
+                        container.appendChild(dna);
+                    }
+                }
+
                 updateDetailVisibility();
             });
         }
@@ -704,7 +715,7 @@
                 if (html) {
                     container.innerHTML = html;
                 } else {
-                    container.innerHTML = '<div style="text-align:center; color:#aaa; font-size:13px;">No DNA data.</div>';
+                    container.innerHTML = '';
                 }
                 attachCommonListeners(container);
             });
@@ -773,7 +784,7 @@
                     summary.style.marginTop = '6px';
                     dnaBox.appendChild(summary);
                 }
-                summary.innerHTML = icon;
+                summary.innerHTML = '';
             }
             if (issueLabel) {
                 issueLabel.textContent = '';
