@@ -779,6 +779,19 @@
             }
             summary.innerHTML = `<img src="${chrome.runtime.getURL('fennec_icon.png')}" class="loading-fennec"/>`;
             chrome.storage.local.set({ adyenDnaInfo: null });
+            moveDnaSummary();
+        }
+
+        function moveDnaSummary() {
+            const summary = document.getElementById('dna-summary');
+            const container = document.getElementById('db-summary-section');
+            if (!summary || !container) return;
+            const billing = container.querySelector('#billing-section-box');
+            if (billing && billing.parentElement) {
+                billing.parentElement.insertAdjacentElement('afterend', summary);
+            } else {
+                container.appendChild(summary);
+            }
         }
 
         function showLoadingState() {
