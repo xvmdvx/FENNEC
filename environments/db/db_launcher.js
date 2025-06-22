@@ -1300,9 +1300,8 @@
         const addrValues = Object.values(addrMap);
         const addrEntries = addrValues
             .map(a => {
-                const br = a.labels.includes('Agent') ? '' : '<br>';
                 const tags = a.labels.map(l => `<span class="copilot-tag">${escapeHtml(l)}</span>`).join(' ');
-                return `<div style="margin-left:10px"><b>${renderAddress(a.addr, isVAAddress(a.addr))}</b>${br}${tags}</div>`;
+                return `<div style="margin-left:10px"><b>${renderAddress(a.addr, isVAAddress(a.addr))}</b><br>${tags}</div>`;
             });
 
         // Render del HTML
@@ -1353,10 +1352,12 @@
                 const url = `${location.origin}/incfile/companies/${client.id}`;
                 lines.push(`<div><a href="${url}" class="copilot-link" target="_blank">${escapeHtml(client.id)}</a></div>`);
             }
-            if (client.email || client.phone) {
-                const emailHtml = client.email ? `<a href="mailto:${encodeURIComponent(client.email)}" class="copilot-link">${escapeHtml(client.email)}</a>` : '';
-                const phoneText = client.phone ? ` ${escapeHtml(client.phone)}` : '';
-                lines.push(`<div>${emailHtml}${phoneText}</div>`);
+            if (client.email) {
+                const emailHtml = `<a href="mailto:${encodeURIComponent(client.email)}" class="copilot-link">${escapeHtml(client.email)}</a>`;
+                lines.push(`<div>${emailHtml}</div>`);
+            }
+            if (client.phone) {
+                lines.push(`<div>${escapeHtml(client.phone)}</div>`);
             }
             const counts = [];
             if (client.orders) counts.push(`Companies: ${renderCopy(client.orders)}`);
@@ -1442,6 +1443,7 @@
                 `<div><span class="${raClass}">RA: ${hasRA ? 'Sí' : 'No'}</span> ` +
                 `<span class="${vaClass}">VA: ${hasVA ? 'Sí' : 'No'}</span></div>`
             );
+            companyLines.push('<hr style="border:none; border-top:1px solid #eee; margin:6px 0"/>');
             const compSection = reviewMode
                 ? `
             <div class="white-box" style="margin-bottom:10px">

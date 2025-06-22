@@ -196,6 +196,9 @@ information scraped from the current page.
   before the Quick Summary.
 - Names in the Quick Summary now include **CLIENT** and **BILLING** tags when
   they appear in those sections.
+- The Gmail sidebar displays a separator below the **DNA** button, the RA/VA labels
+  are followed by a separator line, address labels in the Quick Summary appear on
+  the next line, and the client email no longer merges with the phone number.
 
 ## Known limitations
 
