@@ -344,3 +344,8 @@ If the DNA button opens the Adyen pages but the sidebar never shows the
 5. You can inspect the sample pages under `examples/ADYEN_*` to compare the HTML
    structure expected by the scripts.
 
+
+## Development notes
+
+The `manual-test.js` script prints a checklist for manually verifying the extension. Terms used across this project are defined in `dictionary.txt`. When adding new features, update this README so the documentation stays current.
+
