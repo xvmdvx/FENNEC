@@ -16,7 +16,7 @@
 .fennec-bento-mode #copilot-sidebar {
     position: fixed;
     overflow: hidden;
-    background: #000;
+    background: transparent;
     color: #fff;
     font-family: "Segoe UI", Arial, sans-serif;
 }
@@ -29,7 +29,7 @@
     height: 100%;
     object-fit: cover;
     pointer-events: none;
-    z-index: 0;
+    z-index: -1;
 }
 
 .fennec-bento-mode #copilot-sidebar > * {
