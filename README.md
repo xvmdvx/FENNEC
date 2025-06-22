@@ -12,14 +12,14 @@ information scraped from the current page.
 4. Click **Load unpacked** and select the project folder. The sidebar will then
    be available when visiting supported pages.
 5. Use the extension popup to enable **Light Mode** for a minimalist black and white style. Summary text is solid black with medium gray borders, the header shows white text on a black bar and the Fennec icon appears inverted.
-6. Enable **Bento Mode** from the popup to switch the sidebar to a colorful grid layout with animated backgrounds and subtle hover effects.
+6. Enable **Bento Mode** from the popup to switch the sidebar to a colorful grid layout with a looping video background and subtle hover effects.
 7. Open the extension **Options** from the menu or the Extensions page to set a default sidebar width and Review Mode.
 
 ## Features
 
 - Sidebar appears on Gmail and DB order pages.
 - Quick buttons open Gmail searches and order pages.
-- Light Mode and Bento Mode offer alternative layouts.
+- Light Mode offers a minimalist look and Bento Mode adds a holographic video background.
 - Family Tree panel shows related orders and can diagnose holds.
 - Review Mode merges order details and fetches Adyen DNA data.
 - The DNA summary is inserted below the Billing section once data is available.
