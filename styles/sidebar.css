@@ -116,7 +116,7 @@
 }
 
 .copilot-address {
-    color: #1a73e8;
+    color: #fff;
     cursor: pointer;
     text-decoration: none;
 }
@@ -302,7 +302,7 @@
     text-transform: uppercase;
     margin-right: 4px;
     margin-top: 2px;
-    opacity: 0.9;
+    opacity: 0.95;
 }
 .copilot-tag-green {
     background-color: #2ecc71;

@@ -199,6 +199,10 @@ information scraped from the current page.
 - The Gmail sidebar displays a separator below the **DNA** button, the RA/VA labels
   are followed by a separator line, address labels in the Quick Summary appear on
   the next line, and the client email no longer merges with the phone number.
+- RA/VA tags now show white text at 95% opacity, Quick Summary addresses are white,
+  and expedited orders display a dark green label. The Billing section includes
+  the AVS result and shows the full address in two lines. The sidebar label after
+  the DNA button now reads **COMPANY:** instead of a separator line.
 
 ## Known limitations
 
