@@ -15,8 +15,8 @@ MISC      → All NON-formation orders (Annual Reports, Amendments, Dissolutions
 COMBINED REFERENCES & EXAMPLES
 ────────────────────────────
 
-DB SB                → DATABASE SIDEBAR (global context - Clasic mode)
-DB SB REVIEW MOD     → DATABASE SIDEBAR (global REVIEW MODE)
+DB SB                → DATABASE SIDEBAR (global context - Classic mode)
+DB SB REVIEW MODE    → DATABASE SIDEBAR (global REVIEW MODE)
 DB SB MAIN           → DATABASE SIDEBAR for FORMATION orders only
 DB SB MISC           → DATABASE SIDEBAR for NON-FORMATION orders
 DB SB MAIN REVIEW MODE → DATABASE SIDEBAR in REVIEW MODE for FORMATION orders
@@ -26,7 +26,7 @@ DB SB OFFICERS       → Officers section within DB SIDEBAR
 GM SB                → GMAIL SIDEBAR (visible during email inspection)
 GM SB REVIEW MODE    → GMAIL SIDEBAR when displaying full REVIEW MODE data
 GM SB XRAY     → The XRAY function/button/box inside the GMAIL SIDEBAR
-GM SB OPEN ORRDER BUTTON     → The OPEN ORDER button inside the GMAIL SIDEBAR in Clasic Mode.
+GM SB OPEN ORDER BUTTON     → The OPEN ORDER button inside the GMAIL SIDEBAR in Classic Mode.
 
 ────────────────────────────
 NOTES
@@ -34,3 +34,11 @@ NOTES
 
 - Always use prefixes to ensure clarity when referencing components (e.g., "DB SB XRAY" instead of just "XRAY").
 - REVIEW MODE is a *visual and functional state*, not a component by itself.
+
+────────────────────────────
+ADDITIONAL FEATURES
+────────────────────────────
+
+Bento Mode → Colorful grid layout with animated backgrounds for the sidebar
+Light Mode → Minimalist black-on-white style with an inverted Fennec icon
+DNA        → Shortcut button that opens Adyen payment details and shopper DNA
