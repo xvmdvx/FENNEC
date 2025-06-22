@@ -16,7 +16,7 @@ function loadState() {
 }
 
 function saveState() {
-    chrome.storage.local.set({ extensionEnabled: toggle.checked, lightMode: lightToggle.checked, bentoMode: bentoToggle.checked }, () => {
+    chrome.storage.local.set({ extensionEnabled: toggle.checked, lightMode: lightToggle.checked, bentoMode: bentoToggle.checked, fennecReviewMode: reviewToggle.checked }, () => {
         chrome.storage.sync.set({ fennecReviewMode: reviewToggle.checked }, () => {
             const urls = [
                 "https://mail.google.com/*",
