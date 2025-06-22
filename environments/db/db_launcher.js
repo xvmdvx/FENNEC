@@ -648,7 +648,7 @@
         } else {
             const seg = [];
             if (isValidField(info.cityStateZip)) seg.push(info.cityStateZip.trim());
-            if (isValidField(info.country) && (!info.cityStateZip || !info.cityStateZip.includes(info.country))) {
+            if (info.country && (!info.cityStateZip || !info.cityStateZip.includes(info.country))) {
                 seg.push(info.country.trim());
             }
             line2 = seg.join(', ');
@@ -1062,7 +1062,8 @@
             {name: 'cityStateZipCountry', label: 'city, state, zip, country'},
             {name: 'cityStateZip', label: 'city, state, zip'},
             {name: 'country', label: 'country'},
-            {name: 'address', label: 'address'}
+            {name: 'address', label: 'address'},
+            {name: 'avs', label: 'avs'}
         ]);
 
         const physicalBox = Array.from(document.querySelectorAll('#vcomp .form-body h4, #vcomp .form-body h3'))
@@ -1337,7 +1338,12 @@
         if (client && (client.id || client.name || client.email)) {
             const lines = [];
             if (client.name) {
-                lines.push(`<div><b>${renderName(client.name)}</b></div>`);
+                let nameLine = `<b>${renderName(client.name)}</b>`;
+                if (client.id) {
+                    const url = `${location.origin}/incfile/companies/${client.id}`;
+                    nameLine += ` (<a href="${url}" class="copilot-link" target="_blank">${escapeHtml(client.id)}</a>)`;
+                }
+                lines.push(`<div>${nameLine}</div>`);
                 const r = roleMap[client.name.trim().toLowerCase()];
                 if (r && r.roles && r.roles.size) {
                     const tags = Array.from(r.roles)
@@ -1348,16 +1354,14 @@
                     lines.push(`<div><span class="copilot-tag copilot-tag-purple">NOT LISTED</span></div>`);
                 }
             }
-            if (client.id) {
-                const url = `${location.origin}/incfile/companies/${client.id}`;
-                lines.push(`<div><a href="${url}" class="copilot-link" target="_blank">${escapeHtml(client.id)}</a></div>`);
-            }
-            if (client.email) {
-                const emailHtml = `<a href="mailto:${encodeURIComponent(client.email)}" class="copilot-link">${escapeHtml(client.email)}</a>`;
-                lines.push(`<div>${emailHtml}</div>`);
-            }
-            if (client.phone) {
-                lines.push(`<div>${escapeHtml(client.phone)}</div>`);
+            if (client.email || client.phone) {
+                const parts = [];
+                if (client.email) {
+                    const emailHtml = `<a href="mailto:${encodeURIComponent(client.email)}" class="copilot-link">${escapeHtml(client.email)}</a>`;
+                    parts.push(emailHtml);
+                }
+                if (client.phone) parts.push(escapeHtml(client.phone));
+                lines.push(`<div>${parts.join(' \u2022 ')}</div>`);
             }
             const counts = [];
             if (client.orders) counts.push(`Companies: ${renderCopy(client.orders)}`);
@@ -1382,6 +1386,10 @@
             if (billing.last4) cardParts.push(renderCopy(billing.last4));
             if (billing.expiry) cardParts.push(renderCopy(formatExpiry(billing.expiry)));
             if (cardParts.length) linesB.push(`<div>${cardParts.join(' \u2022 ')}</div>`);
+            if (billing.avs) {
+                const avsTag = `<span class="copilot-tag">${escapeHtml(billing.avs)}</span>`;
+                linesB.push(`<div>AVS: ${avsTag}</div>`);
+            }
             const addr = renderBillingAddress(billing);
             if (addr) linesB.push(`<div>${addr}</div>`);
             const billingSection = `
@@ -1627,7 +1635,8 @@
             street2: raw.street2,
             cityStateZipCountry: raw.cityStateZipCountry,
             cityStateZip: raw.cityStateZip,
-            country: raw.country
+            country: raw.country,
+            avs: raw.avs
         };
     }
     });
@@ -1854,7 +1863,7 @@
                     if (mailEl) email = getText(mailEl);
                     const text = getText(contactCell);
                     if (!email) {
-                        const em = text.match(/[\w.+-]+@[\w.-]+/);
+                        const em = text.match(/[\w.+-]+@[\w.-]+\.[\w.-]+(?=\s|$)/);
                         if (em) email = em[0];
                     }
                     const ph = text.match(/\(?\d{3}\)?[-\s.]?\d{3}[-\s.]?\d{4}/);

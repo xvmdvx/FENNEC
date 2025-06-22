@@ -549,7 +549,8 @@
             if (orderId) html += `<div><b><a href="#" id="order-link" class="order-link">${renderCopy(orderId)}</a> ${renderCopyIcon(orderId)}</b></div>`;
             if (reviewMode && storedOrderInfo) {
                 const typeTag = storedOrderInfo.type ? `<span class="copilot-tag">${escapeHtml(storedOrderInfo.type)}</span>` : "";
-                const expTag = `<span class="copilot-tag">${storedOrderInfo.expedited ? 'Expedited' : 'Non Expedited'}</span>`;
+                const expClass = storedOrderInfo.expedited ? 'copilot-tag copilot-tag-green' : 'copilot-tag';
+                const expTag = `<span class="${expClass}">${storedOrderInfo.expedited ? 'Expedited' : 'Non Expedited'}</span>`;
                 html += `<div>${typeTag} ${expTag}</div>`;
             }
             html += '</div>';
@@ -787,7 +788,7 @@
                         <button id="btn-open-order" class="copilot-button">📂 OPEN ORDER</button>
                     </div>
                     <div class="copilot-dna"></div>
-                    <hr style="border:none;border-top:1px solid #eee;margin:6px 0"/>
+                    <div class="section-label" style="margin:6px 0">COMPANY:</div>
                     <div class="order-summary-header">ORDER SUMMARY</div>
                     <div class="order-summary-box">
                         <div id="order-summary-content" style="color:#ccc; font-size:13px;">
