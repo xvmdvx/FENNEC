@@ -237,6 +237,7 @@
                     btn.textContent = "🧬 DNA";
                     dnaRow.appendChild(btn);
                     setupDnaButton();
+                    loadDnaSummary();
                 }
             } else if (dnaBtn) {
                 dnaBtn.remove();
@@ -660,6 +661,55 @@
             });
         }
 
+        function buildDnaHtml(info) {
+            if (!info || !info.payment || !info.transactions) return null;
+            const p = info.payment;
+            const card = p.card || {};
+            const shopper = p.shopper || {};
+            const proc = p.processing || {};
+            const parts = [];
+            const add = (label, val) => { if (val) parts.push(`<div><b>${escapeHtml(label)}:</b> ${escapeHtml(val)}</div>`); };
+            add('Payment method', card['Payment method']);
+            add('Card holder', card['Card holder']);
+            if (card['Card number']) {
+                const digits = card['Card number'].replace(/\D+/g, '').slice(-4);
+                add('Card number', digits);
+            }
+            add('Expiry date', card['Expiry date']);
+            add('Funding source', card['Funding source']);
+            add('Issuer name', card['Issuer name']);
+            add('Issuer country/region', card['Issuer country/region']);
+            add('IP', shopper['IP Address'] || shopper['IP']);
+            add('Name', shopper['Name']);
+            add('Telephone number', shopper['Telephone number']);
+            add('Billing address', shopper['Billing address']);
+            add('CVC/CVV', proc['CVC/CVV']);
+            add('AVS', proc['AVS']);
+            add('Fraud scoring', proc['Fraud scoring']);
+            const tx = info.transactions || {};
+            Object.keys(tx).forEach(k => {
+                const t = tx[k];
+                const val = (t.count || '') + (t.amount ? ` (${t.amount})` : '');
+                add(k, val.trim());
+            });
+            if (!parts.length) return null;
+            return `<div class="section-label">ADYEN'S DNA</div><div class="white-box" style="margin-bottom:10px">${parts.join('')}</div>`;
+        }
+
+        function loadDnaSummary() {
+            const container = document.querySelector('.copilot-dna');
+            if (!container) return;
+            chrome.storage.local.get({ adyenDnaInfo: null }, ({ adyenDnaInfo }) => {
+                const html = buildDnaHtml(adyenDnaInfo);
+                if (html) {
+                    container.innerHTML = html;
+                } else {
+                    container.innerHTML = '<div style="text-align:center; color:#aaa; font-size:13px;">No DNA data.</div>';
+                }
+                attachCommonListeners(container);
+            });
+        }
+
         function formatIssueText(text) {
             if (!text) return '';
             let formatted = text.replace(/\s*(\d+\s*[).])/g, (m, g) => '\n' + g + ' ');
@@ -711,9 +761,11 @@
             const issueContent = document.getElementById('issue-summary-content');
             const issueLabel = document.getElementById('issue-status-label');
             const icon = `<img src="${chrome.runtime.getURL('fennec_icon.png')}" class="loading-fennec"/>`;
+            const dnaBox = document.querySelector('.copilot-dna');
             if (orderBox) orderBox.innerHTML = icon;
             if (dbBox) dbBox.innerHTML = icon;
             if (issueContent) issueContent.innerHTML = icon;
+            if (dnaBox) dnaBox.innerHTML = icon;
             if (issueLabel) {
                 issueLabel.textContent = '';
                 issueLabel.className = 'issue-status-label';
@@ -726,6 +778,7 @@
             fillOrderSummaryBox(ctx);
             loadDbSummary(ctx && ctx.orderNumber);
             if (ctx && ctx.orderNumber) checkLastIssue(ctx.orderNumber);
+            loadDnaSummary();
         }
 
         function handleEmailSearchClick() {
@@ -826,6 +879,7 @@
             document.getElementById("copilot-refresh").onclick = refreshSidebar;
             setupOpenOrderButton();
             applyReviewMode();
+            loadDnaSummary();
         }
 
         function injectSidebarIfMissing() {
@@ -850,6 +904,9 @@
         chrome.storage.onChanged.addListener((changes, area) => {
             if (area === 'local' && changes.sidebarDb && document.getElementById('db-summary-section')) {
                 loadDbSummary();
+            }
+            if (area === 'local' && changes.adyenDnaInfo && document.querySelector('.copilot-dna')) {
+                loadDnaSummary();
             }
             if (area === 'sync' && changes.fennecReviewMode) {
                 reviewMode = changes.fennecReviewMode.newValue;

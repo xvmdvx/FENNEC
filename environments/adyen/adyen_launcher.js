@@ -1,5 +1,5 @@
-// Auto-navigates to the DNA page when an order number is provided via
-// ?fennec_order= in the URL or session storage.
+// Auto-navigates to the DNA page and collects payment/transaction info when an
+// order number is provided via ?fennec_order= in the URL or session storage.
 (function() {
     chrome.storage.local.get({ extensionEnabled: true }, ({ extensionEnabled }) => {
         if (!extensionEnabled) {
@@ -64,6 +64,38 @@
                 });
             }
 
+            function saveData(part) {
+                chrome.storage.local.get({ adyenDnaInfo: {} }, ({ adyenDnaInfo }) => {
+                    const updated = Object.assign({}, adyenDnaInfo, part);
+                    chrome.storage.local.set({ adyenDnaInfo: updated });
+                });
+            }
+
+            function extractSection(title) {
+                const headings = Array.from(document.querySelectorAll('h3.adl-heading'));
+                const heading = headings.find(h => h.textContent.trim() === title);
+                if (!heading) return null;
+                const card = heading.closest('section');
+                if (!card) return null;
+                const rows = card.querySelectorAll('.structured-list__item');
+                const data = {};
+                rows.forEach(r => {
+                    const label = r.querySelector('.structured-list__label');
+                    const val = r.querySelector('.structured-list__content');
+                    if (label && val) {
+                        data[label.textContent.trim()] = val.textContent.trim().replace(/\s+/g, ' ');
+                    }
+                });
+                return data;
+            }
+
+            function handlePaymentPage() {
+                const card = extractSection('Card details') || {};
+                const shopper = extractSection('Shopper details') || {};
+                const processing = extractSection('Processing') || {};
+                saveData({ payment: { card, shopper, processing } });
+            }
+
             function openDna() {
                 waitForElement('a[href*="showOilSplashList.shtml"]').then(link => {
                     try {
@@ -75,6 +107,21 @@
                         console.error('[FENNEC Adyen] Error opening DNA:', err);
                     }
                 });
+            }
+
+            function handleDnaPage() {
+                const stats = {};
+                document.querySelectorAll('.stats-bar-item').forEach(item => {
+                    const label = item.querySelector('.stats-bar-item__label');
+                    if (!label) return;
+                    const count = item.querySelector('.stats-bar-item__text');
+                    const amount = item.querySelector('.stats-bar-item__subtext');
+                    stats[label.textContent.trim()] = {
+                        count: count ? count.textContent.trim() : '',
+                        amount: amount ? amount.textContent.trim() : ''
+                    };
+                });
+                saveData({ transactions: stats, updated: Date.now() });
             }
 
             const path = window.location.pathname;
@@ -93,10 +140,17 @@
                     openMostRecent();
                 }
             } else if (path.includes('/accounts/showTx.shtml')) {
+                const run = () => { openDna(); handlePaymentPage(); };
                 if (ready) {
-                    document.addEventListener('DOMContentLoaded', openDna);
+                    document.addEventListener('DOMContentLoaded', run);
                 } else {
-                    openDna();
+                    run();
+                }
+            } else if (path.includes('showOilSplashList.shtml')) {
+                if (ready) {
+                    document.addEventListener('DOMContentLoaded', handleDnaPage);
+                } else {
+                    handleDnaPage();
                 }
             }
         } catch (e) {

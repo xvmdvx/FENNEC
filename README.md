@@ -73,6 +73,9 @@ information scraped from the current page.
   mode stays in sync across Gmail and DB.
 - The Adyen helper now waits for the shopper DNA link to appear before opening
   it so slow pages still navigate correctly.
+- When both the Payment details and Shopper DNA pages finish loading, their
+  information is collected and shown in a new **ADYEN'S DNA** section of the
+  Gmail sidebar.
 
 ### DB
 - Displays a sidebar on order detail pages.
