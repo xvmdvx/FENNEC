@@ -323,3 +323,21 @@ Reload the extension after editing the manifest.
 - The DNA summary now stays hidden until Adyen data is available and is
   displayed below the Billing section in Gmail Review Mode.
 
+## Troubleshooting the Adyen DNA summary
+
+If the DNA button opens the Adyen pages but the sidebar never shows the
+**ADYEN'S DNA** section, use the browser console to trace what is happening.
+
+1. Enable **Review Mode** from the extension popup so the DNA button appears.
+2. Click **🧬 DNA** on a Gmail message. Two Adyen tabs should open.
+3. In each Adyen tab press <kbd>F12</kbd> and check the **Console** for messages
+   starting with `[FENNEC Adyen]`. They indicate when the script fills the search
+   form, opens the most recent transaction, and extracts data from the payment
+   and DNA pages.
+4. After "DNA stats stored" appears, return to Gmail and click **REFRESH** in the
+   sidebar. Open the console there and look for `[Copilot]` messages.
+   "DNA data found" means the information was read correctly. If you see
+   "No DNA data available", the Adyen pages may not have loaded fully.
+5. You can inspect the sample pages under `examples/ADYEN_*` to compare the HTML
+   structure expected by the scripts.
+

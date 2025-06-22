@@ -707,14 +707,17 @@
             return `<div class="section-label">ADYEN'S DNA</div><div class="white-box" style="margin-bottom:10px">${parts.join('')}</div>`;
         }
 
-        function loadDnaSummary() {
+       function loadDnaSummary() {
             const container = document.getElementById('dna-summary');
             if (!container) return;
+            console.log('[Copilot] Loading DNA summary');
             chrome.storage.local.get({ adyenDnaInfo: null }, ({ adyenDnaInfo }) => {
                 const html = buildDnaHtml(adyenDnaInfo);
                 if (html) {
+                    console.log('[Copilot] DNA data found');
                     container.innerHTML = html;
                 } else {
+                    console.log('[Copilot] No DNA data available');
                     container.innerHTML = '';
                 }
                 attachCommonListeners(container);
@@ -1007,6 +1010,7 @@
                         alert("No se encontró ningún número de orden válido en el correo.");
                         return;
                     }
+                    console.log('[Copilot] Opening Adyen for order', orderId);
                     const url = `https://ca-live.adyen.com/ca/ca/overview/default.shtml?fennec_order=${orderId}`;
                     chrome.runtime.sendMessage({ action: "openActiveTab", url });
                 } catch (error) {
