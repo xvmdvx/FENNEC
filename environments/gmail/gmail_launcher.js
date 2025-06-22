@@ -195,9 +195,12 @@
                     orderBox.appendChild(compBox);
                 }
                 if (compLabel) compLabel.remove();
-                orderBox.insertAdjacentElement("afterend", quick);
+                orderBox.appendChild(quick);
+                quick.classList.remove("white-box");
                 quick.classList.remove("quick-summary-collapsed");
-                quick.style.maxHeight = quick.scrollHeight + "px";
+                quick.style.margin = "8px 0 0";
+                quick.style.padding = "0";
+                quick.style.maxHeight = "none";
                 Array.from(container.children).forEach(el => {
                     if (el !== quick && el !== clientLabel && el !== clientBox && el !== billingLabel && el !== billingBox) el.style.display = "none";
                 });
@@ -208,6 +211,11 @@
                 if (issueBox) issueBox.style.display = "";
                 orderBox.querySelectorAll('[data-review-merged="1"]').forEach(el => el.remove());
                 if (quick.parentElement !== container) container.prepend(quick);
+                quick.classList.add("white-box");
+                quick.classList.add("quick-summary-collapsed");
+                quick.style.marginBottom = "10px";
+                quick.style.padding = "12px";
+                quick.style.maxHeight = "0";
                 showFullDetails();
                 if (clientLabel && clientBox) { clientLabel.style.display = "none"; clientBox.style.display = "none"; }
                 if (billingLabel && billingBox) { billingLabel.style.display = "none"; billingBox.style.display = "none"; }

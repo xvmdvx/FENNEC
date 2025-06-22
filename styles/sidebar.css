@@ -275,7 +275,8 @@
     transition: max-height 0.3s ease;
 }
 
-#copilot-sidebar .white-box.quick-summary-content {
+#copilot-sidebar .white-box.quick-summary-content,
+#copilot-sidebar .quick-summary-content {
     font-size: 13px;
     line-height: 1.4em;
 }
