@@ -17,7 +17,7 @@
             const order = sessionStorage.getItem('fennec_order');
             if (!order) return;
 
-            function waitForElement(selector, timeout = 10000) {
+            function waitForElement(selector, timeout = 20000) {
                 return new Promise(resolve => {
                     const interval = 250;
                     let elapsed = 0;
