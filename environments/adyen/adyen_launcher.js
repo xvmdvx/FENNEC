@@ -60,7 +60,7 @@
                     try {
                         if (link) {
                             console.log('[FENNEC Adyen] Opening most recent transaction');
-                            link.click();
+                            chrome.runtime.sendMessage({ action: 'openTab', url: link.href });
                         }
                     } catch (err) {
                         console.error('[FENNEC Adyen] Error opening result:', err);
@@ -94,6 +94,36 @@
                 return data;
             }
 
+            function extractNetworkTransactions() {
+                const heading = Array.from(document.querySelectorAll('.adl-heading'))
+                    .find(h => h.textContent.trim() === 'Network');
+                if (!heading) return {};
+                const container = heading.closest('.data-breakdown');
+                if (!container) return {};
+                const group = Array.from(container.querySelectorAll('.group'))
+                    .find(g => g.querySelector('.adl-heading') && g.querySelector('.adl-heading').textContent.trim() === 'Transactions');
+                if (!group) return {};
+                const details = {};
+                group.querySelectorAll('.item').forEach(item => {
+                    const countEl = item.querySelector('.status, .identifier-count');
+                    const flex = item.querySelector('.u-display-flex');
+                    let label = '';
+                    let amount = '';
+                    if (flex) {
+                        const divs = flex.querySelectorAll('div');
+                        if (divs[0]) label = divs[0].textContent.trim();
+                        if (divs[1]) amount = divs[1].textContent.trim();
+                    } else {
+                        const clone = item.cloneNode(true);
+                        const toRemove = clone.querySelector('.status, .identifier-count');
+                        if (toRemove) toRemove.remove();
+                        label = clone.textContent.trim();
+                    }
+                    details[label] = { count: countEl ? countEl.textContent.trim() : '', amount };
+                });
+                return details;
+            }
+
             function handlePaymentPage() {
                 console.log('[FENNEC Adyen] Extracting payment page details');
                 const card = extractSection('Card details') || {};
@@ -112,7 +142,7 @@
                     try {
                         if (link) {
                             console.log('[FENNEC Adyen] Opening DNA tab');
-                            window.open(link.href, '_blank');
+                            chrome.runtime.sendMessage({ action: 'openTab', url: link.href });
                             sessionStorage.removeItem('fennec_order');
                         }
                     } catch (err) {
@@ -134,6 +164,7 @@
                         amount: amount ? amount.textContent.trim() : ''
                     };
                 });
+                Object.assign(stats, extractNetworkTransactions());
                 saveData({ transactions: stats, updated: Date.now() });
                 console.log('[FENNEC Adyen] DNA stats stored');
             }
