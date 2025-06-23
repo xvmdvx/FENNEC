@@ -70,3 +70,4 @@
 - The DNA summary now stays hidden until Adyen data is available and is
   displayed below the Billing section in Gmail Review Mode.
  - Adyen opens the Payment Details tab in the background and then automatically navigates to the DNA page to capture transactions.
+ - The Adyen search now starts even if the tab never becomes active so DNA data loads without switching tabs.
