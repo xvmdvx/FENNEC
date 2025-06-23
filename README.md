@@ -28,6 +28,7 @@ information scraped from the current page.
 - The DNA summary is inserted below the Billing section once data is available.
 - Adyen payment details briefly take focus to ensure the search begins, then automatically return to Gmail. The Payment Details tab navigates to the DNA page after collecting information and retries the search so DNA data loads without manual tab switching. Network transactions from the DNA page are captured.
 - The DNA search now waits up to 20 seconds for Adyen elements to load.
+- DNA summaries persist after switching tabs and reappear when returning to the same order.
 - A Refresh button updates information without reloading the page.
 
 See [CHANGELOG.md](CHANGELOG.md) for a detailed list of bug fixes.

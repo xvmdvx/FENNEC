@@ -77,7 +77,7 @@
 
             function saveData(part) {
                 chrome.storage.local.get({ adyenDnaInfo: {} }, ({ adyenDnaInfo }) => {
-                    const updated = Object.assign({}, adyenDnaInfo, part);
+                    const updated = Object.assign({}, adyenDnaInfo, part, { order });
                     chrome.storage.local.set({ adyenDnaInfo: updated });
                     console.log('[FENNEC Adyen] Data saved', part);
                 });

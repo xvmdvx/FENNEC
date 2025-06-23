@@ -713,12 +713,16 @@
             return `<div class="section-label">ADYEN'S DNA</div><div class="white-box" style="margin-bottom:10px">${parts.join('')}</div>`;
         }
 
-       function loadDnaSummary() {
-           const container = document.getElementById('dna-summary');
-           if (!container) return;
+        function loadDnaSummary() {
+            const container = document.getElementById('dna-summary');
+            if (!container) return;
             console.log('[Copilot] Loading DNA summary');
             console.log('[Copilot] Fetching DNA info from storage');
+            const orderId = currentContext && currentContext.orderNumber;
             chrome.storage.local.get({ adyenDnaInfo: null }, ({ adyenDnaInfo }) => {
+                if (adyenDnaInfo && orderId && adyenDnaInfo.order !== orderId) {
+                    adyenDnaInfo = null;
+                }
                 const html = buildDnaHtml(adyenDnaInfo);
                 if (html) {
                     console.log('[Copilot] DNA data found');
@@ -776,7 +780,7 @@
             });
         }
 
-        function showDnaLoading() {
+        function showDnaLoading(orderId) {
             const dnaBox = document.querySelector('.copilot-dna');
             if (!dnaBox) return;
             let summary = dnaBox.querySelector('#dna-summary');
@@ -788,7 +792,9 @@
             }
             summary.innerHTML = `<img src="${chrome.runtime.getURL('fennec_icon.png')}" class="loading-fennec"/>`;
             console.log('[Copilot] Showing DNA loading placeholder');
-            chrome.storage.local.set({ adyenDnaInfo: null });
+            if (orderId) {
+                chrome.storage.local.set({ adyenDnaInfo: { order: orderId } });
+            }
             repositionDnaSummary();
         }
 
@@ -1049,7 +1055,7 @@
                     console.log('[Copilot] DNA button clicked for order', orderId);
                     console.log('[Copilot] Opening Adyen for order', orderId);
                     const url = `https://ca-live.adyen.com/ca/ca/overview/default.shtml?fennec_order=${orderId}`;
-                    showDnaLoading();
+                    showDnaLoading(orderId);
                     chrome.runtime.sendMessage({ action: "openTab", url, runAdyen: true });
                 } catch (error) {
                     console.error("Error al intentar buscar en Adyen:", error);
