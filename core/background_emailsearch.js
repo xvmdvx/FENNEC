@@ -14,13 +14,21 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
                 return;
             }
             if (message.runAdyen) {
+                let sent = false;
+                const send = () => {
+                    if (!sent) {
+                        sent = true;
+                        chrome.tabs.sendMessage(tab.id, { action: "startAdyenFlow" });
+                    }
+                };
                 const listener = (tabId, info) => {
                     if (tabId === tab.id && info.status === "complete") {
                         chrome.tabs.onUpdated.removeListener(listener);
-                        chrome.tabs.sendMessage(tabId, { action: "startAdyenFlow" });
+                        send();
                     }
                 };
                 chrome.tabs.onUpdated.addListener(listener);
+                setTimeout(send, 5000);
             }
         });
     }
