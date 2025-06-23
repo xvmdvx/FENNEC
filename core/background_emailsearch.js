@@ -16,10 +16,14 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
             }
             if (message.runAdyen) {
                 let attempts = 5;
+                let returned = false;
                 const send = () => {
                     chrome.tabs.sendMessage(tab.id, { action: "startAdyenFlow" }, () => {
                         if (chrome.runtime.lastError && --attempts > 0) {
                             setTimeout(send, 2000);
+                        } else if (previousTabId && !returned) {
+                            chrome.tabs.update(previousTabId, { active: true });
+                            returned = true;
                         }
                     });
                 };
@@ -31,11 +35,6 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
                 };
                 chrome.tabs.onUpdated.addListener(listener);
                 setTimeout(send, 5000);
-                if (previousTabId) {
-                    setTimeout(() => {
-                        chrome.tabs.update(previousTabId, { active: true });
-                    }, 1000);
-                }
             }
         });
     }
