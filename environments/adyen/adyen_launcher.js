@@ -16,6 +16,7 @@
 
             const order = sessionStorage.getItem('fennec_order');
             if (!order) return;
+            console.log('[FENNEC Adyen] Order detected:', order);
 
             function waitForElement(selector, timeout = 20000) {
                 return new Promise(resolve => {
@@ -140,6 +141,7 @@
                 }
                 const shopper = extractSection('Shopper details') || {};
                 const processing = extractSection('Processing') || {};
+                console.log('[FENNEC Adyen] Payment details', { card, shopper, processing });
                 saveData({ payment: { card, shopper, processing } });
             }
 
@@ -171,6 +173,7 @@
                     };
                 });
                 Object.assign(stats, extractNetworkTransactions());
+                console.log('[FENNEC Adyen] DNA stats', stats);
                 saveData({ transactions: stats, updated: Date.now() });
                 console.log('[FENNEC Adyen] DNA stats stored');
             }

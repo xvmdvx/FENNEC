@@ -92,6 +92,7 @@ If the DNA button opens the Adyen pages but the sidebar never shows the
    starting with `[FENNEC Adyen]`. They indicate when the script fills the search
    form, opens the most recent transaction, and extracts data from the payment
    and DNA pages.
+   Additional logs now confirm when the order is detected and DNA stats are saved.
 4. After "DNA stats stored" appears, return to Gmail and click **REFRESH** in the
    sidebar. Open the console there and look for `[Copilot]` messages.
    "DNA data found" means the information was read correctly. If you see

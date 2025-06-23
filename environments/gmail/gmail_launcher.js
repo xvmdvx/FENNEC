@@ -714,14 +714,16 @@
         }
 
        function loadDnaSummary() {
-            const container = document.getElementById('dna-summary');
-            if (!container) return;
+           const container = document.getElementById('dna-summary');
+           if (!container) return;
             console.log('[Copilot] Loading DNA summary');
+            console.log('[Copilot] Fetching DNA info from storage');
             chrome.storage.local.get({ adyenDnaInfo: null }, ({ adyenDnaInfo }) => {
                 const html = buildDnaHtml(adyenDnaInfo);
                 if (html) {
                     console.log('[Copilot] DNA data found');
                     container.innerHTML = html;
+                    console.log('[Copilot] DNA summary injected');
                 } else {
                     console.log('[Copilot] No DNA data available');
                     container.innerHTML = '';
@@ -785,11 +787,13 @@
                 dnaBox.appendChild(summary);
             }
             summary.innerHTML = `<img src="${chrome.runtime.getURL('fennec_icon.png')}" class="loading-fennec"/>`;
+            console.log('[Copilot] Showing DNA loading placeholder');
             chrome.storage.local.set({ adyenDnaInfo: null });
             repositionDnaSummary();
         }
 
         function showLoadingState() {
+            console.log('[Copilot] Showing loading state');
             currentContext = null;
             storedOrderInfo = null;
             const orderBox = document.getElementById('order-summary-content');
@@ -962,6 +966,7 @@
                 loadDbSummary();
             }
             if (area === 'local' && changes.adyenDnaInfo && document.querySelector('.copilot-dna')) {
+                console.log('[Copilot] DNA info updated in storage');
                 loadDnaSummary();
             }
             if (area === 'sync' && changes.fennecReviewMode) {
@@ -1041,6 +1046,7 @@
                         alert("No se encontró ningún número de orden válido en el correo.");
                         return;
                     }
+                    console.log('[Copilot] DNA button clicked for order', orderId);
                     console.log('[Copilot] Opening Adyen for order', orderId);
                     const url = `https://ca-live.adyen.com/ca/ca/overview/default.shtml?fennec_order=${orderId}`;
                     showDnaLoading();
