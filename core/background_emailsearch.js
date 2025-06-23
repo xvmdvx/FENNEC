@@ -14,12 +14,13 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
                 return;
             }
             if (message.runAdyen) {
-                let sent = false;
+                let attempts = 5;
                 const send = () => {
-                    if (!sent) {
-                        sent = true;
-                        chrome.tabs.sendMessage(tab.id, { action: "startAdyenFlow" });
-                    }
+                    chrome.tabs.sendMessage(tab.id, { action: "startAdyenFlow" }, () => {
+                        if (chrome.runtime.lastError && --attempts > 0) {
+                            setTimeout(send, 2000);
+                        }
+                    });
                 };
                 const listener = (tabId, info) => {
                     if (tabId === tab.id && info.status === "complete") {
