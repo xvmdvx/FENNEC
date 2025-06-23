@@ -2,7 +2,8 @@
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if (message.action === "openTab" && message.url) {
         console.log("[Copilot] Forzando apertura de una pestaña:", message.url);
-        const opts = { url: message.url, active: false };
+        const previousTabId = sender && sender.tab ? sender.tab.id : null;
+        const opts = { url: message.url, active: Boolean(message.runAdyen) };
         if (message.windowId) {
             opts.windowId = message.windowId;
         } else if (sender && sender.tab) {
@@ -30,6 +31,11 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
                 };
                 chrome.tabs.onUpdated.addListener(listener);
                 setTimeout(send, 5000);
+                if (previousTabId) {
+                    setTimeout(() => {
+                        chrome.tabs.update(previousTabId, { active: true });
+                    }, 1000);
+                }
             }
         });
     }
