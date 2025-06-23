@@ -141,8 +141,8 @@
                 waitForElement('a[href*="showOilSplashList.shtml"]').then(link => {
                     try {
                         if (link) {
-                            console.log('[FENNEC Adyen] Opening DNA tab');
-                            chrome.runtime.sendMessage({ action: 'openTab', url: link.href });
+                            console.log('[FENNEC Adyen] Navigating to DNA page');
+                            window.location.href = link.href;
                             sessionStorage.removeItem('fennec_order');
                         }
                     } catch (err) {
