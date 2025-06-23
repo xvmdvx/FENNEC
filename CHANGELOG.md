@@ -73,3 +73,4 @@
  - The Adyen search now starts even if the tab never becomes active so DNA data loads without switching tabs.
 - Improved DNA reliability by retrying the background search until the page finishes loading.
 - The DNA search now waits up to 20 seconds for Adyen elements to load.
+- DNA results are stored with the order ID so returning to Gmail shows the summary again.
