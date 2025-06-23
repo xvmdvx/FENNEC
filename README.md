@@ -26,7 +26,7 @@ information scraped from the current page.
 - Family Tree panel shows related orders and can diagnose holds.
 - Review Mode merges order details and fetches Adyen DNA data.
 - The DNA summary is inserted below the Billing section once data is available.
-- Network transactions from the DNA page are now captured.
+- Adyen payment details and DNA tabs open in the background (payment first), and network transactions from the DNA page are captured.
 - A Refresh button updates information without reloading the page.
 
 See [CHANGELOG.md](CHANGELOG.md) for a detailed list of bug fixes.
@@ -86,7 +86,7 @@ If the DNA button opens the Adyen pages but the sidebar never shows the
 **ADYEN'S DNA** section, use the browser console to trace what is happening.
 
 1. Enable **Review Mode** from the extension popup so the DNA button appears.
-2. Click **🧬 DNA** on a Gmail message. Two Adyen tabs open in the background.
+2. Click **🧬 DNA** on a Gmail message. Two Adyen tabs open in the background: the first shows **Payment Details** and the second opens **DNA**.
 3. In each Adyen tab press <kbd>F12</kbd> and check the **Console** for messages
    starting with `[FENNEC Adyen]`. They indicate when the script fills the search
    form, opens the most recent transaction, and extracts data from the payment

@@ -60,7 +60,7 @@
                     try {
                         if (link) {
                             console.log('[FENNEC Adyen] Opening most recent transaction');
-                            chrome.runtime.sendMessage({ action: 'openTab', url: link.href });
+                            link.click();
                         }
                     } catch (err) {
                         console.error('[FENNEC Adyen] Error opening result:', err);
