@@ -55,6 +55,12 @@
                 });
             }
 
+            chrome.runtime.onMessage.addListener((msg) => {
+                if (msg.action === 'startAdyenFlow') {
+                    fillAndSubmit();
+                }
+            });
+
             function openMostRecent() {
                 waitForElement('a[href*="showTx.shtml?pspReference="]').then(link => {
                     try {

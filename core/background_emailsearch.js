@@ -11,6 +11,16 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         chrome.tabs.create(opts, (tab) => {
             if (chrome.runtime.lastError) {
                 console.error("[Copilot] Error (openTab):", chrome.runtime.lastError.message);
+                return;
+            }
+            if (message.runAdyen) {
+                const listener = (tabId, info) => {
+                    if (tabId === tab.id && info.status === "complete") {
+                        chrome.tabs.onUpdated.removeListener(listener);
+                        chrome.tabs.sendMessage(tabId, { action: "startAdyenFlow" });
+                    }
+                };
+                chrome.tabs.onUpdated.addListener(listener);
             }
         });
     }

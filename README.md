@@ -26,7 +26,7 @@ information scraped from the current page.
 - Family Tree panel shows related orders and can diagnose holds.
 - Review Mode merges order details and fetches Adyen DNA data.
 - The DNA summary is inserted below the Billing section once data is available.
- - Adyen payment details open in the background and automatically navigate to the DNA page after collecting information. Network transactions from the DNA page are captured.
+ - Adyen payment details open in the background and automatically navigate to the DNA page after collecting information. The search now runs even if the tab stays in the background, and network transactions from the DNA page are captured.
 - A Refresh button updates information without reloading the page.
 
 See [CHANGELOG.md](CHANGELOG.md) for a detailed list of bug fixes.
