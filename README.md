@@ -53,6 +53,7 @@ information scraped from the current page.
 - When Review Mode is enabled a **🩻 XRAY** button runs **SEARCH** and then **DNA** automatically. The **OPEN ORDER** button is hidden. The **SEARCH**, **DNA** and **XRAY** buttons now share one row.
 - CODA Search menu item queries the knowledge base using the Coda API.
 - Clicking the state in the DB sidebar now opens the Coda Knowledge Base in a popup window covering about 70% of the page.
+- Clicking the company name or State ID opens the state's SOS search page directly without requesting extra permissions.
 - Edit `environments/db/db_launcher.js` to provide your Coda API token and the
   Coda doc ID. Generate a new token in Coda and replace the value after
   `Bearer` if searches return "No results". Set the doc ID without the leading
