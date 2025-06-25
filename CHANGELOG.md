@@ -1,6 +1,7 @@
 # Changelog
 
 ## v0.3 - 2025-06-24
+- Added Date of Formation next to the State ID in the Company summary on DB and Gmail sidebars.
 
 - Fixed Bento Mode positioning so the sidebar displays correctly on Gmail and DB.
 - Fixed Bento Mode layering so headers and boxes appear above the video background.
