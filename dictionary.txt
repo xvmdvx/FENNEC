@@ -61,3 +61,4 @@ AR COMPLETED         → Default comment used when resolving a Family Tree order
 Diagnose overlay → Floating panel listing Family Tree hold orders
 Comment Box → Editable field in the diagnose overlay prefilled with AR COMPLETED and the current order number
 Clear Tabs icon → Button that closes all other tabs in the window
+BETA → Pre-release version name used for testing
