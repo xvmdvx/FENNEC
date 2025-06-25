@@ -15,9 +15,7 @@
     "https://*.incfile.com/storage/incfile/*",
     "https://tools.usps.com/*",
     "https://coda.io/*",
-    "https://ca-live.adyen.com/*"
-  ],
-  "optional_host_permissions": [
+    "https://ca-live.adyen.com/*",
     "https://*/*"
   ],
   "content_scripts": [
