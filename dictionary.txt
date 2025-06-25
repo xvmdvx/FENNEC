@@ -22,11 +22,12 @@ DB SB MISC           → DATABASE SIDEBAR for NON-FORMATION orders
 DB SB MAIN REVIEW MODE → DATABASE SIDEBAR in REVIEW MODE for FORMATION orders
 DB SB ALL REVIEW MODE = DB SB REVIEW MODE → DATABASE SIDEBAR in REVIEW MODE for ALL order types
 DB SB OFFICERS       → Officers section within DB SIDEBAR
+DB SB FILING XRAY    → Button at the bottom of the DB SIDEBAR to run a filing summary
 
 GM SB                → GMAIL SIDEBAR (visible during email inspection)
 GM SB REVIEW MODE    → GMAIL SIDEBAR when displaying full REVIEW MODE data
 GM SB XRAY     → The XRAY function/button/box inside the GMAIL SIDEBAR
-GM SB OPEN ORDER BUTTON     → The OPEN ORDER button inside the GMAIL SIDEBAR in Classic Mode.
+GM SB OPEN ORDER BUTTON     → [Deprecated] Former button in the GMAIL SIDEBAR used to open orders from Classic Mode.
 
 ────────────────────────────
 NOTES
@@ -42,3 +43,21 @@ ADDITIONAL FEATURES
 Bento Mode → Colorful grid layout with looping video background for the sidebar
 Light Mode → Minimalist black-on-white style with an inverted Fennec icon
 DNA        → Shortcut button that opens Adyen payment details and shopper DNA
+Network Transactions → Counts and amounts from the DNA page Network section
+CODA Search → Menu option to query the KB via the Coda API
+Coda API token → Authentication key required for CODA Search
+Coda doc ID → Identifier of the Coda document searched by CODA Search
+Amendment orders → Changes to existing filings processed through the DB
+DNA Match Tag → Label indicating if Billing details agree with the DNA data
+Card Match Tag → Label showing if DB card details match the Adyen card info
+Transaction table → Colored summary of Adyen transactions
+Light Gray Tag → Label color used for Adyen DNA entries in Review Mode (light gray background with black text)
+Knowledge Base overlay → Deprecated floating window that tried to show the Coda Knowledge Base over the DB page
+CVV → Card Verification Value result code
+AVS → Address Verification System result code
+Knowledge Base window → Popup covering about 70% of the DB page that shows the Coda Knowledge Base
+
+AR COMPLETED         → Default comment used when resolving a Family Tree order
+Diagnose overlay → Floating panel listing Family Tree hold orders
+Comment Box → Editable field in the diagnose overlay prefilled with AR COMPLETED and the current order number
+Clear Tabs icon → Button that closes all other tabs in the window

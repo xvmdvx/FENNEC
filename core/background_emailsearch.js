@@ -2,8 +2,7 @@
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if (message.action === "openTab" && message.url) {
         console.log("[Copilot] Forzando apertura de una pestaña:", message.url);
-        const previousTabId = sender && sender.tab ? sender.tab.id : null;
-        const opts = { url: message.url, active: Boolean(message.runAdyen) };
+        const opts = { url: message.url, active: Boolean(message.active) };
         if (message.windowId) {
             opts.windowId = message.windowId;
         } else if (sender && sender.tab) {
@@ -12,31 +11,11 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         chrome.tabs.create(opts, (tab) => {
             if (chrome.runtime.lastError) {
                 console.error("[Copilot] Error (openTab):", chrome.runtime.lastError.message);
-                return;
-            }
-            if (message.runAdyen) {
-                let attempts = 5;
-                let returned = false;
-                const send = () => {
-                    chrome.tabs.sendMessage(tab.id, { action: "startAdyenFlow" }, () => {
-                        if (chrome.runtime.lastError && --attempts > 0) {
-                            setTimeout(send, 2000);
-                        } else if (previousTabId && !returned) {
-                            chrome.tabs.update(previousTabId, { active: true });
-                            returned = true;
-                        }
-                    });
-                };
-                const listener = (tabId, info) => {
-                    if (tabId === tab.id && info.status === "complete") {
-                        chrome.tabs.onUpdated.removeListener(listener);
-                        send();
-                    }
-                };
-                chrome.tabs.onUpdated.addListener(listener);
-                setTimeout(send, 5000);
             }
         });
+        if (message.refocus && sender && sender.tab) {
+            chrome.storage.local.set({ fennecReturnTab: sender.tab.id });
+        }
     }
 
     if (message.action === "openActiveTab" && message.url) {
@@ -97,6 +76,19 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
                             console.error("[Copilot] Error abriendo pestaña", url, ":", chrome.runtime.lastError.message);
                         }
                     });
+                });
+            }
+        });
+    }
+
+    if (message.action === "closeOtherTabs" && sender.tab) {
+        chrome.tabs.query({ windowId: sender.tab.windowId }, (tabs) => {
+            const toClose = tabs.filter(t => t.id !== sender.tab.id).map(t => t.id);
+            if (toClose.length) {
+                chrome.tabs.remove(toClose, () => {
+                    if (chrome.runtime.lastError) {
+                        console.error("[Copilot] Error cerrando pestañas:", chrome.runtime.lastError.message);
+                    }
                 });
             }
         });
@@ -476,6 +468,133 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
                 }
             };
             chrome.tabs.onUpdated.addListener(listener);
+        });
+        return;
+    }
+
+    if (message.action === "openKnowledgeBaseWindow" && message.state) {
+        const state = message.state;
+        const type = message.orderType || "";
+        const url = "https://coda.io/d/Bizee-Filing-Department_dQJWsDF3UZ6/Knowledge-Base_suQao1ou";
+        const width = message.width || 800;
+        const height = message.height || 600;
+        const left = message.left;
+        const top = message.top;
+        const opts = { url, type: "popup", width, height };
+        if (typeof left === "number") opts.left = left;
+        if (typeof top === "number") opts.top = top;
+        chrome.windows.create(opts, (win) => {
+            if (chrome.runtime.lastError) {
+                console.error("[Copilot] Error opening KB window:", chrome.runtime.lastError.message);
+                return;
+            }
+            const tab = win.tabs && win.tabs[0];
+            if (!tab || !tab.id) return;
+            const inject = (tabId) => {
+                chrome.scripting.executeScript({
+                    target: { tabId },
+                    func: (state, type) => {
+                        function clickExact(txt) {
+                            const nodes = Array.from(document.querySelectorAll("a,button,span,div"));
+                            const target = nodes.find(n => n.textContent && n.textContent.trim().toLowerCase() === txt.toLowerCase());
+                            if (target) { target.click(); return true; }
+                            return false;
+                        }
+
+                        function clickStateAnchor(stateName) {
+                            const slug = stateName.replace(/\s+/g, "-");
+                            const sel = `a[href*='/${slug}_']`;
+                            const el = document.querySelector(sel);
+                            if (el) { el.click(); return true; }
+                            return clickExact(stateName);
+                        }
+
+                        let tries = 40;
+                        const run = () => {
+                            if (clickStateAnchor(state)) {
+                                if (type) {
+                                    let typeTries = 40;
+                                    const tryType = () => {
+                                        if (!clickExact(type) && typeTries-- > 0) {
+                                            setTimeout(tryType, 500);
+                                        }
+                                    };
+                                    setTimeout(tryType, 500);
+                                }
+                            } else if (tries-- > 0) {
+                                setTimeout(run, 500);
+                            }
+                        };
+                        run();
+                    },
+                    args: [state, type]
+                });
+            };
+            const listener = (tabId, info) => {
+                if (tabId === tab.id && info.status === "complete") {
+                    chrome.tabs.onUpdated.removeListener(listener);
+                    inject(tabId);
+                }
+            };
+            chrome.tabs.onUpdated.addListener(listener);
+        });
+        return;
+    }
+
+    if (message.action === "navigateKbFrame" && message.state && sender.tab) {
+        const state = message.state;
+        const type = message.orderType || "";
+        chrome.scripting.executeScript({
+            target: { tabId: sender.tab.id, allFrames: true },
+            func: (state, type) => {
+                if (!location.hostname.includes('coda.io')) return;
+                function clickExact(txt) {
+                    const nodes = Array.from(document.querySelectorAll('a,button,span,div'));
+                    const target = nodes.find(n => n.textContent && n.textContent.trim().toLowerCase() === txt.toLowerCase());
+                    if (target) { target.click(); return true; }
+                    return false;
+                }
+
+                function clickStateAnchor(stateName) {
+                    const slug = stateName.replace(/\s+/g, '-');
+                    const sel = `a[href*='/${slug}_']`;
+                    const el = document.querySelector(sel);
+                    if (el) { el.click(); return true; }
+                    return clickExact(stateName);
+                }
+
+                let tries = 40;
+                const run = () => {
+                    if (clickStateAnchor(state)) {
+                        if (type) {
+                            let typeTries = 40;
+                            const tryType = () => {
+                                if (!clickExact(type) && typeTries-- > 0) {
+                                    setTimeout(tryType, 500);
+                                }
+                            };
+                            setTimeout(tryType, 500);
+                        }
+                    } else if (tries-- > 0) {
+                        setTimeout(run, 500);
+                    }
+                };
+                run();
+            },
+            args: [state, type]
+        });
+        return;
+    }
+
+    if (message.action === "refocusTab") {
+        chrome.storage.local.get({ fennecReturnTab: null }, ({ fennecReturnTab }) => {
+            if (fennecReturnTab) {
+                chrome.tabs.update(fennecReturnTab, { active: true }, () => {
+                    if (chrome.runtime.lastError) {
+                        console.error("[Copilot] Error focusing tab:", chrome.runtime.lastError.message);
+                    }
+                });
+            }
         });
         return;
     }

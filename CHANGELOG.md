@@ -1,6 +1,6 @@
 # Changelog
 
-## v0.3
+## v0.3 - 2025-06-24
 
 - Fixed Bento Mode positioning so the sidebar displays correctly on Gmail and DB.
 - Fixed Bento Mode layering so headers and boxes appear above the video background.
@@ -68,9 +68,30 @@
 - Fixed EMAIL SEARCH removing the DNA button by keeping the summary container
   intact while loading.
 - The DNA summary now stays hidden until Adyen data is available and is
-  displayed below the Billing section in Gmail Review Mode.
- - Adyen opens the Payment Details tab in the background and then automatically navigates to the DNA page to capture transactions.
- - The Adyen search now starts even if the tab never becomes active so DNA data loads without switching tabs.
-- Improved DNA reliability by retrying the background search until the page finishes loading.
-- The DNA search now waits up to 20 seconds for Adyen elements to load.
-- DNA results are stored with the order ID so returning to Gmail shows the summary again.
+  displayed above the Company section in Gmail Review Mode.
+- DNA summary now includes Network Transactions from the DNA page.
+- Network Transactions wait for the DNA page to fully load so details appear consistently.
+- Fixed the CLIENT summary combining email and phone when DB separates them with a <br> tag.
+- Fixed mailto links including the phone number when contact info is wrapped in a single anchor.
+- Diagnose overlay now lists amendment orders in review and the cancel tag was renamed to "RESOLVE AND COMMENT".
+- Diagnose overlay comment box now defaults to the current order number and cards are 1.5× wider.
+- Fixed billing address in Gmail Review Mode to include the street line.
+- CODA Search token updated for API access.
+- Fixed order summary duplicating when pressing **EMAIL SEARCH** more than once.
+- Fixed **QUICK SUMMARY** duplicating when pressing **EMAIL SEARCH** repeatedly.
+- CODA Search token updated for API access.
+- DNA summary now shows two lines below the XRAY button and resets on new Gmail tabs.
+- Fixed the DNA summary disappearing after a few seconds in Gmail by clearing
+  data only once per tab.
+- CVV and AVS tags use the normal font size with green labels for matches,
+  purple for partial or no matches and black for unknown results.
+- Focus returns to the email tab automatically after the DNA page loads.
+- DNA pages now open in front before returning focus to the original tab.
+- Gmail Review Mode now hides **OPEN ORDER** and adds a **🩻 XRAY** button that runs **EMAIL SEARCH** followed by **DNA**.
+- Clicking the state in DB SB now opens the Coda Knowledge Base in a floating overlay covering most of the page.
+- Light gray labels now display black text in Light Mode.
+- Fixed light gray tags in Review Mode inheriting sidebar text color.
+- Refunded and cancelled totals now use a black **REFUNDED** tag and remain legible.
+- REFUNDED tag text is now white for better contrast.
+ - EMAIL SEARCH button renamed to **SEARCH**. In Review Mode the **SEARCH**, **DNA** and **XRAY** buttons appear on the same line. The DB match tag in DNA now shows below the CVV/AVS labels and those labels use green for matches, purple for partial or no matches and black for unknown results.
+- Fixed Diagnose overlay comment box showing **null** instead of the current order number when triggered from the Family Tree panel.

@@ -16,9 +16,8 @@
 
             const order = sessionStorage.getItem('fennec_order');
             if (!order) return;
-            console.log('[FENNEC Adyen] Order detected:', order);
 
-            function waitForElement(selector, timeout = 20000) {
+            function waitForElement(selector, timeout = 10000) {
                 return new Promise(resolve => {
                     const interval = 250;
                     let elapsed = 0;
@@ -56,12 +55,6 @@
                 });
             }
 
-            chrome.runtime.onMessage.addListener((msg) => {
-                if (msg.action === 'startAdyenFlow') {
-                    fillAndSubmit();
-                }
-            });
-
             function openMostRecent() {
                 waitForElement('a[href*="showTx.shtml?pspReference="]').then(link => {
                     try {
@@ -77,7 +70,7 @@
 
             function saveData(part) {
                 chrome.storage.local.get({ adyenDnaInfo: {} }, ({ adyenDnaInfo }) => {
-                    const updated = Object.assign({}, adyenDnaInfo, part, { order });
+                    const updated = Object.assign({}, adyenDnaInfo, part);
                     chrome.storage.local.set({ adyenDnaInfo: updated });
                     console.log('[FENNEC Adyen] Data saved', part);
                 });
@@ -101,36 +94,6 @@
                 return data;
             }
 
-            function extractNetworkTransactions() {
-                const heading = Array.from(document.querySelectorAll('.adl-heading'))
-                    .find(h => h.textContent.trim() === 'Network');
-                if (!heading) return {};
-                const container = heading.closest('.data-breakdown');
-                if (!container) return {};
-                const group = Array.from(container.querySelectorAll('.group'))
-                    .find(g => g.querySelector('.adl-heading') && g.querySelector('.adl-heading').textContent.trim() === 'Transactions');
-                if (!group) return {};
-                const details = {};
-                group.querySelectorAll('.item').forEach(item => {
-                    const countEl = item.querySelector('.status, .identifier-count');
-                    const flex = item.querySelector('.u-display-flex');
-                    let label = '';
-                    let amount = '';
-                    if (flex) {
-                        const divs = flex.querySelectorAll('div');
-                        if (divs[0]) label = divs[0].textContent.trim();
-                        if (divs[1]) amount = divs[1].textContent.trim();
-                    } else {
-                        const clone = item.cloneNode(true);
-                        const toRemove = clone.querySelector('.status, .identifier-count');
-                        if (toRemove) toRemove.remove();
-                        label = clone.textContent.trim();
-                    }
-                    details[label] = { count: countEl ? countEl.textContent.trim() : '', amount };
-                });
-                return details;
-            }
-
             function handlePaymentPage() {
                 console.log('[FENNEC Adyen] Extracting payment page details');
                 const card = extractSection('Card details') || {};
@@ -141,7 +104,6 @@
                 }
                 const shopper = extractSection('Shopper details') || {};
                 const processing = extractSection('Processing') || {};
-                console.log('[FENNEC Adyen] Payment details', { card, shopper, processing });
                 saveData({ payment: { card, shopper, processing } });
             }
 
@@ -149,8 +111,8 @@
                 waitForElement('a[href*="showOilSplashList.shtml"]').then(link => {
                     try {
                         if (link) {
-                            console.log('[FENNEC Adyen] Navigating to DNA page');
-                            window.location.href = link.href;
+                            console.log('[FENNEC Adyen] Opening DNA tab');
+                            window.open(link.href, '_blank');
                             sessionStorage.removeItem('fennec_order');
                         }
                     } catch (err) {
@@ -161,21 +123,46 @@
 
             function handleDnaPage() {
                 console.log('[FENNEC Adyen] Extracting DNA page stats');
-                const stats = {};
-                document.querySelectorAll('.stats-bar-item').forEach(item => {
-                    const label = item.querySelector('.stats-bar-item__label');
-                    if (!label) return;
-                    const count = item.querySelector('.stats-bar-item__text');
-                    const amount = item.querySelector('.stats-bar-item__subtext');
-                    stats[label.textContent.trim()] = {
-                        count: count ? count.textContent.trim() : '',
-                        amount: amount ? amount.textContent.trim() : ''
-                    };
+                waitForElement('.data-breakdown .item').then(() => {
+                    const stats = {};
+                    document.querySelectorAll('.stats-bar-item').forEach(item => {
+                        const label = item.querySelector('.stats-bar-item__label');
+                        if (!label) return;
+                        const count = item.querySelector('.stats-bar-item__text');
+                        const amount = item.querySelector('.stats-bar-item__subtext');
+                        stats[label.textContent.trim()] = {
+                            count: count ? count.textContent.trim() : '',
+                            amount: amount ? amount.textContent.trim() : ''
+                        };
+                    });
+
+                    function extractNetworkTransactions() {
+                        const netHeading = Array.from(document.querySelectorAll('.adl-heading'))
+                            .find(h => h.textContent.trim() === 'Network');
+                        if (!netHeading || !netHeading.parentElement) return null;
+                        const txHeading = Array.from(netHeading.parentElement.querySelectorAll('.adl-heading'))
+                            .find(h => h.textContent.trim() === 'Transactions');
+                        if (!txHeading || !txHeading.parentElement) return null;
+                        const data = {};
+                        txHeading.parentElement.querySelectorAll('.item').forEach(item => {
+                            const labelEl = item.querySelector('.u-display-flex div:first-child');
+                            const amountEl = item.querySelector('.u-display-flex div:last-child');
+                            const countEl = item.querySelector('.status');
+                            if (labelEl) {
+                                data[labelEl.textContent.trim()] = {
+                                    count: countEl ? countEl.textContent.trim() : '',
+                                    amount: amountEl ? amountEl.textContent.trim() : ''
+                                };
+                            }
+                        });
+                        return data;
+                    }
+
+                    const networkTx = extractNetworkTransactions();
+                    saveData({ transactions: stats, networkTransactions: networkTx, updated: Date.now() });
+                    console.log('[FENNEC Adyen] DNA stats stored');
+                    chrome.runtime.sendMessage({ action: 'refocusTab' });
                 });
-                Object.assign(stats, extractNetworkTransactions());
-                console.log('[FENNEC Adyen] DNA stats', stats);
-                saveData({ transactions: stats, updated: Date.now() });
-                console.log('[FENNEC Adyen] DNA stats stored');
             }
 
             const path = window.location.pathname;

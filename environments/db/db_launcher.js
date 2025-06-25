@@ -33,7 +33,7 @@
     }
 
     function getText(el) {
-        return el ? (el.textContent || el.innerText || "").trim() : "";
+        return el ? (el.innerText || el.textContent || "").trim() : "";
     }
 
     function loadStoredSummary() {
@@ -418,6 +418,7 @@
                                 <img src="${chrome.runtime.getURL('fennec_icon.png')}" class="copilot-icon" alt="FENNEC (v0.3)" />
                                 <span>FENNEC (v0.3)</span>
                             </div>
+                            <button id="copilot-clear-tabs">🗑</button>
                             <button id="copilot-close">✕</button>
                         </div>
                         <div class="order-summary-header"><span id="family-tree-icon" class="family-tree-icon" style="display:none">🌳</span> ORDER SUMMARY <span id="qs-toggle" class="quick-summary-toggle">⚡</span></div>
@@ -459,6 +460,13 @@
                             sessionStorage.setItem("fennecSidebarClosed", "true");
                             console.log("[Copilot] Sidebar cerrado manualmente en DB.");
                             showFloatingIcon();
+                        };
+                    }
+
+                    const clearBtn = sidebar.querySelector('#copilot-clear-tabs');
+                    if (clearBtn) {
+                        clearBtn.onclick = () => {
+                            chrome.runtime.sendMessage({ action: "closeOtherTabs" });
                         };
                     }
                     const isStorage = /\/storage\/incfile\//.test(location.pathname);
@@ -508,7 +516,7 @@
                         qaMenu.id = 'quick-actions-menu';
                         qaMenu.style.display = 'none';
                         qaMenu.innerHTML = '<div class="qa-title">QUICK ACTIONS</div>' +
-                            '<ul><li id="qa-emails">Emails</li><li id="qa-cancel">Cancel</li></ul>';
+                            '<ul><li id="qa-emails">Emails</li><li id="qa-cancel">Cancel</li><li id="qa-coda">CODA SEARCH</li></ul>';
                         document.body.appendChild(qaMenu);
 
                         function showMenu() {
@@ -571,6 +579,14 @@
                             hideMenu();
                             startCancelProcedure();
                         });
+
+                        const codaItem = qaMenu.querySelector('#qa-coda');
+                        if (codaItem) {
+                            codaItem.addEventListener('click', () => {
+                                hideMenu();
+                                openCodaSearch();
+                            });
+                        }
                     }
                         const refreshBtn = sidebar.querySelector('#copilot-refresh');
                         if (refreshBtn) {
@@ -1394,6 +1410,33 @@
             dbSections.push(clientSection);
         }
 
+        function colorFor(result) {
+            if (result === 'green') return 'copilot-tag-green';
+            if (result === 'purple') return 'copilot-tag-purple';
+            return 'copilot-tag-black';
+        }
+
+        function formatAvs(text) {
+            const t = (text || '').toLowerCase();
+            if (/^7\b/.test(t) || t.includes('both match')) {
+                return { label: 'AVS: MATCH', result: 'green' };
+            }
+            if (/^6\b/.test(t) || (t.includes('postal code matches') && t.includes("address doesn't"))) {
+                return { label: 'AVS: PARTIAL (STREET✖️)', result: 'purple' };
+            }
+            if (/^1\b/.test(t) || (t.includes('address matches') && t.includes("postal code doesn't"))) {
+                return { label: 'AVS: PARTIAL (ZIP✖️)', result: 'purple' };
+            }
+            if (/^2\b/.test(t) || t.includes('neither matches') || /\bw\b/.test(t)) {
+                return { label: 'AVS: NO MATCH', result: 'purple' };
+            }
+            if (/^0\b/.test(t) || /^3\b/.test(t) || /^4\b/.test(t) || /^5\b/.test(t) ||
+                t.includes('unavailable') || t.includes('not supported') || t.includes('no avs') || t.includes('unknown')) {
+                return { label: 'AVS: UNKNOWN', result: 'black' };
+            }
+            return { label: 'AVS: UNKNOWN', result: 'black' };
+        }
+
         if (billing) {
             const linesB = [];
             if (billing.cardholder) {
@@ -1405,8 +1448,9 @@
             if (billing.expiry) cardParts.push(renderCopy(formatExpiry(billing.expiry)));
             if (cardParts.length) linesB.push(`<div>${cardParts.join(' \u2022 ')}</div>`);
             if (billing.avs) {
-                const avsTag = `<span class="copilot-tag">${escapeHtml(billing.avs)}</span>`;
-                linesB.push(`<div>AVS: ${avsTag}</div>`);
+                const { label, result } = formatAvs(billing.avs);
+                const avsTag = `<span class="copilot-tag ${colorFor(result)}">${escapeHtml(label)}</span>`;
+                linesB.push(`<div>${avsTag}</div>`);
             }
             const addr = renderBillingAddress(billing);
             if (addr) linesB.push(`<div>${addr}</div>`);
@@ -1469,17 +1513,9 @@
                 `<div><span class="${raClass}">RA: ${hasRA ? 'Sí' : 'No'}</span> ` +
                 `<span class="${vaClass}">VA: ${hasVA ? 'Sí' : 'No'}</span></div>`
             );
-            companyLines.push('<hr style="border:none; border-top:1px solid #eee; margin:6px 0"/>');
             const compSection = reviewMode
-                ? `
-            <div class="white-box" style="margin-bottom:10px">
-                ${companyLines.join('')}
-            </div>`
-                : `
-            <div class="section-label">COMPANY:</div>
-            <div class="white-box" style="margin-bottom:10px">
-                ${companyLines.join('')}
-            </div>`;
+                ? `<div class="white-box" style="margin-bottom:10px">${companyLines.join('').trim()}</div>`
+                : `<div class="section-label">COMPANY:</div><div class="white-box" style="margin-bottom:10px">${companyLines.join('').trim()}</div>`;
             if (companyLines.length) {
                 html += compSection;
                 dbSections.push(compSection);
@@ -1599,6 +1635,7 @@
         if (!html) {
             html = `<div style="text-align:center; color:#aaa; margin-top:40px">No se encontró información relevante de la orden.</div>`;
         }
+        html += `<div class="copilot-footer"><button id="filing-xray" class="copilot-button">FILING XRAY</button></div>`;
 
         const orderInfo = getBasicOrderInfo();
         const sidebarOrderInfo = {
@@ -1649,7 +1686,7 @@
             expiry: raw.expiry,
             last4: raw.last4,
             address: buildAddress(raw),
-            street1: raw.street1 || raw.street,
+            street1: raw.street1 || raw.street || raw.address,
             street2: raw.street2,
             cityStateZipCountry: raw.cityStateZipCountry,
             cityStateZip: raw.cityStateZip,
@@ -1704,6 +1741,138 @@
         } else {
             openCancelPopup();
         }
+    }
+
+    function autoResolveIssue(comment) {
+        const clickResolve = () => {
+            const btn = Array.from(document.querySelectorAll('a'))
+                .find(a => /mark resolved/i.test(a.textContent));
+            if (btn) {
+                sessionStorage.setItem('fennecAutoComment', comment);
+                btn.click();
+                fillComment();
+            } else {
+                setTimeout(clickResolve, 500);
+            }
+        };
+        const fillComment = () => {
+            const modal = document.getElementById('modalUpdateIssue');
+            const ta = modal ? modal.querySelector('#comment') : null;
+            const save = modal ? modal.querySelector("a[onclick*='update-issue']") : null;
+            if (ta && save) {
+                ta.value = comment;
+                save.click();
+                sessionStorage.removeItem('fennecAutoComment');
+                sessionStorage.setItem('fennecAddComment', comment);
+            } else {
+                setTimeout(fillComment, 500);
+            }
+        };
+        clickResolve();
+    }
+
+    function addOrderComment(comment) {
+        const openModal = () => {
+            const btn = Array.from(document.querySelectorAll('a,button'))
+                .find(el => /modalAddNote/.test(el.getAttribute('onclick') || ''));
+            if (btn) {
+                btn.click();
+                fill();
+            } else {
+                setTimeout(openModal, 500);
+            }
+        };
+        const fill = () => {
+            const modal = document.getElementById('modalAddNote');
+            const ta = modal ? modal.querySelector('#commentText') : null;
+            const add = modal ? modal.querySelector('#btnTextSaveComment') : null;
+            if (ta && add) {
+                ta.value = comment;
+                add.click();
+            } else {
+                setTimeout(fill, 500);
+            }
+        };
+        openModal();
+    }
+
+    function openCodaSearch() {
+        let overlay = document.getElementById('fennec-coda-overlay');
+        if (overlay) overlay.remove();
+        overlay = document.createElement('div');
+        overlay.id = 'fennec-coda-overlay';
+        const close = document.createElement('div');
+        close.className = 'coda-close';
+        close.textContent = '✕';
+        close.addEventListener('click', () => overlay.remove());
+        overlay.appendChild(close);
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.placeholder = 'Search KB...';
+        overlay.appendChild(input);
+        const btn = document.createElement('button');
+        btn.className = 'copilot-button';
+        btn.textContent = 'SEARCH';
+        overlay.appendChild(btn);
+        const results = document.createElement('div');
+        results.className = 'coda-results';
+        overlay.appendChild(results);
+        document.body.appendChild(overlay);
+
+        const runSearch = () => {
+            const q = input.value.trim();
+            if (!q) return;
+            results.textContent = "Loading...";
+            console.log("[Copilot] CODA search query:", q);
+            fetch("https://coda.io/apis/v1/docs/QJWsDF3UZ6/search?q=" + encodeURIComponent(q), {
+                headers: { "Authorization": "Bearer 758d99dd-34d0-43a5-8896-595785019945" }
+            })
+                .then(r => {
+                    console.log("[Copilot] CODA search status:", r.status);
+                    const status = r.status;
+                    return r.json().catch(() => ({})).then(data => ({ status, data }));
+                })
+                .then(({ status, data }) => {
+                    console.log("[Copilot] CODA search response:", data);
+                    if (status !== 200) {
+                        const msg = data && data.message ? data.message : "API request failed";
+                        results.textContent = `Error ${status}: ${msg}`;
+                        return;
+                    }
+                    if (!data || !data.items || !data.items.length) {
+                        results.textContent = "No results";
+                        return;
+                    }
+                    results.innerHTML = data.items.map(item => {
+                        const t = item.name || item.title || "";
+                        const link = item.browserLink || item.url || "#";
+                        return `<div class="coda-result-item"><a href="${link}" target="_blank">${escapeHtml(t)}</a></div>`;
+                    }).join("");
+                })
+                .catch(err => {
+                    results.textContent = "Network error";
+                    console.error("[Copilot] Coda search error:", err);
+                });
+        };
+        btn.addEventListener('click', runSearch);
+        input.addEventListener('keydown', e => { if (e.key === 'Enter') runSearch(); });
+    }
+
+    // Opens the Coda knowledge base in a popup window covering 70% of the page
+    function openKbWindow(state, type) {
+        const width = Math.round(window.innerWidth * 0.7);
+        const height = Math.round(window.innerHeight * 0.7);
+        const left = window.screenX + Math.round((window.outerWidth - width) / 2);
+        const top = window.screenY + Math.round((window.outerHeight - height) / 2);
+        chrome.runtime.sendMessage({
+            action: 'openKnowledgeBaseWindow',
+            state,
+            orderType: type,
+            width,
+            height,
+            left,
+            top
+        });
     }
 
     function getLastIssueInfo() {
@@ -1877,14 +2046,25 @@
                 let email = '';
                 let phone = '';
                 if (contactCell) {
+                    const emailRegex = /[\w.+-]+@[\w.-]+\.[A-Za-z]{2,}/;
+                    const phoneRegex = /\(?\d{3}\)?[-\s.]?\d{3}[-\s.]?\d{4}/;
                     const mailEl = contactCell.querySelector('a[href^="mailto:"]');
-                    if (mailEl) email = getText(mailEl);
+                    if (mailEl) {
+                        const href = mailEl.getAttribute("href") || '';
+                        const match = href.replace(/^mailto:/, '').match(emailRegex);
+                        if (match) {
+                            email = match[0];
+                        } else {
+                            const txtMatch = getText(mailEl).match(emailRegex);
+                            if (txtMatch) email = txtMatch[0];
+                        }
+                    }
                     const text = getText(contactCell);
                     if (!email) {
-                        const em = text.match(/[\w.+-]+@[\w.-]+\.[\w.-]+(?=\s|$)/);
+                        const em = text.match(emailRegex);
                         if (em) email = em[0];
                     }
-                    const ph = text.match(/\(?\d{3}\)?[-\s.]?\d{3}[-\s.]?\d{4}/);
+                    const ph = text.match(phoneRegex);
                     if (ph) phone = ph[0];
                 }
                 return { id, orders, ltv, name, email, phone };
@@ -1911,7 +2091,13 @@
     }
 
 
-    function diagnoseHoldOrders(orders) {
+    function diagnoseHoldOrders(orders, parentId, originId) {
+        // fall back to current order when originId missing
+        if (!originId) {
+            originId = typeof getBasicOrderInfo === 'function'
+                ? getBasicOrderInfo().orderId
+                : parentId;
+        }
         let overlay = document.getElementById('fennec-diagnose-overlay');
         if (overlay) overlay.remove();
         overlay = document.createElement('div');
@@ -1959,11 +2145,22 @@
             issueDiv.textContent = r.issue;
             card.appendChild(issueDiv);
 
-            const cancel = document.createElement('span');
-            cancel.className = 'copilot-tag copilot-tag-red diag-cancel';
-            cancel.textContent = 'CANCEL';
-            cancel.addEventListener('click', startCancelProcedure);
-            card.appendChild(cancel);
+            const commentBox = document.createElement('input');
+            commentBox.type = 'text';
+            commentBox.className = 'diag-comment';
+            commentBox.value = `AR COMPLETED: ${originId}`;
+            card.appendChild(commentBox);
+
+            const resolve = document.createElement('span');
+            resolve.className = 'copilot-tag copilot-tag-green diag-resolve';
+            resolve.textContent = 'RESOLVE AND COMMENT';
+            resolve.addEventListener('click', () => {
+                const comment = commentBox.value.trim();
+                chrome.storage.local.set({ fennecPendingComment: { orderId: r.order.orderId, comment } }, () => {
+                    chrome.runtime.sendMessage({ action: 'openActiveTab', url: `${location.origin}/incfile/order/detail/${r.order.orderId}` });
+                });
+            });
+            card.appendChild(resolve);
 
             overlay.appendChild(card);
         };
@@ -2028,6 +2225,23 @@ function getLastHoldUser() {
     // Expose helpers so core/utils.js can access them
     window.getParentOrderId = getParentOrderId;
     window.diagnoseHoldOrders = diagnoseHoldOrders;
+    window.openKbWindow = openKbWindow;
+
+chrome.storage.local.get({ fennecPendingComment: null }, ({ fennecPendingComment }) => {
+    if (fennecPendingComment) {
+        const info = getBasicOrderInfo();
+        if (info.orderId && String(fennecPendingComment.orderId) === String(info.orderId)) {
+            chrome.storage.local.remove('fennecPendingComment');
+            autoResolveIssue(fennecPendingComment.comment);
+        }
+    }
+});
+
+const pendingNote = sessionStorage.getItem('fennecAddComment');
+if (pendingNote) {
+    sessionStorage.removeItem('fennecAddComment');
+    setTimeout(() => addOrderComment(pendingNote), 1500);
+}
 
 chrome.storage.onChanged.addListener((changes, area) => {
     if (area === 'local' && changes.fennecReviewMode) {

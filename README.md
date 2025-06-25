@@ -23,13 +23,47 @@ information scraped from the current page.
 - Bento Mode uses a holographic video background that plays at 0.2x speed and reverses at each end.
   The FENNEC header and all summary boxes appear above the video in black containers with 95% opacity and
   white text.
-- Family Tree panel shows related orders and can diagnose holds.
+- Family Tree panel shows related orders and can diagnose holds, including amendment orders in review.
+- Diagnose overlay now shows a black text Comment Box prefilled with **AR COMPLETED** and the current order number. Cards are 1.5× wider and pressing **RESOLVE AND COMMENT** opens the child order, marks the issue resolved and adds that comment to the order.
 - Review Mode merges order details and fetches Adyen DNA data.
-- The DNA summary is inserted below the Billing section once data is available.
-- Adyen payment details briefly take focus to ensure the search begins, then automatically return to Gmail. The Payment Details tab navigates to the DNA page after collecting information and retries the search so DNA data loads without manual tab switching. Network transactions from the DNA page are captured.
-- The DNA search now waits up to 20 seconds for Adyen elements to load.
-- DNA summaries persist after switching tabs and reappear when returning to the same order.
+- The DNA summary now appears two lines below the XRAY button.
+- The DNA summary resets when opening a new Gmail tab.
+- Fixed the DNA summary disappearing after a few seconds in Gmail by only
+  clearing the stored data once per tab.
+- Card holder name now appears in bold followed by concise card details for easier reading.
+- Network transactions from the DNA page appear in the summary.
+- Transactions now display in a table with colored tags for each type.
+- CVV, AVS and card match tags now appear on one line beneath the billing address.
+- CVV and AVS tags use the normal font size with green labels for matches,
+  purple for partial or no matches and black for unknown results.
+- CVV results show **MATCH**, **NO MATCH** or **UNKNOWN**. AVS displays **MATCH**, **PARTIAL (ZIP✖️)**, **PARTIAL (STREET✖️)**, **NO MATCH** or **UNKNOWN** based on the Adyen codes.
+- Expiry date shows as **MM/YY** and the bank line text is 1px smaller.
+- Light gray labels in Light Mode now keep black text for readability.
+- Adyen DNA labels use a light gray tag with black text in Review Mode.
+- The "Total" label in DNA transaction tables now uses the light gray tag.
+- Refund and cancel totals show a black tag labeled **REFUNDED**.
+- REFUSED totals now use a purple tag instead of red.
+ - DNA pages open in front and focus returns to the original email tab after transactions load.
+ - A CARD label under CVV and AVS compares DB card details with the Adyen card information and displays **DB: MATCH**, **DB: PARTIAL** or **DB: NO MATCH**.
 - A Refresh button updates information without reloading the page.
+- A Clear Tabs icon closes all other tabs in the current window.
+- DB sidebar formation orders now show a **FILING XRAY** button below the last section.
+- Classic Mode now displays only the **SEARCH** button in the Gmail sidebar.
+- When Review Mode is enabled a **🩻 XRAY** button runs **SEARCH** and then **DNA** automatically. The **OPEN ORDER** button is hidden. The **SEARCH**, **DNA** and **XRAY** buttons now share one row.
+- CODA Search menu item queries the knowledge base using the Coda API.
+- Clicking the state in the DB sidebar now opens the Coda Knowledge Base in a popup window covering about 70% of the page.
+- Edit `environments/db/db_launcher.js` to provide your Coda API token and the
+  Coda doc ID. Generate a new token in Coda and replace the value after
+  `Bearer` if searches return "No results". Set the doc ID without the leading
+  `d` (for example `QJWsDF3UZ6`).
+- CODA Search now logs the query and API status in the console. Look for
+  `[Copilot] CODA search` messages to confirm access.
+- When the API request fails the results panel shows the status code and
+  message so you know if the document ID is invalid or the token needs to be
+  updated.
+- Email and phone are shown separately in the Client section.
+- Billing address shows the full street line followed by city, state, zip and
+  country. The address remains clickable and includes USPS verification.
 
 See [CHANGELOG.md](CHANGELOG.md) for a detailed list of bug fixes.
 ## Known limitations
@@ -88,12 +122,11 @@ If the DNA button opens the Adyen pages but the sidebar never shows the
 **ADYEN'S DNA** section, use the browser console to trace what is happening.
 
 1. Enable **Review Mode** from the extension popup so the DNA button appears.
-2. Click **🧬 DNA** on a Gmail message. An Adyen tab opens in the background showing **Payment Details** and automatically navigates to **DNA**.
-3. In the Adyen tab press <kbd>F12</kbd> and check the **Console** for messages
+2. Click **🧬 DNA** on a Gmail message. Two Adyen tabs should open.
+3. In each Adyen tab press <kbd>F12</kbd> and check the **Console** for messages
    starting with `[FENNEC Adyen]`. They indicate when the script fills the search
    form, opens the most recent transaction, and extracts data from the payment
    and DNA pages.
-   Additional logs now confirm when the order is detected and DNA stats are saved.
 4. After "DNA stats stored" appears, return to Gmail and click **REFRESH** in the
    sidebar. Open the console there and look for `[Copilot]` messages.
    "DNA data found" means the information was read correctly. If you see

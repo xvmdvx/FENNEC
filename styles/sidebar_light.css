@@ -32,6 +32,19 @@
     color: #000 !important;
     border: 1px solid #777;
 }
+.fennec-light-mode #fennec-coda-overlay {
+    background: #fff;
+    color: #000 !important;
+    border: 1px solid #777;
+}
+.fennec-light-mode #fennec-coda-overlay input {
+    background: #fff;
+    color: #000;
+    border: 1px solid #777;
+}
+.fennec-light-mode #fennec-coda-overlay .coda-result-item a {
+    color: #0000ee;
+}
 .fennec-light-mode .copilot-tag {
     background-color: #000;
     color: #fff !important;
@@ -46,16 +59,40 @@
     display: none;
 }
 
+#copilot-sidebar .white-box .dna-label {
+    color: #000 !important;
+}
+#copilot-sidebar .white-box .dna-label.copilot-tag-black {
+    color: #fff !important;
+}
+
+.fennec-light-mode #fennec-kb-overlay {
+    background: #fff;
+    color: #000 !important;
+    border: 1px solid #777;
+}
+.fennec-light-mode #fennec-kb-overlay .kb-close {
+    color: #000;
+}
+
 /* Ensure status labels remain visible */
 .fennec-light-mode #copilot-sidebar .issue-status-label,
 .fennec-light-mode #copilot-sidebar .review-mode-label {
     color: #fff !important;
 }
 
-.fennec-light-mode .copilot-tag-white {
+.fennec-light-mode #copilot-sidebar .copilot-tag-white {
     background-color: #fff;
     color: #000 !important;
     border: 1px solid #777;
+}
+.fennec-light-mode #copilot-sidebar .copilot-tag-lightgray {
+    background-color: #ddd;
+    color: #000 !important;
+    border: 1px solid #777;
+}
+.fennec-light-mode #copilot-sidebar .copilot-tag.tx-label {
+    color: #000 !important;
 }
 
 .fennec-light-mode #fennec-diagnose-overlay .diag-order {
@@ -75,6 +112,9 @@
 
 /* Ensure header icon stays visible */
 .fennec-light-mode #copilot-close {
+    color: #fff;
+}
+.fennec-light-mode #copilot-clear-tabs {
     color: #fff;
 }
 

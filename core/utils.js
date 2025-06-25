@@ -53,7 +53,11 @@ function attachCommonListeners(rootEl) {
             const state = el.dataset.state;
             const otype = el.dataset.otype || '';
             if (!state) return;
-            chrome.runtime.sendMessage({ action: 'openKnowledgeBase', state, orderType: otype });
+            if (typeof window.openKbWindow === 'function') {
+                window.openKbWindow(state, otype);
+            } else {
+                chrome.runtime.sendMessage({ action: 'openKnowledgeBaseWindow', state, orderType: otype });
+            }
         });
     });
     rootEl.querySelectorAll('.company-purpose .copilot-copy').forEach(el => {
@@ -166,12 +170,20 @@ function attachCommonListeners(rootEl) {
                 const diagBtn = container.querySelector('#ar-diagnose-btn');
                 if (diagBtn && typeof diagnoseHoldOrders === 'function') {
                     diagBtn.addEventListener('click', () => {
-                        const holds = resp.childOrders.filter(o => /hold/i.test(o.status));
-                        if (!holds.length) {
-                            alert('No HOLD orders found');
+                        const relevant = resp.childOrders.filter(o => {
+                            const status = o.status || '';
+                            const type = o.type || '';
+                            return /hold/i.test(status) ||
+                                (/amendment/i.test(type) && /review/i.test(status));
+                        });
+                        if (!relevant.length) {
+                            alert('No applicable orders found');
                             return;
                         }
-                        diagnoseHoldOrders(holds);
+                        const current = typeof getBasicOrderInfo === 'function'
+                            ? getBasicOrderInfo().orderId
+                            : null;
+                        diagnoseHoldOrders(relevant, parent.orderId, current);
                     });
                 }
             });
