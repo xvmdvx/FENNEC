@@ -1088,6 +1088,7 @@
             {name: 'name', label: 'company name'},
             {name: 'stateId', label: 'state id'},
             {name: 'state', label: 'state of formation'},
+            {name: 'formationDate', label: 'date of formation'},
             {name: 'status', label: 'state status'},
             {name: 'purpose', label: 'purpose'},
             {name: 'street', label: 'street'},
@@ -1133,6 +1134,9 @@
             name: companyRaw.name,
             stateId: companyRaw.stateId,
             state: companyRaw.state,
+            formationDate: companyRaw.formationDate && !/n\/?a/i.test(companyRaw.formationDate)
+                ? formatDateLikeParent(companyRaw.formationDate)
+                : null,
             status: companyRaw.status || headerStatus,
             purpose: companyRaw.purpose,
             address: buildAddress(companyRaw),
@@ -1504,6 +1508,9 @@
                 } else {
                     idHtml += ' ' + renderCopyIcon(company.stateId);
                 }
+                if (company.formationDate) {
+                    idHtml += ` \u2022 ${escapeHtml(company.formationDate)}`;
+                }
                 companyLines.push(`<div>${idHtml}</div>`);
             }
             companyLines.push(`<div>${renderKb(company.state)}</div>`);
@@ -1644,7 +1651,8 @@
             expedited: isExpeditedOrder(),
             companyName: company ? company.name : null,
             companyId: company ? company.stateId : null,
-            companyState: company ? company.state : null
+            companyState: company ? company.state : null,
+            formationDate: company ? company.formationDate : null
         };
         chrome.storage.local.set({
             sidebarDb: dbSections,
