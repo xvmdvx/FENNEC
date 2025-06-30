@@ -7,15 +7,20 @@
     "storage",
     "activeTab",
     "scripting",
-    "tabs"
+    "tabs",
+    "declarativeNetRequest"
   ],
-  "host_permissions": [
-    "https://mail.google.com/*",
-    "https://*.incfile.com/incfile/order/detail/*",
-    "https://*.incfile.com/storage/incfile/*",
-    "https://tools.usps.com/*",
-    "https://coda.io/*",
-    "https://ca-live.adyen.com/*",
+    "host_permissions": [
+        "https://mail.google.com/*",
+        "https://*.incfile.com/incfile/order/detail/*",
+        "https://*.incfile.com/storage/incfile/*",
+        "https://tools.usps.com/*",
+        "https://coda.io/*",
+        "https://ca-live.adyen.com/*",
+        "https://direct.sos.state.tx.us/*",
+        "http://127.0.0.1:11434/*"
+    ],
+  "optional_host_permissions": [
     "https://*/*"
   ],
   "content_scripts": [
@@ -42,6 +47,7 @@
       "all_frames": true,
       "js": [
         "core/utils.js",
+        "core/mistral_chat.js",
         "environments/db/db_launcher.js"
       ],
       "css": [
@@ -65,13 +71,29 @@
       "js": [
         "environments/adyen/adyen_launcher.js"
       ]
+    },
+    {
+      "matches": [
+        "https://direct.sos.state.tx.us/*"
+      ],
+      "all_frames": true,
+      "js": [
+        "core/utils.js",
+        "environments/txsos/tx_sos_launcher.js"
+      ],
+      "css": [
+        "styles/sidebar.css",
+        "styles/sidebar_light.css",
+        "styles/sidebar_bento.css"
+      ]
     }
   ],
   "web_accessible_resources": [
     {
       "resources": [
         "fennec_icon.png",
-        "BG_HOLO.mp4"
+        "bg_holo.mp4",
+        "mistral-7b-instruct-v0.1.Q4_K_M.gguf"
       ],
       "matches": [
         "<all_urls>"
@@ -93,7 +115,7 @@
   },
   "options_page": "options.html",
   "background": {
-    "service_worker": "core/background_emailsearch.js",
+    "service_worker": "core/background_email_search.js",
     "type": "module"
   }
 }

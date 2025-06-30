@@ -347,6 +347,10 @@
     background-color: #8B0000;
     color: #fff;
 }
+.copilot-tag-yellow {
+    background-color: #f7bc00;
+    color: #000;
+}
 .copilot-tag-black {
     background-color: #000;
     color: #fff;
@@ -684,4 +688,43 @@
     width: 100%;
     height: 100%;
     border: none;
+}
+
+/* Mistral chat box */
+.mistral-box {
+    background-color: #2e2e2e;
+    color: #f1f1f1;
+    padding: 8px;
+    margin-top: 12px;
+    border-radius: 8px;
+    font-size: 13px;
+}
+.mistral-log {
+    max-height: 150px;
+    overflow-y: auto;
+    margin-bottom: 6px;
+}
+.mistral-msg {
+    margin-bottom: 4px;
+    transition: opacity 0.3s ease;
+    opacity: 0;
+}
+.mistral-msg.user {
+    text-align: right;
+}
+.mistral-msg.ai {
+    text-align: left;
+    color: #bfe3ff;
+}
+.mistral-input-row {
+    display: flex;
+    gap: 6px;
+}
+#mistral-input {
+    flex: 1;
+    padding: 4px;
+    border-radius: 4px;
+    border: 1px solid #555;
+    background: #1e1e1e;
+    color: #fff;
 }

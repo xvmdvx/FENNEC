@@ -22,7 +22,7 @@ DB SB MISC           → DATABASE SIDEBAR for NON-FORMATION orders
 DB SB MAIN REVIEW MODE → DATABASE SIDEBAR in REVIEW MODE for FORMATION orders
 DB SB ALL REVIEW MODE = DB SB REVIEW MODE → DATABASE SIDEBAR in REVIEW MODE for ALL order types
 DB SB OFFICERS       → Officers section within DB SIDEBAR
-DB SB FILING XRAY    → Button at the bottom of the DB SIDEBAR to run a filing summary
+DB SB FILE          → Button at the bottom of the DB SIDEBAR that opens the filing automation window
 
 GM SB                → GMAIL SIDEBAR (visible during email inspection)
 GM SB REVIEW MODE    → GMAIL SIDEBAR when displaying full REVIEW MODE data
@@ -42,6 +42,7 @@ ADDITIONAL FEATURES
 
 Bento Mode → Colorful grid layout with looping video background for the sidebar
 Light Mode → Minimalist black-on-white style with an inverted Fennec icon
+Dev Mode → Temporary mode showing experimental features like the Mistral Box and FILE button
 DNA        → Shortcut button that opens Adyen payment details and shopper DNA
 Network Transactions → Counts and amounts from the DNA page Network section
 CODA Search → Menu option to query the KB via the Coda API
@@ -61,4 +62,15 @@ AR COMPLETED         → Default comment used when resolving a Family Tree order
 Diagnose overlay → Floating panel listing Family Tree hold orders
 Comment Box → Editable field in the diagnose overlay prefilled with AR COMPLETED and the current order number
 Clear Tabs icon → Button that closes all other tabs in the window
-BETA → Pre-release version name used for testing
+
+File Along → Opens a new window with TX SOS and guides formation filing automatically.
+Organizer → Person or entity that signs and submits the formation documents.
+Client Account → Prepaid balance used for TX SOS filings.
+Puppeteer → Node.js library for automated browser control
+TX SOS Puppeteer script → Node script that automates the full Texas formation filing.
+Mistral → Local AI model used for chat guidance
+Mistral Box → Chat area below REFRESH button
+Ollama → Local server running the Mistral API
+Retry button → Resends a prompt when the Mistral service is unavailable
+BOIR → Beneficial Ownership Information Report
+BETA → Early test version of Fennec

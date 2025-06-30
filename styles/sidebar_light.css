@@ -91,6 +91,11 @@
     color: #000 !important;
     border: 1px solid #777;
 }
+.fennec-light-mode #copilot-sidebar .copilot-tag-yellow {
+    background-color: #f7bc00;
+    color: #000 !important;
+    border: 1px solid #777;
+}
 .fennec-light-mode #copilot-sidebar .copilot-tag.tx-label {
     color: #000 !important;
 }

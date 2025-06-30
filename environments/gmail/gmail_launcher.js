@@ -13,8 +13,9 @@
             alert('Permiso denegado para abrir la búsqueda SOS.');
         }
     });
-    chrome.storage.sync.get({ fennecReviewMode: false, sidebarWidth: 340 }, ({ fennecReviewMode, sidebarWidth }) => {
-        chrome.storage.local.get({ extensionEnabled: true, lightMode: false, bentoMode: false }, ({ extensionEnabled, lightMode, bentoMode }) => {
+    chrome.storage.sync.get({ fennecReviewMode: false, fennecDevMode: false, sidebarWidth: 340 }, ({ fennecReviewMode, fennecDevMode, sidebarWidth }) => {
+        chrome.storage.local.get({ extensionEnabled: true, lightMode: false, bentoMode: false, fennecDevMode: false }, ({ extensionEnabled, lightMode, bentoMode, fennecDevMode: localDev }) => {
+        const devMode = localDev || fennecDevMode;
         if (!extensionEnabled) {
             console.log('[FENNEC] Extension disabled, skipping Gmail launcher.');
             return;
@@ -688,11 +689,10 @@
                     const idBase = buildSosUrl(storedOrderInfo.companyState, null, 'id');
                     const compId = escapeHtml(storedOrderInfo.companyId);
                     const idLink = idBase ? `<a href="#" class="copilot-sos copilot-link" data-url="${idBase}" data-query="${compId}" data-type="id">${compId}</a>` : compId;
-                    let line = `${idLink} ${renderCopyIcon(storedOrderInfo.companyId)}`;
-                    if (storedOrderInfo.formationDate) {
-                        line += ` \u2022 ${escapeHtml(storedOrderInfo.formationDate)}`;
-                    }
-                    html += `<div>${line}</div>`;
+                    const dof = storedOrderInfo.type && storedOrderInfo.type.toLowerCase() !== 'formation' && storedOrderInfo.formationDate
+                        ? ` (${escapeHtml(storedOrderInfo.formationDate)})`
+                        : '';
+                    html += `<div>${idLink}${dof} ${renderCopyIcon(storedOrderInfo.companyId)}</div>`;
                 }
             }
             if (orderId) html += `<div><b><a href="#" id="order-link" class="order-link">${renderCopy(orderId)}</a> ${renderCopyIcon(orderId)}</b></div>`;
@@ -1202,16 +1202,14 @@
                         <strong>ISSUE <span id="issue-status-label" class="issue-status-label"></span></strong><br>
                         <div id="issue-summary-content" style="color:#ccc; font-size:13px; white-space:pre-line;">No issue data yet.</div>
                     </div>
-                    <div class="copilot-footer">
-                        <button id="copilot-refresh" class="copilot-button">🔄 REFRESH</button>
-                    </div>
+                    ${devMode ? `<div class="copilot-footer"><button id="copilot-refresh" class="copilot-button">🔄 REFRESH</button></div>` : ``}
                 </div>
             `;
             document.body.appendChild(sidebar);
             if (document.body.classList.contains('fennec-bento-mode')) {
                 const vid = document.createElement('video');
                 vid.id = 'bento-video';
-                vid.src = chrome.runtime.getURL('BG_HOLO.mp4');
+                vid.src = chrome.runtime.getURL('bg_holo.mp4');
                 vid.muted = true;
                 vid.autoplay = true;
                 vid.playsInline = true;
@@ -1250,7 +1248,8 @@
 
             // Botón SEARCH (listener UNIFICADO)
             document.getElementById("btn-email-search").onclick = handleEmailSearchClick;
-            document.getElementById("copilot-refresh").onclick = refreshSidebar;
+            const rBtn = document.getElementById("copilot-refresh");
+            if (devMode && rBtn) rBtn.onclick = refreshSidebar;
             applyReviewMode();
             loadDnaSummary();
         }
@@ -1285,6 +1284,9 @@
                 reviewMode = changes.fennecReviewMode.newValue;
                 sessionStorage.setItem("fennecReviewMode", reviewMode ? "true" : "false");
                 applyReviewMode();
+            }
+            if ((area === 'sync' && changes.fennecDevMode) || (area === 'local' && changes.fennecDevMode)) {
+                window.location.reload();
             }
         });
 

@@ -1,7 +1,23 @@
 # Changelog
 
+## Unreleased
+
+- The payment step logs the dropdown selector and value before clicking **Continue** so you can confirm **Client Account** is selected.
+- Replaced `form.submit()` fallback with a submit event to mimic real clicks.
+- Added a brief delay after selecting the payment type so the page registers **Client Account** reliably.
+- Fixed the Mistral chat box disappearing after loading the order summary.
+- The Mistral Box now sends prompts to a local Ollama server at
+  `http://127.0.0.1:11434/api/generate`.
+- Requests route through the background script to avoid CORS errors when
+  communicating with the local server.
+- Friendly error message now appears if the Mistral service is unavailable and
+  includes a **Retry** button.
+- The background script strips the `Origin` header so the local server accepts
+  Mistral requests without returning **403**.
+- Diagnose overlay now displays all child orders instead of only the first three.
+- Added Dev Mode. The Mistral chat box, FILE and REFRESH buttons now appear only when Dev Mode is enabled.
+
 ## v0.3 - 2025-06-24
-- Added Date of Formation next to the State ID in the Company summary on DB and Gmail sidebars.
 
 - Fixed Bento Mode positioning so the sidebar displays correctly on Gmail and DB.
 - Fixed Bento Mode layering so headers and boxes appear above the video background.
@@ -96,3 +112,5 @@
 - REFUNDED tag text is now white for better contrast.
  - EMAIL SEARCH button renamed to **SEARCH**. In Review Mode the **SEARCH**, **DNA** and **XRAY** buttons appear on the same line. The DB match tag in DNA now shows below the CVV/AVS labels and those labels use green for matches, purple for partial or no matches and black for unknown results.
 - Fixed Diagnose overlay comment box showing **null** instead of the current order number when triggered from the Family Tree panel.
+- Payment fields inside nested iframes are now detected so File Along selects the Client Account option reliably.
+- The payment step now verifies **Client Account** is selected before continuing.

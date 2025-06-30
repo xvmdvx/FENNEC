@@ -9,6 +9,7 @@
     let initQuickSummary = null;
     // Tracks whether Review Mode is active across DB pages
     let reviewMode = false;
+    let devMode = false;
 
     function showFloatingIcon() {
         if (document.getElementById("fennec-floating-icon")) return;
@@ -369,7 +370,7 @@
         }
     }
 
-    chrome.storage.local.get({ extensionEnabled: true, lightMode: false, bentoMode: false, fennecReviewMode: false }, ({ extensionEnabled, lightMode, bentoMode, fennecReviewMode }) => {
+    chrome.storage.local.get({ extensionEnabled: true, lightMode: false, bentoMode: false, fennecReviewMode: false, fennecDevMode: false }, ({ extensionEnabled, lightMode, bentoMode, fennecReviewMode, fennecDevMode }) => {
         if (!extensionEnabled) {
             console.log('[FENNEC] Extension disabled, skipping DB launcher.');
             return;
@@ -386,6 +387,7 @@
         }
 
         reviewMode = fennecReviewMode;
+        devMode = fennecDevMode;
         try {
         function initSidebar() {
             if (sessionStorage.getItem("fennecSidebarClosed") === "true") { showFloatingIcon(); return; }
@@ -424,9 +426,15 @@
                         <div class="order-summary-header"><span id="family-tree-icon" class="family-tree-icon" style="display:none">🌳</span> ORDER SUMMARY <span id="qs-toggle" class="quick-summary-toggle">⚡</span></div>
                         <div class="copilot-body" id="copilot-body-content">
                             <div style="text-align:center; color:#888; margin-top:20px;">Cargando resumen...</div>
-                            <div class="copilot-footer">
-                                <button id="copilot-refresh" class="copilot-button">🔄 REFRESH</button>
-                            </div>
+                            ${devMode ? `<div class="copilot-footer"><button id="copilot-refresh" class="copilot-button">🔄 REFRESH</button></div>` : ``}
+                            ${devMode ? `
+                            <div id="mistral-chat" class="mistral-box">
+                                <div id="mistral-log" class="mistral-log"></div>
+                                <div class="mistral-input-row">
+                                    <input id="mistral-input" type="text" placeholder="Ask Mistral..." />
+                                    <button id="mistral-send" class="copilot-button">Send</button>
+                                </div>
+                            </div>` : ``}
                             <div id="review-mode-label" class="review-mode-label" style="display:none; margin-top:4px; text-align:center; font-size:11px;">REVIEW MODE</div>
                         </div>
                     `;
@@ -434,7 +442,7 @@
                     if (document.body.classList.contains('fennec-bento-mode')) {
                         const vid = document.createElement('video');
                         vid.id = 'bento-video';
-                        vid.src = chrome.runtime.getURL('BG_HOLO.mp4');
+                        vid.src = chrome.runtime.getURL('bg_holo.mp4');
                         vid.muted = true;
                         vid.autoplay = true;
                         vid.playsInline = true;
@@ -588,15 +596,20 @@
                             });
                         }
                     }
-                        const refreshBtn = sidebar.querySelector('#copilot-refresh');
-                        if (refreshBtn) {
-                            refreshBtn.onclick = () => {
-                                if (currentOrderType === "amendment") {
-                                    extractAndShowAmendmentData();
-                                } else {
-                                    extractAndShowFormationData();
-                                }
-                            };
+                        if (devMode) {
+                            const refreshBtn = sidebar.querySelector('#copilot-refresh');
+                            if (refreshBtn) {
+                                refreshBtn.onclick = () => {
+                                    if (currentOrderType === "amendment") {
+                                        extractAndShowAmendmentData();
+                                    } else {
+                                        extractAndShowFormationData();
+                                    }
+                                };
+                            }
+                            const fileBtn = sidebar.querySelector('#filing-xray');
+                            if (fileBtn) fileBtn.onclick = startFileAlong;
+                            initMistralChat();
                         }
                         if (sessionStorage.getItem('fennecCancelPending') === '1') {
                             openCancelPopup();
@@ -1087,8 +1100,8 @@
         const companyRaw = extractSingle('#vcomp .form-body', [
             {name: 'name', label: 'company name'},
             {name: 'stateId', label: 'state id'},
-            {name: 'state', label: 'state of formation'},
             {name: 'formationDate', label: 'date of formation'},
+            {name: 'state', label: 'state of formation'},
             {name: 'status', label: 'state status'},
             {name: 'purpose', label: 'purpose'},
             {name: 'street', label: 'street'},
@@ -1133,10 +1146,8 @@
         const company = companyRaw ? {
             name: companyRaw.name,
             stateId: companyRaw.stateId,
+            formationDate: companyRaw.formationDate,
             state: companyRaw.state,
-            formationDate: companyRaw.formationDate && !/n\/?a/i.test(companyRaw.formationDate)
-                ? formatDateLikeParent(companyRaw.formationDate)
-                : null,
             status: companyRaw.status || headerStatus,
             purpose: companyRaw.purpose,
             address: buildAddress(companyRaw),
@@ -1307,7 +1318,9 @@
             .map(li => getText(li).toLowerCase());
 
         // Registered Agent subscription status from #vagent section
-        const hasRA = /^yes/i.test(agent.status || '');
+        const hasRA = /^yes/i.test(agent.status || "");
+        const raExpDate = agent.expiration ? parseDate(agent.expiration) : null;
+        const raExpired = hasRA && raExpDate && raExpDate < new Date();
 
         // Virtual Address status from #vvirtual-address section or fallback button
         let hasVA = false;
@@ -1328,9 +1341,11 @@
             }
         }
 
-        const raClass = hasRA
-            ? 'copilot-tag copilot-tag-green'
-            : 'copilot-tag copilot-tag-purple';
+        const raClass = raExpired
+            ? "copilot-tag copilot-tag-yellow"
+            : (hasRA
+                ? "copilot-tag copilot-tag-green"
+                : "copilot-tag copilot-tag-purple");
         const vaClass = hasVA
             ? 'copilot-tag copilot-tag-green'
             : 'copilot-tag copilot-tag-purple';
@@ -1508,17 +1523,17 @@
                 } else {
                     idHtml += ' ' + renderCopyIcon(company.stateId);
                 }
-                if (company.formationDate) {
-                    idHtml += ` \u2022 ${escapeHtml(company.formationDate)}`;
-                }
-                companyLines.push(`<div>${idHtml}</div>`);
+                const dof = currentOrderType !== 'formation' && company.formationDate
+                    ? ` (${escapeHtml(company.formationDate)})`
+                    : '';
+                companyLines.push(`<div>${idHtml}${dof}</div>`);
             }
             companyLines.push(`<div>${renderKb(company.state)}</div>`);
             companyLines.push(addrHtml);
             companyLines.push(`<div class="company-purpose">${renderCopy(company.purpose)}</div>`);
             companyLines.push(
-                `<div><span class="${raClass}">RA: ${hasRA ? 'Sí' : 'No'}</span> ` +
-                `<span class="${vaClass}">VA: ${hasVA ? 'Sí' : 'No'}</span></div>`
+                `<div><span class="${raClass}">RA: ${raExpired ? "EXPIRED" : (hasRA ? "Sí" : "No")}</span> ` +
+                `<span class="${vaClass}">VA: ${hasVA ? "Sí" : "No"}</span></div>`
             );
             const compSection = reviewMode
                 ? `<div class="white-box" style="margin-bottom:10px">${companyLines.join('').trim()}</div>`
@@ -1642,7 +1657,19 @@
         if (!html) {
             html = `<div style="text-align:center; color:#aaa; margin-top:40px">No se encontró información relevante de la orden.</div>`;
         }
-        html += `<div class="copilot-footer"><button id="filing-xray" class="copilot-button">FILING XRAY</button></div>`;
+        if (devMode) {
+            html += `<div class="copilot-footer"><button id="filing-xray" class="copilot-button">🤖 FILE</button></div>`;
+            html += `<div class="copilot-footer"><button id="copilot-refresh" class="copilot-button">🔄 REFRESH</button></div>`;
+            html += `
+            <div id="mistral-chat" class="mistral-box">
+                <div id="mistral-log" class="mistral-log"></div>
+                <div class="mistral-input-row">
+                    <input id="mistral-input" type="text" placeholder="Ask Mistral..." />
+                    <button id="mistral-send" class="copilot-button">Send</button>
+                </div>
+            </div>`;
+        }
+        html += `<div id="review-mode-label" class="review-mode-label" style="display:none; margin-top:4px; text-align:center; font-size:11px;">REVIEW MODE</div>`;
 
         const orderInfo = getBasicOrderInfo();
         const sidebarOrderInfo = {
@@ -1652,7 +1679,9 @@
             companyName: company ? company.name : null,
             companyId: company ? company.stateId : null,
             companyState: company ? company.state : null,
-            formationDate: company ? company.formationDate : null
+            formationDate: company ? company.formationDate : null,
+            registeredAgent: hasAgentInfo ? { name: agent.name, address: agent.address } : null,
+            members: directors
         };
         chrome.storage.local.set({
             sidebarDb: dbSections,
@@ -1665,6 +1694,7 @@
             body.innerHTML = html;
             if (typeof initQuickSummary === 'function') initQuickSummary();
             attachCommonListeners(body);
+            initMistralChat();
             updateReviewDisplay();
         }
     }
@@ -1883,6 +1913,10 @@
         });
     }
 
+    function startFileAlong() {
+        chrome.runtime.sendMessage({ action: 'openFilingWindow', dbUrl: location.href });
+    }
+
     function getLastIssueInfo() {
         function parseRow(row) {
             const cells = row.querySelectorAll('td');
@@ -1938,7 +1972,7 @@
             const db = Date.parse(b.date);
             return (isNaN(db) ? 0 : db) - (isNaN(da) ? 0 : da);
         });
-        return info.slice(0, 3);
+        return info;
     }
 
     function getBasicOrderInfo() {
@@ -2144,7 +2178,12 @@
             tagsDiv.appendChild(statusSpan);
             const typeSpan = document.createElement('span');
             typeSpan.className = 'copilot-tag copilot-tag-white';
-            typeSpan.textContent = r.order.type.toUpperCase();
+            let rawType = r.order.type || '';
+            let typeText = rawType.toUpperCase();
+            if (/beneficial ownership information report/i.test(rawType)) {
+                typeText = 'BOIR';
+            }
+            typeSpan.textContent = typeText;
             tagsDiv.appendChild(typeSpan);
             card.appendChild(tagsDiv);
 
@@ -2234,6 +2273,7 @@ function getLastHoldUser() {
     window.getParentOrderId = getParentOrderId;
     window.diagnoseHoldOrders = diagnoseHoldOrders;
     window.openKbWindow = openKbWindow;
+    window.startFileAlong = startFileAlong;
 
 chrome.storage.local.get({ fennecPendingComment: null }, ({ fennecPendingComment }) => {
     if (fennecPendingComment) {
@@ -2255,6 +2295,10 @@ chrome.storage.onChanged.addListener((changes, area) => {
     if (area === 'local' && changes.fennecReviewMode) {
         reviewMode = changes.fennecReviewMode.newValue;
         updateReviewDisplay();
+    }
+    if (area === 'local' && changes.fennecDevMode) {
+        devMode = changes.fennecDevMode.newValue;
+        window.location.reload();
     }
 });
 })();

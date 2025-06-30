@@ -1,0 +1,51 @@
+#,Estado,Name Search Link,State ID Search Link,US Network Required
+1,Alabama,https://arc-sos.state.al.us/CGI/CORPNAME.MBR/INPUT,https://arc-sos.state.al.us/CGI/corpnumber.mbr/input,Sí
+2,Alaska,https://www.commerce.alaska.gov/cbp/main/search/entities,https://www.commerce.alaska.gov/cbp/main/search/entities,No
+3,Arizona,https://ecorp.azcc.gov/EntitySearch/Index,https://ecorp.azcc.gov/EntitySearch/Index,Sí
+4,Arkansas,https://www.ark.org/corp-search/,https://www.ark.org/corp-search/,No
+5,California,https://bizfileonline.sos.ca.gov/search/business,https://bizfileonline.sos.ca.gov/search/business,No
+6,Colorado,https://www.sos.state.co.us/biz/BusinessEntityCriteriaExt.do,https://www.sos.state.co.us/biz/BusinessEntityCriteriaExt.do,No
+7,Connecticut,https://service.ct.gov/business/s/onlinebusinesssearch?language=en_US,https://service.ct.gov/business/s/onlinebusinesssearch?language=en_US,No
+8,Delaware,https://icis.corp.delaware.gov/Ecorp/EntitySearch/NameSearch.aspx,https://icis.corp.delaware.gov/Ecorp/EntitySearch/NameSearch.aspx,No
+9,Florida,https://search.sunbiz.org/Inquiry/CorporationSearch/ByName,https://search.sunbiz.org/Inquiry/CorporationSearch/ByDocumentNumber,No
+10,Georgia,https://ecorp.sos.ga.gov/BusinessSearch,https://ecorp.sos.ga.gov/BusinessSearch,No
+11,Hawaii,https://hbe.ehawaii.gov/documents/search.html,https://hbe.ehawaii.gov/documents/search.html,No
+12,Idaho,https://sosbiz.idaho.gov/search/business,https://sosbiz.idaho.gov/search/business,No
+13,Illinois,https://apps.ilsos.gov/businessentitysearch/,https://apps.ilsos.gov/businessentitysearch/,Sí
+14,Indiana,https://bsd.sos.in.gov/publicbusinesssearch,https://bsd.sos.in.gov/publicbusinesssearch,Sí
+15,Iowa,https://sos.iowa.gov/search/business/search.aspx,https://sos.iowa.gov/search/business/search.aspx,No
+16,Kansas,https://www.sos.ks.gov/eforms/BusinessEntity/Search.aspx,https://www.sos.ks.gov/eforms/BusinessEntity/Search.aspx,No
+17,Kentucky,https://sosbes.sos.ky.gov/BusSearchNProfile/Search.aspx?na=true,https://sosbes.sos.ky.gov/BusSearchNProfile/Search.aspx?na=true,No
+18,Louisiana,https://coraweb.sos.la.gov/commercialsearch/commercialsearch.aspx,https://coraweb.sos.la.gov/commercialsearch/commercialsearch.aspx,No
+19,Maine,https://apps3.web.maine.gov/nei-sos-icrs/ICRS?MainPage=,https://apps3.web.maine.gov/nei-sos-icrs/ICRS?MainPage=,No
+20,Maryland,https://egov.maryland.gov/businessexpress/entitysearch,https://egov.maryland.gov/businessexpress/entitysearch,No
+21,Massachusetts,https://corp.sec.state.ma.us/corpweb/CorpSearch/CorpSearch.aspx,https://corp.sec.state.ma.us/corpweb/CorpSearch/CorpSearch.aspx,No
+22,Michigan,https://www.michigan.gov/lara/online-services/business-entity-search,https://www.michigan.gov/lara/online-services/business-entity-search,Sí
+23,Minnesota,https://mblsportal.sos.mn.gov/Business/Search,https://mblsportal.sos.mn.gov/Business/Search,Sí
+24,Mississippi,https://corp.sos.ms.gov/corp/portal/c/page/corpBusinessIdSearch/portal.aspx,https://corp.sos.ms.gov/corp/portal/c/page/corpBusinessIdSearch/portal.aspx,No
+25,Missouri,https://bsd.sos.mo.gov/BusinessEntity/BESearch.aspx?SearchType=0,https://bsd.sos.mo.gov/BusinessEntity/BESearch.aspx?SearchType=0,No
+26,Montana,https://biz.sosmt.gov/search/business/1000,https://biz.sosmt.gov/search/business/1000,No
+27,Nebraska,https://www.nebraska.gov/sos/corp/corpsearch.cgi?nav=search,https://www.nebraska.gov/sos/corp/corpsearch.cgi?nav=search,No
+28,Nevada,https://esos.nv.gov/EntitySearch/OnlineEntitySearch,https://esos.nv.gov/EntitySearch/OnlineEntitySearch,No
+29,New Hampshire,https://quickstart.sos.nh.gov/online/BusinessInquire,https://quickstart.sos.nh.gov/online/BusinessInquire,Sí
+30,New Jersey,https://www.njportal.com/DOR/BusinessNameSearch/Search/BusinessName,https://www.njportal.com/DOR/BusinessNameSearch/Search/EntityId,No
+31,New Mexico,https://enterprise.sos.nm.gov/search,https://enterprise.sos.nm.gov/search,Sí
+32,New York,https://apps.dos.ny.gov/publicInquiry/,https://apps.dos.ny.gov/publicInquiry/,No
+33,North Carolina,https://www.sosnc.gov/online_services/search/by_title/_Business_Registration,https://www.sosnc.gov/online_services/search/by_title/_Business_Registration,No
+34,North Dakota,https://firststop.sos.nd.gov/search,https://firststop.sos.nd.gov/search,No
+35,Ohio,https://businesssearch.ohiosos.gov/,https://businesssearch.ohiosos.gov/,No
+36,Oklahoma,https://www.sos.ok.gov/corp/corpInquiryFind.aspx,https://www.sos.ok.gov/corp/corpInquiryFind.aspx,No
+37,Oregon,https://sos.oregon.gov/business/Pages/find.aspx,https://sos.oregon.gov/business/Pages/find.aspx,No
+38,Pennsylvania,https://file.dos.pa.gov/search/business,https://file.dos.pa.gov/search/business,Sí
+39,Rhode Island,https://business.sos.ri.gov/corp/CorpSearch/CorpSearchInput.asp,https://business.sos.ri.gov/corp/CorpSearch/CorpSearchInput.asp,No
+40,South Carolina,https://businessfilings.sc.gov/BusinessFiling/Entity/NewFiling,https://businessfilings.sc.gov/BusinessFiling/Entity/NewFiling,Sí
+41,South Dakota,https://sosenterprise.sd.gov/BusinessServices/Business/FilingSearch.aspx,https://sosenterprise.sd.gov/BusinessServices/Business/FilingSearch.aspx,No
+42,Tennessee,https://tncab.tnsos.gov/business-entity-search,https://tncab.tnsos.gov/business-entity-search,No
+43,Texas,https://comptroller.texas.gov/taxes/franchise/account-status/search,https://comptroller.texas.gov/taxes/franchise/account-status/search,No
+44,Utah,https://businessregistration.utah.gov/NameAvailabilitySearch,https://businessregistration.utah.gov/EntitySearch/OnlineEntitySearch,No
+45,Vermont,https://www.vermontbusinessregistry.com/BusinessSearch.aspx,https://www.vermontbusinessregistry.com/BusinessSearch.aspx,No
+46,Virginia,https://cis.scc.virginia.gov/EntitySearch/Index,https://cis.scc.virginia.gov/EntitySearch/Index,Sí
+47,Washington,https://ccfs.sos.wa.gov/#/,https://ccfs.sos.wa.gov/#/,No
+48,West Virginia,https://apps.sos.wv.gov/business/corporations/,https://apps.sos.wv.gov/business/corporations/,No
+49,Wisconsin,https://apps.dfi.wi.gov/apps/corpsearch/search.aspx,https://apps.dfi.wi.gov/apps/corpsearch/search.aspx,Sí
+50,Wyoming,https://wyobiz.wyo.gov/business/filingsearch.aspx,https://wyobiz.wyo.gov/business/filingsearch.aspx,No
