@@ -53,6 +53,8 @@ MAIN (BUSINESS FORMATION ORDERS: SILVER, GOLD, PLATINUM)
          - Comment input and **COMMENT & RESOLVE** button.
       Quick resolve field under Issue summary
       Reuses any open DB tab for comments and resolves the issue only if active
+      The comment box disappears after submission showing your comment and a
+      success message. Resolving automatically updates the tag to RESOLVED.
       (Dev Mode) End: [🔄 REFRESH] button centered.
 
 MISC (ALL NON-BUSINESS FORMATION ORDERS)
@@ -195,6 +197,7 @@ GENERAL FEATURES:
 - Clicking COMPANY NAME opens the SOS search, injects the name and hits search.
 - Clicking the STATE ID in the sidebar opens the Coda Knowledge Base in a popup window covering about 70% of the page.
 - RA and VA tags display in the COMPANY box. If the Registered Agent Service shows an expiration date in the past, the RA tag turns yellow and reads **EXPIRED**.
+- A magnifier icon on the COMPANY box toggles a form with inputs to run SOS name or ID searches using custom parameters.
 - 🩺 DIAGNOSE overlay lists hold orders from the Family Tree and now displays all child orders.
 - When the sidebar is opened manually in Gmail or Adyen, it starts empty and only shows the action buttons. Order details appear after using SEARCH, DNA or XRAY.
 - Visiting the Fraud tracker in DB automatically opens the sidebar in Review Mode and adds 🩻 XRAY icons next to each order number.

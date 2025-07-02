@@ -12,6 +12,7 @@
     // Tracks whether Review Mode is active across DB pages
     let reviewMode = false;
     let devMode = false;
+    const fraudXray = new URLSearchParams(location.search).get('fraud_xray') === '1';
 
     function showFloatingIcon() {
         if (document.getElementById("fennec-floating-icon")) return;
@@ -509,6 +510,7 @@
                             }
                         }
                         loadDnaSummary();
+                        setTimeout(runFraudXray, 500);
                     });
                     const qsToggle = sidebar.querySelector('#qs-toggle');
                     initQuickSummary = () => {
@@ -655,6 +657,7 @@
         const sep = base.includes('?') ? '&' : '?';
         return base + sep + 'q=' + encodeURIComponent(query);
     }
+    window.buildSosUrl = buildSosUrl;
 
 
     function isValidField(text) {
@@ -1550,7 +1553,8 @@
             if (company.formationDate && company.formationDate.toLowerCase() !== 'n/a') {
                 highlight.push(`<div><b>${escapeHtml(company.formationDate)}</b></div>`);
             }
-            companyLines.push(`<div class="company-summary-highlight">${highlight.join('')}</div>`);
+            const searchIcon = '<span class="company-search-toggle">🔍</span>';
+            companyLines.push(`<div class="company-summary-highlight">${highlight.join('')}${searchIcon}</div>`);
             companyLines.push(`<div>${renderKb(company.state)}</div>`);
             companyLines.push(addrHtml);
             companyLines.push(`<div class="company-purpose">${renderCopy(company.purpose)}</div>`);
@@ -1558,9 +1562,10 @@
                 `<div><span class="${raClass}">RA: ${raExpired ? "EXPIRED" : (hasRA ? "Sí" : "No")}</span> ` +
                 `<span class="${vaClass}">VA: ${hasVA ? "Sí" : "No"}</span></div>`
             );
+            const stateAttr = company.state ? ` data-state="${escapeHtml(company.state)}"` : '';
             const compSection = reviewMode
-                ? `<div class="white-box" style="margin-bottom:10px">${companyLines.join('').trim()}</div>`
-                : `<div class="section-label">COMPANY:</div><div class="white-box" style="margin-bottom:10px">${companyLines.join('').trim()}</div>`;
+                ? `<div class="white-box company-box"${stateAttr} style="margin-bottom:10px">${companyLines.join('').trim()}</div>`
+                : `<div class="section-label">COMPANY:</div><div class="white-box company-box"${stateAttr} style="margin-bottom:10px">${companyLines.join('').trim()}</div>`;
             if (companyLines.length) {
                 html += compSection;
                 dbSections.push(compSection);
@@ -2064,7 +2069,13 @@
                 save.click();
                 sessionStorage.removeItem('fennecAutoComment');
                 sessionStorage.setItem('fennecAddComment', comment);
-                chrome.storage.local.set({ fennecQuickResolveDone: Date.now() });
+                chrome.storage.local.set({
+                    fennecQuickResolveDone: {
+                        time: Date.now(),
+                        resolved: true,
+                        comment
+                    }
+                });
                 chrome.runtime.sendMessage({ action: 'refocusTab' });
             } else {
                 setTimeout(fillComment, 500);
@@ -2091,7 +2102,13 @@
             if (ta && add) {
                 ta.value = comment;
                 add.click();
-                chrome.storage.local.set({ fennecQuickResolveDone: Date.now() });
+                chrome.storage.local.set({
+                    fennecQuickResolveDone: {
+                        time: Date.now(),
+                        resolved: false,
+                        comment
+                    }
+                });
                 chrome.runtime.sendMessage({ action: 'refocusTab' });
             } else {
                 setTimeout(fill, 500);
@@ -2113,6 +2130,15 @@
             addOrderComment(data.comment);
             if (data.cancel) setTimeout(openCancelPopup, 1500);
         }
+    }
+
+    function processDuplicateCancel(id) {
+        if (!id) return;
+        const info = getBasicOrderInfo();
+        if (!info.orderId || String(info.orderId) !== String(id)) return;
+        chrome.storage.local.remove('fennecDupCancel');
+        startCancelProcedure();
+        chrome.storage.local.set({ fennecDupCancelDone: { orderId: id } });
     }
 
     function openCodaSearch() {
@@ -2572,8 +2598,36 @@ function getLastHoldUser() {
     window.startFileAlong = startFileAlong;
     window.currentOrderTypeText = currentOrderTypeText;
 
+    function runFraudXray() {
+        if (!fraudXray) return;
+        const info = getBasicOrderInfo();
+        const client = getClientInfo();
+        const parts = [];
+        if (info.orderId) {
+            parts.push(info.orderId);
+            parts.push(`subject:"${info.orderId}"`);
+        }
+        if (client.email) parts.push(`"${client.email}"`);
+        if (client.name) parts.push(`"${client.name}"`);
+        if (parts.length) {
+            const query = parts.map(p => encodeURIComponent(p)).join('+OR+');
+            const gmailUrl = 'https://mail.google.com/mail/u/0/#search/' + query;
+            chrome.runtime.sendMessage({ action: 'openTab', url: gmailUrl, active: true });
+        }
+        if (info.orderId) {
+            const adyenUrl = `https://ca-live.adyen.com/ca/ca/overview/default.shtml?fennec_order=${info.orderId}`;
+            setTimeout(() => {
+                chrome.runtime.sendMessage({ action: 'openTab', url: adyenUrl, active: true });
+            }, 1000);
+        }
+    }
+
 chrome.storage.local.get({ fennecPendingComment: null }, ({ fennecPendingComment }) => {
     processPendingComment(fennecPendingComment);
+});
+
+chrome.storage.local.get({ fennecDupCancel: null }, ({ fennecDupCancel }) => {
+    processDuplicateCancel(fennecDupCancel);
 });
 
 const pendingNote = sessionStorage.getItem('fennecAddComment');
@@ -2593,6 +2647,9 @@ chrome.storage.onChanged.addListener((changes, area) => {
     }
     if (area === 'local' && changes.fennecPendingComment) {
         processPendingComment(changes.fennecPendingComment.newValue);
+    }
+    if (area === 'local' && changes.fennecDupCancel) {
+        processDuplicateCancel(changes.fennecDupCancel.newValue);
     }
     if (area === 'local' && (changes.sidebarDb || changes.sidebarOrderId || changes.sidebarOrderInfo)) {
         const currentId = getBasicOrderInfo().orderId;

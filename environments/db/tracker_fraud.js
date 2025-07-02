@@ -37,12 +37,8 @@
         }
 
         function runXray(orderId) {
-            const dbUrl = `https://db.incfile.com/incfile/order/detail/${orderId}`;
-            const adyenUrl = `https://ca-live.adyen.com/ca/ca/overview/default.shtml?fennec_order=${orderId}`;
-            chrome.runtime.sendMessage({ action: 'openTab', url: dbUrl, active: true });
-            setTimeout(() => {
-                chrome.runtime.sendMessage({ action: 'openTab', url: adyenUrl, refocus: true, active: true });
-            }, 1000);
+            const dbUrl = `https://db.incfile.com/incfile/order/detail/${orderId}?fraud_xray=1`;
+            chrome.runtime.sendMessage({ action: 'openTab', url: dbUrl, active: true, refocus: true });
         }
 
         function addXrayIcon(el, orderId) {

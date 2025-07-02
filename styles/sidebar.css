@@ -196,6 +196,19 @@
     box-sizing: border-box;
 }
 
+.quick-resolve-comment-text {
+    width: calc(100% - 8px);
+    margin: 6px 4px 0;
+    padding: 4px;
+    border-radius: 4px;
+    border: 1px solid #888;
+    box-sizing: border-box;
+    text-align: left;
+    word-break: break-word;
+    background: #fff;
+    color: #000;
+}
+
 /* Ensure DB sidebar sections remain readable */
 #copilot-sidebar .white-box {
     background-color: var(--sb-box-bg);
@@ -207,6 +220,30 @@
     padding: 12px;
     text-align: center;
     position: relative;
+}
+
+.company-search-toggle {
+    position: absolute;
+    bottom: 4px;
+    right: 6px;
+    cursor: pointer;
+    font-size: 13px;
+}
+
+.company-search-form {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.company-search-form input {
+    padding: 4px;
+    font-size: 12px;
+    color: #000 !important;
+}
+/* Ensure text stays black even with inherited white-box color */
+#copilot-sidebar .white-box .company-search-form input {
+    color: #000 !important;
 }
 
 #copilot-sidebar .box-title {
@@ -334,6 +371,13 @@
     margin-top: 2px;
     opacity: 0.95;
 }
+
+.copilot-xray {
+    display: inline-block;
+    margin-left: 4px;
+    cursor: pointer;
+    vertical-align: middle;
+}
 .copilot-tag-large {
     font-size: 13px;
 }
@@ -359,6 +403,7 @@
     border-radius: 4px;
     padding: 4px;
     margin-bottom: 6px;
+    position: relative;
 }
 #copilot-sidebar .white-box .company-summary-highlight,
 #copilot-sidebar .white-box .company-summary-highlight * {
@@ -519,6 +564,12 @@
 }
 #family-tree-orders .ft-link:hover {
     text-decoration: underline;
+}
+
+#family-tree-orders .ft-cancel {
+    color: #f44336;
+    cursor: pointer;
+    margin-left: 4px;
 }
 
 @keyframes fennec-blink {

@@ -98,6 +98,7 @@
                 const sep = base.includes('?') ? '&' : '?';
                 return base + sep + 'q=' + encodeURIComponent(query);
             }
+            window.buildSosUrl = buildSosUrl;
 
         function applyPaddingToMainPanels() {
             const candidates = [
@@ -1359,9 +1360,24 @@
                 window.location.reload();
             }
             if (area === 'local' && changes.fennecQuickResolveDone) {
+                const data = changes.fennecQuickResolveDone.newValue || {};
                 chrome.storage.local.remove('fennecQuickResolveDone');
                 const box = document.getElementById('issue-summary-box');
                 if (box) {
+                    const commentInput = document.getElementById('issue-comment-input');
+                    const resolveBtn = document.getElementById('issue-resolve-btn');
+                    if (commentInput) commentInput.remove();
+                    if (resolveBtn) resolveBtn.remove();
+                    if (data.comment) {
+                        let c = document.getElementById('quick-resolve-comment-text');
+                        if (!c) {
+                            c = document.createElement('div');
+                            c.id = 'quick-resolve-comment-text';
+                            c.className = 'quick-resolve-comment-text';
+                            box.appendChild(c);
+                        }
+                        c.textContent = data.comment;
+                    }
                     let msg = document.getElementById('quick-resolve-confirm');
                     if (!msg) {
                         msg = document.createElement('div');
@@ -1373,6 +1389,13 @@
                     msg.textContent = 'Issue updated successfully.';
                     msg.style.display = 'block';
                     setTimeout(() => { if (msg) msg.style.display = 'none'; }, 3000);
+                    if (data.resolved) {
+                        const label = document.getElementById('issue-status-label');
+                        if (label) {
+                            label.textContent = 'RESOLVED';
+                            label.className = 'issue-status-label issue-status-resolved';
+                        }
+                    }
                 }
             }
         });

@@ -403,12 +403,15 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
                             const patterns = type === "id"
                                 ? ["id", "number", "document", "control", "filing", "account"]
                                 : ["name", "business", "entity", "organization", "company", "keyword", "search"];
+                            const skip = ["login", "email", "user", "password"];
                             let attempts = 10;
                             const run = () => {
-                                const inputs = Array.from(document.querySelectorAll("input,textarea"));
+                                const inputs = Array.from(document.querySelectorAll("input[type='text'],input[type='search'],input:not([type]),textarea"));
                                 const field = inputs.find(i => {
+                                    if (i.type === 'hidden' || !(i.offsetWidth || i.offsetHeight || i.getClientRects().length)) return false;
                                     const attrs = (i.name || "") + " " + (i.id || "") + " " + (i.placeholder || "") + " " + (i.getAttribute("aria-label") || "");
                                     const txt = attrs.toLowerCase();
+                                    if (skip.some(p => txt.includes(p))) return false;
                                     return patterns.some(p => txt.includes(p));
                                 });
                                 if (field) {

@@ -3,6 +3,7 @@
 ## Unreleased
 
 - The payment step logs the dropdown selector and value before clicking **Continue** so you can confirm **Client Account** is selected.
+- Family Tree detects duplicate orders in review, processing or hold and adds a ❌ icon to cancel and refund them.
 - Diagnose overlay now supports Reinstatement orders and detects amendments or reinstatements in review.
 - Replaced `form.submit()` fallback with a submit event to mimic real clicks.
 - Added a brief delay after selecting the payment type so the page registers **Client Account** reliably.
@@ -30,6 +31,9 @@
 
 - Quick resolve now reuses an existing DB tab when available and displays the
   completion message inside the Gmail sidebar instead of using a popup.
+- Quick resolve removes the input after posting your comment and shows it below
+  the Issue summary. If the issue was active, the status tag updates to
+  **RESOLVED**.
 
 - Quick Summary no longer auto-expands on Annual Report orders and the
   Family Tree panel loads automatically.

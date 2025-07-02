@@ -99,6 +99,7 @@
     border-radius: 4px;
     padding: 4px;
     margin-bottom: 6px;
+    position: relative;
 }
 .fennec-light-mode #copilot-sidebar .white-box .company-summary-highlight,
 .fennec-light-mode #copilot-sidebar .white-box .company-summary-highlight * {
@@ -129,6 +130,16 @@
     color: #000;
 }
 
+.fennec-light-mode .company-search-toggle {
+    color: #000;
+}
+
+.fennec-light-mode .company-search-form input {
+    background: #fff;
+    color: #000 !important;
+    border: 1px solid #777;
+}
+
 /* Ensure header icon stays visible */
 .fennec-light-mode #copilot-close {
     color: #fff;
@@ -141,6 +152,12 @@
 .fennec-light-mode #order-summary-content,
 .fennec-light-mode #issue-summary-content {
     color: #000 !important;
+}
+
+.fennec-light-mode .quick-resolve-comment-text {
+    border: 1px solid #777;
+    background: #fff;
+    color: #000;
 }
 
 /* Use inverted Fennec icon in light mode */
