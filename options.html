@@ -1,33 +1,158 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <style>
-        body { font-family: Arial, sans-serif; width: 250px; padding: 10px; }
-        label { display: block; margin-top: 8px; }
-    </style>
+    <title>FENNEC Options</title>
+    <link rel="stylesheet" href="styles/options.css">
 </head>
 <body>
-    <h2>FENNEC Options</h2>
-    <label>
-        <input type="checkbox" id="default-review"> Default Review Mode
-    </label>
-    <label>
-        <input type="checkbox" id="default-dev"> Default Dev Mode
-    </label>
-    <label>
-        Sidebar width (px)
-        <input type="number" id="sidebar-width" min="200" max="500" step="10">
-    </label>
-    <label>
-        TX SOS User ID
-        <input type="text" id="txsos-user">
-    </label>
-    <label>
-        TX SOS Password
-        <input type="password" id="txsos-pass">
-    </label>
-    <button id="save-btn" style="margin-top:10px;">Save</button>
+    <header class="topbar">
+        <h1>FENNEC Settings</h1>
+    </header>
+    <main class="options-grid">
+        <div class="controls">
+            <div class="bento">
+                <label for="sidebar-theme">Theme</label>
+                <select id="sidebar-theme">
+                    <option value="classic">Classic</option>
+                    <option value="light">Light</option>
+                    <option value="custom">Custom</option>
+                </select>
+            </div>
+            <div class="bento">
+                <label><input type="checkbox" id="default-review"> Default Review Mode</label>
+                <label><input type="checkbox" id="default-dev"> Default Dev Mode</label>
+            </div>
+            <div class="bento custom-only">
+                <label>Sidebar width (px)
+                    <input type="number" id="sidebar-width" min="200" max="500" step="10">
+                </label>
+                <label>Font family
+                    <select id="sidebar-font">
+                        <option value="'Inter', sans-serif">Inter</option>
+                        <option value="Arial, sans-serif">Arial</option>
+                        <option value="'Times New Roman', serif">Times New Roman</option>
+                    </select>
+                </label>
+                <label>Font size
+                    <select id="sidebar-font-size">
+                        <option value="13">Small</option>
+                        <option value="15">Mid</option>
+                        <option value="17">Big</option>
+                    </select>
+                </label>
+                <label>Header font size
+                    <input type="number" id="header-font-size" min="12" max="20" step="1">
+                </label>
+                <label><input type="checkbox" id="header-bold"> Bold header</label>
+                <label>Header background
+                    <input type="color" id="header-bg-color">
+                </label>
+                <label>Header text color
+                    <input type="color" id="header-text-color">
+                </label>
+                <label>Line 1 size
+                    <input type="number" id="line1-size" min="11" max="18" step="1">
+                </label>
+                <label><input type="checkbox" id="line1-bold"> Bold line 1</label>
+                <label>Line 1 color
+                    <input type="color" id="line1-color">
+                </label>
+                <label>Line 2 size
+                    <input type="number" id="line2-size" min="11" max="18" step="1">
+                </label>
+                <label><input type="checkbox" id="line2-bold"> Bold line 2</label>
+                <label>Line 2 color
+                    <input type="color" id="line2-color">
+                </label>
+                <label>Line 3 size
+                    <input type="number" id="line3-size" min="11" max="18" step="1">
+                </label>
+                <label><input type="checkbox" id="line3-bold"> Bold line 3</label>
+                <label>Line 3 color
+                    <input type="color" id="line3-color">
+                </label>
+                <label>Sidebar background
+                    <input type="color" id="sidebar-bg-color">
+                </label>
+                <label>Box background
+                    <input type="color" id="sidebar-box-color">
+                </label>
+                <label>Box title size
+                    <input type="number" id="box-title-size" min="12" max="22" step="1">
+                </label>
+                <label><input type="checkbox" id="box-title-bold"> Bold box title</label>
+                <label>Box title color
+                    <input type="color" id="box-title-color">
+                </label>
+                <label>Button color
+                    <input type="color" id="button-color">
+                </label>
+                <label>Button text color
+                    <input type="color" id="button-text-color">
+                </label>
+                <label>Button radius
+                    <input type="number" id="button-radius" min="0" max="20" step="1">
+                </label>
+                <label>Icon style
+                    <select id="icon-set">
+                        <option value="default">Default</option>
+                        <option value="minimal">Minimal</option>
+                    </select>
+                </label>
+            </div>
+            <div class="bento">
+                <label>TX SOS User ID
+                    <input type="text" id="txsos-user">
+                </label>
+                <label>TX SOS Password
+                    <input type="password" id="txsos-pass">
+                </label>
+            </div>
+            <button id="save-btn" class="save-button">Save</button>
+        </div>
+        <div class="preview">
+            <div id="corp-preview" class="sidebar-preview">
+                <div class="header">CORP MAIN</div>
+                <div class="white-box">
+                    <div class="box-title">🏢</div>
+                    <div class="line1">EXAMPLE LLC</div>
+                    <div class="line2">CA • ID 123456789</div>
+                    <div class="line3">Formed Jan 01, 2020</div>
+                </div>
+                <div class="white-box">
+                    <div class="box-title">🕵️</div>
+                    <div class="line1">Example RA Inc.</div>
+                    <div class="line2">123 Street</div>
+                    <div class="line3">City, ST 12345</div>
+                </div>
+                <div class="white-box">
+                    <div class="box-title">👥</div>
+                    <div class="line1">John Doe</div>
+                    <div class="line2">Jane Roe</div>
+                </div>
+                <button class="example-button">Button</button>
+            </div>
+            <div id="amend-preview" class="sidebar-preview">
+                <div class="header">LLC AMENDMENT</div>
+                <div class="white-box">
+                    <div class="box-title">🏢</div>
+                    <div class="line1">EXAMPLE LLC</div>
+                    <div class="line2">CA • ID 123456789</div>
+                </div>
+                <div class="white-box">
+                    <div class="box-title">🕵️</div>
+                    <div class="line1">Example RA Inc.</div>
+                    <div class="line2">City, ST 12345</div>
+                </div>
+                <div class="white-box">
+                    <div class="box-title">📝</div>
+                    <div class="line1">Amendment: change name</div>
+                </div>
+                <button class="example-button">Button</button>
+            </div>
+        </div>
+    </main>
     <script src="options.js"></script>
 </body>
 </html>

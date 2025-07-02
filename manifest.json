@@ -18,7 +18,8 @@
         "https://coda.io/*",
         "https://ca-live.adyen.com/*",
         "https://direct.sos.state.tx.us/*",
-        "http://127.0.0.1:11434/*"
+        "http://127.0.0.1:11434/*",
+        "https://*/*"
     ],
   "optional_host_permissions": [
     "https://*/*"
@@ -35,8 +36,7 @@
       ],
       "css": [
         "styles/sidebar.css",
-        "styles/sidebar_light.css",
-        "styles/sidebar_bento.css"
+        "styles/sidebar_light.css"
       ]
     },
     {
@@ -52,8 +52,21 @@
       ],
       "css": [
         "styles/sidebar.css",
-        "styles/sidebar_light.css",
-        "styles/sidebar_bento.css"
+        "styles/sidebar_light.css"
+      ]
+    },
+    {
+      "matches": [
+        "https://db.incfile.com/order-tracker/orders/fraud*"
+      ],
+      "all_frames": true,
+      "js": [
+        "core/utils.js",
+        "environments/db/tracker_fraud.js"
+      ],
+      "css": [
+        "styles/sidebar.css",
+        "styles/sidebar_light.css"
       ]
     },
     {
@@ -68,8 +81,14 @@
       "matches": [
         "https://ca-live.adyen.com/*"
       ],
+      "all_frames": true,
       "js": [
+        "core/utils.js",
         "environments/adyen/adyen_launcher.js"
+      ],
+      "css": [
+        "styles/sidebar.css",
+        "styles/sidebar_light.css"
       ]
     },
     {
@@ -83,8 +102,7 @@
       ],
       "css": [
         "styles/sidebar.css",
-        "styles/sidebar_light.css",
-        "styles/sidebar_bento.css"
+        "styles/sidebar_light.css"
       ]
     }
   ],

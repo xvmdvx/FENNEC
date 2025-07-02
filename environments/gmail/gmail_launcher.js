@@ -14,7 +14,7 @@
         }
     });
     chrome.storage.sync.get({ fennecReviewMode: false, fennecDevMode: false, sidebarWidth: 340 }, ({ fennecReviewMode, fennecDevMode, sidebarWidth }) => {
-        chrome.storage.local.get({ extensionEnabled: true, lightMode: false, bentoMode: false, fennecDevMode: false }, ({ extensionEnabled, lightMode, bentoMode, fennecDevMode: localDev }) => {
+        chrome.storage.local.get({ extensionEnabled: true, lightMode: false, fennecDevMode: false }, ({ extensionEnabled, lightMode, fennecDevMode: localDev }) => {
         const devMode = localDev || fennecDevMode;
         if (!extensionEnabled) {
             console.log('[FENNEC] Extension disabled, skipping Gmail launcher.');
@@ -25,21 +25,15 @@
         } else {
             document.body.classList.remove('fennec-light-mode');
         }
-        if (bentoMode) {
-            document.body.classList.add('fennec-bento-mode');
-        } else {
-            document.body.classList.remove('fennec-bento-mode');
-        }
         try {
             const SIDEBAR_WIDTH = parseInt(sidebarWidth, 10) || 340;
             let reviewMode = sessionStorage.getItem('fennecReviewMode');
             reviewMode = reviewMode === null ? fennecReviewMode : reviewMode === 'true';
             let currentContext = null;
             let storedOrderInfo = null;
-            if (!sessionStorage.getItem('fennecDnaCleared')) {
-                chrome.storage.local.set({ adyenDnaInfo: null });
-                sessionStorage.setItem('fennecDnaCleared', '1');
-            }
+            // Preserve the latest DNA details across Gmail pages.
+            // Older versions cleared the data on each load when no sidebar was
+            // frozen, which prevented displaying Adyen's DNA in Review Mode.
 
             // Map of US states to their SOS business search pages
             const SOS_URLS = {
@@ -147,7 +141,7 @@
                 sessionStorage.removeItem("fennecSidebarClosed");
                 const panels = applyPaddingToMainPanels();
                 injectSidebar(panels);
-                refreshSidebar();
+                showInitialStatus();
             });
             document.body.appendChild(icon);
         }
@@ -265,6 +259,7 @@
                 if (xrayBtn) xrayBtn.remove();
             }
             chrome.storage.sync.set({ fennecReviewMode: reviewMode });
+            chrome.storage.local.set({ fennecReviewMode: reviewMode });
             updateDetailVisibility();
         }
 
@@ -674,6 +669,8 @@
         function fillOrderSummaryBox(context) {
             const summaryBox = document.getElementById('order-summary-content');
             if (!summaryBox) return;
+            const container = document.querySelector('.order-summary-box');
+            if (container) container.style.display = 'block';
             const orderId = context?.orderNumber || (storedOrderInfo && storedOrderInfo.orderId) || '';
             const url = orderId ? `https://db.incfile.com/incfile/order/detail/${orderId}` : '#';
 
@@ -799,11 +796,18 @@
             chrome.storage.local.get({ sidebarDb: [], sidebarOrderId: null, sidebarOrderInfo: null }, ({ sidebarDb, sidebarOrderId, sidebarOrderInfo }) => {
                 if (Array.isArray(sidebarDb) && sidebarDb.length && (!expectedId || sidebarOrderId === expectedId)) {
                     container.innerHTML = sidebarDb.join("");
+                    container.style.display = 'block';
                     attachCommonListeners(container);
+                    const qbox = container.querySelector('#quick-summary');
+                    if (qbox) {
+                        qbox.classList.remove('quick-summary-collapsed');
+                        qbox.style.maxHeight = 'none';
+                    }
                     storedOrderInfo = sidebarOrderInfo;
                     fillOrderSummaryBox(currentContext);
                 } else {
-                    container.innerHTML = '<div style="text-align:center; color:#aaa; font-size:13px;">No DB data.</div>';
+                    container.innerHTML = '';
+                    container.style.display = 'none';
                     storedOrderInfo = null;
                 }
 
@@ -1040,17 +1044,20 @@
             const box = document.getElementById('issue-summary-box');
             const content = document.getElementById('issue-summary-content');
             const label = document.getElementById('issue-status-label');
+            const btn = document.getElementById('issue-resolve-btn');
             if (!box || !content || !label) return;
             box.style.display = 'block';
             if (info && info.text) {
                 content.textContent = formatIssueText(info.text);
                 label.textContent = info.active ? 'ACTIVE' : 'RESOLVED';
                 label.className = 'issue-status-label ' + (info.active ? 'issue-status-active' : 'issue-status-resolved');
+                if (btn) btn.textContent = info.active ? 'RESOLVE & COMMENT' : 'COMMENT';
             } else {
                 const link = orderId ? `<a href="https://db.incfile.com/incfile/order/detail/${orderId}" target="_blank">${orderId}</a>` : '';
                 content.innerHTML = `NO ISSUE DETECTED FROM ORDER: ${link}`;
                 label.textContent = '';
                 label.className = 'issue-status-label';
+                if (btn) btn.textContent = 'COMMENT';
             }
         }
 
@@ -1119,13 +1126,55 @@
             }
         }
 
+        function showInitialStatus() {
+            const orderBox = document.getElementById('order-summary-content');
+            const orderContainer = document.querySelector('.order-summary-box');
+            const dbBox = document.getElementById('db-summary-section');
+            const issueBox = document.getElementById('issue-summary-box');
+            const dnaSummary = document.getElementById('dna-summary');
+            if (orderContainer) orderContainer.style.display = 'none';
+            if (dbBox) dbBox.style.display = 'none';
+            if (issueBox) issueBox.style.display = 'none';
+            if (orderBox) orderBox.innerHTML = '';
+            if (dbBox) dbBox.innerHTML = '';
+            if (issueBox) {
+                const content = issueBox.querySelector('#issue-summary-content');
+                if (content) content.innerHTML = '';
+                const label = issueBox.querySelector('#issue-status-label');
+                if (label) label.textContent = '';
+            }
+            if (dnaSummary) dnaSummary.innerHTML = '';
+            repositionDnaSummary();
+        }
+
         function refreshSidebar() {
             const ctx = extractOrderContextFromEmail();
             currentContext = ctx;
+            chrome.storage.local.get({ sidebarFreezeId: null }, ({ sidebarFreezeId }) => {
+                if (sidebarFreezeId && (!ctx || ctx.orderNumber !== sidebarFreezeId)) {
+                    chrome.storage.local.set({ sidebarFreezeId: null, adyenDnaInfo: null });
+                }
+            });
             fillOrderSummaryBox(ctx);
             loadDbSummary(ctx && ctx.orderNumber);
             if (ctx && ctx.orderNumber) checkLastIssue(ctx.orderNumber);
             loadDnaSummary();
+        }
+
+        function clearSidebar() {
+            storedOrderInfo = null;
+            currentContext = null;
+            chrome.storage.local.set({
+                sidebarDb: [],
+                sidebarOrderId: null,
+                sidebarOrderInfo: null,
+                adyenDnaInfo: null,
+                sidebarFreezeId: null
+            });
+            showInitialStatus();
+            applyReviewMode();
+            loadDnaSummary();
+            repositionDnaSummary();
         }
 
         function handleEmailSearchClick() {
@@ -1201,33 +1250,29 @@
                     <div class="issue-summary-box" id="issue-summary-box" style="margin-top:10px;">
                         <strong>ISSUE <span id="issue-status-label" class="issue-status-label"></span></strong><br>
                         <div id="issue-summary-content" style="color:#ccc; font-size:13px; white-space:pre-line;">No issue data yet.</div>
+                        <input id="issue-comment-input" class="quick-resolve-comment" type="text" placeholder="Comment..." />
+                        <button id="issue-resolve-btn" class="copilot-button" style="margin-top:4px;">COMMENT &amp; RESOLVE</button>
                     </div>
                     ${devMode ? `<div class="copilot-footer"><button id="copilot-refresh" class="copilot-button">🔄 REFRESH</button></div>` : ``}
+                    <div class="copilot-footer"><button id="copilot-clear" class="copilot-button">🧹 CLEAR</button></div>
                 </div>
             `;
             document.body.appendChild(sidebar);
-            if (document.body.classList.contains('fennec-bento-mode')) {
-                const vid = document.createElement('video');
-                vid.id = 'bento-video';
-                vid.src = chrome.runtime.getURL('bg_holo.mp4');
-                vid.muted = true;
-                vid.autoplay = true;
-                vid.playsInline = true;
-                vid.loop = false;
-                vid.playbackRate = 0.2;
-                sidebar.prepend(vid);
-                let reverse = false;
-                vid.addEventListener('ended', () => {
-                    reverse = !reverse;
-                    vid.playbackRate = reverse ? -0.2 : 0.2;
-                    vid.currentTime = reverse ? vid.duration - 0.01 : 0.01;
-                    vid.play();
-                });
-            }
+            chrome.storage.sync.get({
+                sidebarFontSize: 13,
+                sidebarFont: "'Inter', sans-serif",
+                sidebarBgColor: '#212121',
+                sidebarBoxColor: '#2e2e2e'
+            }, opts => applySidebarDesign(sidebar, opts));
+
             console.log("[Copilot] Sidebar INYECTADO en Gmail.");
 
-            // Start with empty boxes. Details load after the user interacts
-            // with SEARCH.
+            // Start with empty layout showing only action buttons.
+            showInitialStatus();
+            loadDnaSummary();
+            repositionDnaSummary();
+            // Details load after the user interacts with SEARCH or when
+            // opened automatically with context.
 
             // Botón de cierre
             document.getElementById('copilot-close').onclick = () => {
@@ -1250,6 +1295,30 @@
             document.getElementById("btn-email-search").onclick = handleEmailSearchClick;
             const rBtn = document.getElementById("copilot-refresh");
             if (devMode && rBtn) rBtn.onclick = refreshSidebar;
+            const clearSb = document.getElementById("copilot-clear");
+            if (clearSb) clearSb.onclick = clearSidebar;
+
+            const resolveBtn = document.getElementById("issue-resolve-btn");
+            const commentInput = document.getElementById("issue-comment-input");
+            if (resolveBtn && commentInput) {
+                resolveBtn.onclick = () => {
+                    const comment = commentInput.value.trim();
+                    const orderId = (storedOrderInfo && storedOrderInfo.orderId) ||
+                        (currentContext && currentContext.orderNumber);
+                    if (!orderId) {
+                        alert("No order ID detected.");
+                        return;
+                    }
+                    if (!comment) {
+                        commentInput.focus();
+                        return;
+                    }
+                    chrome.storage.local.set({ fennecPendingComment: { orderId, comment } }, () => {
+                        const url = `https://db.incfile.com/incfile/order/detail/${orderId}`;
+                        chrome.runtime.sendMessage({ action: "openOrReuseTab", url, refocus: true, active: true });
+                    });
+                };
+            }
             applyReviewMode();
             loadDnaSummary();
         }
@@ -1260,6 +1329,7 @@
                 console.log("[Copilot] Sidebar no encontrado, inyectando en Gmail...");
                 const mainPanels = applyPaddingToMainPanels();
                 injectSidebar(mainPanels);
+                showInitialStatus();
             }
         }
 
@@ -1277,7 +1347,7 @@
             if (area === 'local' && changes.sidebarDb && document.getElementById('db-summary-section')) {
                 loadDbSummary();
             }
-            if (area === 'local' && changes.adyenDnaInfo && document.querySelector('.copilot-dna')) {
+            if (area === 'local' && changes.adyenDnaInfo) {
                 loadDnaSummary();
             }
             if (area === 'sync' && changes.fennecReviewMode) {
@@ -1288,6 +1358,28 @@
             if ((area === 'sync' && changes.fennecDevMode) || (area === 'local' && changes.fennecDevMode)) {
                 window.location.reload();
             }
+            if (area === 'local' && changes.fennecQuickResolveDone) {
+                chrome.storage.local.remove('fennecQuickResolveDone');
+                const box = document.getElementById('issue-summary-box');
+                if (box) {
+                    let msg = document.getElementById('quick-resolve-confirm');
+                    if (!msg) {
+                        msg = document.createElement('div');
+                        msg.id = 'quick-resolve-confirm';
+                        msg.style.marginTop = '4px';
+                        msg.style.color = '#0a0';
+                        box.appendChild(msg);
+                    }
+                    msg.textContent = 'Issue updated successfully.';
+                    msg.style.display = 'block';
+                    setTimeout(() => { if (msg) msg.style.display = 'none'; }, 3000);
+                }
+            }
+        });
+
+        // Ensure DNA summary refreshes when returning from Adyen
+        window.addEventListener('focus', () => {
+            loadDnaSummary();
         });
 
         // --- OPEN ORDER listener reutilizable ---
@@ -1315,6 +1407,8 @@
             if (!button || button.dataset.listenerAttached) return;
             button.dataset.listenerAttached = "true";
             button.addEventListener("click", function () {
+                const skipSearch = button.dataset.skipSearch === "1";
+                delete button.dataset.skipSearch;
                 try {
                     const bodyNode = document.querySelector(".a3s");
                     if (!bodyNode) {
@@ -1329,10 +1423,21 @@
                         alert("No se encontró ningún número de orden válido en el correo.");
                         return;
                     }
-                    console.log('[Copilot] Opening Adyen for order', orderId);
-                    const url = `https://ca-live.adyen.com/ca/ca/overview/default.shtml?fennec_order=${orderId}`;
-                    showDnaLoading();
-                    chrome.runtime.sendMessage({ action: "openTab", url, refocus: true, active: true });
+                    function openAdyen() {
+                        console.log('[Copilot] Opening Adyen for order', orderId);
+                        const url = `https://ca-live.adyen.com/ca/ca/overview/default.shtml?fennec_order=${orderId}`;
+                        showDnaLoading();
+                        chrome.storage.local.set({ sidebarFreezeId: orderId }, () => {
+                            chrome.runtime.sendMessage({ action: "openTab", url, refocus: true, active: true });
+                        });
+                    }
+
+                    if (!storedOrderInfo || storedOrderInfo.orderId !== orderId) {
+                        if (!skipSearch) handleEmailSearchClick();
+                        setTimeout(openAdyen, 500);
+                    } else {
+                        openAdyen();
+                    }
                 } catch (error) {
                     console.error("Error al intentar buscar en Adyen:", error);
                     alert("Ocurrió un error al intentar buscar en Adyen.");
@@ -1348,7 +1453,10 @@
                 handleEmailSearchClick();
                 setTimeout(() => {
                     const dnaBtn = document.getElementById("btn-dna");
-                    if (dnaBtn) dnaBtn.click();
+                    if (dnaBtn) {
+                        dnaBtn.dataset.skipSearch = "1";
+                        dnaBtn.click();
+                    }
                 }, 500);
             });
         }

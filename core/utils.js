@@ -10,6 +10,24 @@ function escapeHtml(text) {
         .replace(/'/g, "&#039;");
 }
 
+function applySidebarDesign(sidebar, opts) {
+    if (!sidebar || !opts) return;
+    if (opts.sidebarBgColor) {
+        sidebar.style.setProperty('--sb-bg', opts.sidebarBgColor);
+    }
+    if (opts.sidebarBoxColor) {
+        sidebar.style.setProperty('--sb-box-bg', opts.sidebarBoxColor);
+    }
+    const fs = parseInt(opts.sidebarFontSize, 10);
+    if (fs) {
+        sidebar.style.setProperty('--sb-font-size', fs + 'px');
+    }
+    if (opts.sidebarFont) {
+        sidebar.style.setProperty('--sb-font-family', opts.sidebarFont);
+    }
+}
+window.applySidebarDesign = applySidebarDesign;
+
 function attachCommonListeners(rootEl) {
     if (!rootEl) return;
     rootEl.querySelectorAll('.copilot-address').forEach(el => {
@@ -44,6 +62,7 @@ function attachCommonListeners(rootEl) {
             const query = el.dataset.query;
             const type = el.dataset.type || 'name';
             if (!url || !query) return;
+            navigator.clipboard.writeText(query).catch(err => console.warn('[Copilot] Clipboard', err));
             chrome.runtime.sendMessage({ action: 'sosSearch', url, query, searchType: type });
         });
     });
@@ -174,7 +193,7 @@ function attachCommonListeners(rootEl) {
                             const status = o.status || '';
                             const type = o.type || '';
                             return /hold/i.test(status) ||
-                                (/amendment/i.test(type) && /review/i.test(status));
+                                ((/amendment/i.test(type) || /reinstat/i.test(type)) && /review/i.test(status));
                         });
                         if (!relevant.length) {
                             alert('No applicable orders found');
@@ -183,7 +202,8 @@ function attachCommonListeners(rootEl) {
                         const current = typeof getBasicOrderInfo === 'function'
                             ? getBasicOrderInfo().orderId
                             : null;
-                        diagnoseHoldOrders(relevant, parent.orderId, current);
+                        const typeText = typeof currentOrderTypeText !== 'undefined' ? currentOrderTypeText : null;
+                        diagnoseHoldOrders(relevant, parent.orderId, current, typeText);
                     });
                 }
             });

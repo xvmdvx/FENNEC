@@ -3,6 +3,7 @@
 ## Unreleased
 
 - The payment step logs the dropdown selector and value before clicking **Continue** so you can confirm **Client Account** is selected.
+- Diagnose overlay now supports Reinstatement orders and detects amendments or reinstatements in review.
 - Replaced `form.submit()` fallback with a submit event to mimic real clicks.
 - Added a brief delay after selecting the payment type so the page registers **Client Account** reliably.
 - Fixed the Mistral chat box disappearing after loading the order summary.
@@ -16,11 +17,25 @@
   Mistral requests without returning **403**.
 - Diagnose overlay now displays all child orders instead of only the first three.
 - Added Dev Mode. The Mistral chat box, FILE and REFRESH buttons now appear only when Dev Mode is enabled.
+- Added quick resolve field below the Issue summary in Gmail.
+- Sidebar now loads on the Fraud tracker page and auto-enables Review Mode.
+  Order numbers show an 🩻 icon that runs XRAY starting with that order.
+- Review Mode can now be toggled directly from the extension popup.
+- Sidebar design can now be customized from the Options page, including font size,
+  font family and colors.
+- CVV and AVS labels in ADYEN's DNA now show the full reason on hover and correctly mark "Supplied, Matches (M)" as a match.
+- The Options page shows a live sidebar preview and Bento Mode has been removed.
+- Quick resolve button now shows **COMMENT** when the issue is already resolved
+  and automatically returns focus to Gmail with a success message.
+
+- Quick resolve now reuses an existing DB tab when available and displays the
+  completion message inside the Gmail sidebar instead of using a popup.
+
+- Quick Summary no longer auto-expands on Annual Report orders and the
+  Family Tree panel loads automatically.
 
 ## v0.3 - 2025-06-24
 
-- Fixed Bento Mode positioning so the sidebar displays correctly on Gmail and DB.
-- Fixed Bento Mode layering so headers and boxes appear above the video background.
 - Fixed a race condition where the "Family Tree" view failed to load if the
   background script queried the page before helper functions finished
   initializing.
@@ -53,6 +68,7 @@
 - Fixed popup Review Mode toggle to use sync storage so the DNA button appears after enabling the mode.
 - Fixed DNA button not appearing in Gmail Review Mode by storing the setting locally.
 - Fixed the DNA summary replacing the button in Gmail Review Mode so the button remains visible when no data is available.
+- DB sidebar now extracts information when first locked by DNA so Gmail Review Mode shows the full summary.
 - Escaped quotes in the background script so the service worker loads correctly.
   Buttons like **EMAIL SEARCH** and **OPEN ORDER** now open tabs again.
 - Common helpers moved to `core/utils.js` and shared by Gmail and DB scripts.
@@ -114,3 +130,5 @@
 - Fixed Diagnose overlay comment box showing **null** instead of the current order number when triggered from the Family Tree panel.
 - Payment fields inside nested iframes are now detected so File Along selects the Client Account option reliably.
 - The payment step now verifies **Client Account** is selected before continuing.
+- Comment & Resolve in Gmail now reuses an open DB tab and only resolves when the issue is active.
+- DNA summary refreshes when returning focus to DB or Gmail so results from XRAY appear consistently.

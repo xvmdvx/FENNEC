@@ -1,25 +1,18 @@
-// Handles enable/disable toggle and theme selections
+// Handles enable/disable toggle and provides a quick link to Options
 const toggle = document.getElementById("extension-toggle");
-const lightToggle = document.getElementById("light-toggle");
-const bentoToggle = document.getElementById("bento-toggle");
+const optionsBtn = document.getElementById("options-btn");
 const reviewToggle = document.getElementById("review-toggle");
-const devToggle = document.getElementById("dev-toggle");
 
 function loadState() {
-    chrome.storage.local.get({ extensionEnabled: true, lightMode: false, bentoMode: false, fennecDevMode: false }, ({ extensionEnabled, lightMode, bentoMode, fennecDevMode }) => {
-        chrome.storage.sync.get({ fennecReviewMode: false, fennecDevMode: false }, ({ fennecReviewMode, fennecDevMode }) => {
-            toggle.checked = Boolean(extensionEnabled);
-            lightToggle.checked = Boolean(lightMode);
-            bentoToggle.checked = Boolean(bentoMode);
-            reviewToggle.checked = Boolean(fennecReviewMode);
-            devToggle.checked = Boolean(fennecDevMode);
-        });
+    chrome.storage.local.get({ extensionEnabled: true, fennecReviewMode: false }, ({ extensionEnabled, fennecReviewMode }) => {
+        toggle.checked = Boolean(extensionEnabled);
+        reviewToggle.checked = Boolean(fennecReviewMode);
     });
 }
 
 function saveState() {
-    chrome.storage.local.set({ extensionEnabled: toggle.checked, lightMode: lightToggle.checked, bentoMode: bentoToggle.checked, fennecReviewMode: reviewToggle.checked, fennecDevMode: devToggle.checked }, () => {
-        chrome.storage.sync.set({ fennecReviewMode: reviewToggle.checked, fennecDevMode: devToggle.checked }, () => {
+    chrome.storage.local.set({ extensionEnabled: toggle.checked, fennecReviewMode: reviewToggle.checked }, () => {
+        chrome.storage.sync.set({ fennecReviewMode: reviewToggle.checked }, () => {
             const urls = [
                 "https://mail.google.com/*",
                 "https://*.incfile.com/incfile/order/detail/*",
@@ -47,8 +40,6 @@ function saveState() {
 document.addEventListener("DOMContentLoaded", () => {
     loadState();
     toggle.addEventListener("change", saveState);
-    lightToggle.addEventListener("change", saveState);
-    bentoToggle.addEventListener("change", saveState);
     reviewToggle.addEventListener("change", saveState);
-    devToggle.addEventListener("change", saveState);
+    optionsBtn.addEventListener("click", () => chrome.runtime.openOptionsPage());
 });

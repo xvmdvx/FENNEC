@@ -40,7 +40,6 @@ NOTES
 ADDITIONAL FEATURES
 ────────────────────────────
 
-Bento Mode → Colorful grid layout with looping video background for the sidebar
 Light Mode → Minimalist black-on-white style with an inverted Fennec icon
 Dev Mode → Temporary mode showing experimental features like the Mistral Box and FILE button
 DNA        → Shortcut button that opens Adyen payment details and shopper DNA
@@ -58,10 +57,13 @@ CVV → Card Verification Value result code
 AVS → Address Verification System result code
 Knowledge Base window → Popup covering about 70% of the DB page that shows the Coda Knowledge Base
 
-AR COMPLETED         → Default comment used when resolving a Family Tree order
+AR COMPLETED         → Legacy default comment for resolving a Family Tree order
+Annual Report filed → Comment template used when diagnosing Annual Report orders
+No AR required      → Comment template used when diagnosing Reinstatement orders
 Diagnose overlay → Floating panel listing Family Tree hold orders
 Comment Box → Editable field in the diagnose overlay prefilled with AR COMPLETED and the current order number
 Clear Tabs icon → Button that closes all other tabs in the window
+Clear SB button → Removes sidebar content and resets it to its initial state
 
 File Along → Opens a new window with TX SOS and guides formation filing automatically.
 Organizer → Person or entity that signs and submits the formation documents.
@@ -74,3 +76,4 @@ Ollama → Local server running the Mistral API
 Retry button → Resends a prompt when the Mistral service is unavailable
 BOIR → Beneficial Ownership Information Report
 BETA → Early test version of Fennec
+Sidebar freeze → Mechanism locking sidebar data to the last processed order until XRAY runs again

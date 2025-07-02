@@ -91,6 +91,20 @@
     color: #000 !important;
     border: 1px solid #777;
 }
+.fennec-light-mode #copilot-sidebar .company-summary-highlight {
+    background-color: #ddd;
+    color: #000 !important;
+    font-weight: bold;
+    border: 1px solid #777;
+    border-radius: 4px;
+    padding: 4px;
+    margin-bottom: 6px;
+}
+.fennec-light-mode #copilot-sidebar .white-box .company-summary-highlight,
+.fennec-light-mode #copilot-sidebar .white-box .company-summary-highlight * {
+    color: #000 !important;
+    font-weight: bold;
+}
 .fennec-light-mode #copilot-sidebar .copilot-tag-yellow {
     background-color: #f7bc00;
     color: #000 !important;
