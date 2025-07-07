@@ -71,6 +71,26 @@
     },
     {
       "matches": [
+        "https://db.incfile.com/db-tools/scan-email-address*"
+      ],
+      "all_frames": true,
+      "js": [
+        "core/utils.js",
+        "environments/db/db_email_search.js"
+      ]
+    },
+    {
+      "matches": [
+        "https://db.incfile.com/order-tracker/orders/order-search*"
+      ],
+      "all_frames": true,
+      "js": [
+        "core/utils.js",
+        "environments/db/db_order_search.js"
+      ]
+    },
+    {
+      "matches": [
         "https://tools.usps.com/zip-code-lookup.htm*"
       ],
       "js": [
@@ -103,6 +123,16 @@
       "css": [
         "styles/sidebar.css",
         "styles/sidebar_light.css"
+      ]
+    },
+    {
+      "matches": [
+        "https://awc.kount.net/workflow/*"
+      ],
+      "all_frames": true,
+      "js": [
+        "core/utils.js",
+        "environments/kount/kount_launcher.js"
       ]
     }
   ],

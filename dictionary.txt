@@ -52,6 +52,7 @@ DNA Match Tag → Label indicating if Billing details agree with the DNA data
 Card Match Tag → Label showing if DB card details match the Adyen card info
 Transaction table → Colored summary of Adyen transactions
 Light Gray Tag → Label color used for Adyen DNA entries in Review Mode (light gray background with black text)
+Kount summary → Box showing email age, device location, VIP declines and Ekata results
 Knowledge Base overlay → Deprecated floating window that tried to show the Coda Knowledge Base over the DB page
 CVV → Card Verification Value result code
 AVS → Address Verification System result code

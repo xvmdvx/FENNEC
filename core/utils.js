@@ -108,7 +108,8 @@ function attachCommonListeners(rootEl) {
         });
     });
     const ftIcon = document.getElementById('family-tree-icon');
-    if (ftIcon) {
+    if (ftIcon && !ftIcon.dataset.listenerAttached) {
+        ftIcon.dataset.listenerAttached = 'true';
         ftIcon.addEventListener('click', () => {
             console.log('[Copilot] Family Tree icon clicked');
             let container = document.getElementById('family-tree-orders');
@@ -123,7 +124,7 @@ function attachCommonListeners(rootEl) {
                     return;
                 }
             }
-            if (container.style.maxHeight && container.style.maxHeight !== '0px') {
+            if (container.style.maxHeight && parseInt(container.style.maxHeight) > 0) {
                 container.style.maxHeight = '0';
                 container.classList.add('ft-collapsed');
                 return;
@@ -213,7 +214,11 @@ function attachCommonListeners(rootEl) {
                         e.preventDefault();
                         const id = a.dataset.id;
                         if (id) {
-                            chrome.runtime.sendMessage({ action: 'openTab', url: `${location.origin}/incfile/order/detail/${id}` });
+                            chrome.runtime.sendMessage({
+                                action: 'openOrReuseTab',
+                                url: `${location.origin}/incfile/order/detail/${id}`,
+                                active: false
+                            });
                         }
                     });
                 });
@@ -223,7 +228,11 @@ function attachCommonListeners(rootEl) {
                         if (!id) return;
                         if (!confirm('Cancel and refund order ' + id + '?')) return;
                         chrome.storage.local.set({ fennecDupCancel: id }, () => {
-                            chrome.runtime.sendMessage({ action: 'openActiveTab', url: `${location.origin}/incfile/order/detail/${id}` });
+                            chrome.runtime.sendMessage({
+                                action: 'openOrReuseTab',
+                                url: `${location.origin}/incfile/order/detail/${id}`,
+                                active: true
+                            });
                         });
                     });
                 });

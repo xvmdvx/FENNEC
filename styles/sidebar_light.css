@@ -45,6 +45,54 @@
 .fennec-light-mode #fennec-coda-overlay .coda-result-item a {
     color: #0000ee;
 }
+.fennec-light-mode #fennec-trial-overlay {
+    background-color: #fff;
+    color: #000 !important;
+    border: 1px solid #777;
+    width: 840px;
+    max-width: 840px;
+    padding: 24px 32px;
+    font-size: var(--sb-font-size);
+}
+.fennec-light-mode #fennec-trial-overlay .trial-close {
+    color: #000;
+}
+.fennec-light-mode #fennec-trial-title {
+    text-align: center;
+    font-weight: bold;
+    color: #fff;
+    margin-bottom: 4px;
+}
+.fennec-light-mode #fennec-trial-overlay .trial-columns {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 8px;
+}
+.fennec-light-mode #fennec-trial-overlay .trial-col-wrap {
+    flex: 1;
+    text-align: center;
+}
+.fennec-light-mode #fennec-trial-overlay .trial-col-title {
+    font-weight: bold;
+    color: #fff;
+    margin-bottom: 2px;
+}
+.fennec-light-mode #fennec-trial-overlay .trial-col {
+    text-align: center;
+    background: #d3d3d3;
+    color: #000;
+    padding: 8px;
+    border-radius: 8px;
+}
+.fennec-light-mode #fennec-trial-overlay .trial-summary {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 8px;
+}
+.fennec-light-mode #fennec-trial-overlay .trial-summary-col {
+    flex: 1;
+    text-align: center;
+}
 .fennec-light-mode .copilot-tag {
     background-color: #000;
     color: #fff !important;
@@ -155,6 +203,11 @@
 }
 
 .fennec-light-mode .quick-resolve-comment-text {
+    border: 1px solid #777;
+    background: #fff;
+    color: #000;
+}
+.fennec-light-mode .quick-resolve-comment {
     border: 1px solid #777;
     background: #fff;
     color: #000;

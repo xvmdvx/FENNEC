@@ -149,7 +149,7 @@
                 if (line1) lines.push(escapeHtml(line1));
                 if (line2) lines.push(escapeHtml(line2));
                 const esc = escapeHtml(addr);
-                return `<span class="address-wrapper"><a href="#" class="copilot-address" data-address="${esc}">${lines.join('<br>')}</a><span class="copilot-usps" data-address="${esc}" title="USPS Lookup"> ✉️</span></span>`;
+                return `<span class="address-wrapper"><a href="#" class="copilot-address" data-address="${esc}">${lines.join('<br>')}</a><span class="copilot-usps" data-address="${esc}" title="USPS Lookup"> ✉️</span><span class="copilot-copy-icon" data-copy="${esc}" title="Copy">⧉</span></span>`;
             }
 
             function buildCardMatchTag(info) {

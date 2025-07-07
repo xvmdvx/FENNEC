@@ -90,8 +90,17 @@
                 "Wyoming": { name: "https://wyobiz.wyo.gov/business/filingsearch.aspx", id: "https://wyobiz.wyo.gov/business/filingsearch.aspx" }
             };
 
+            function canonicalizeState(state) {
+                if (!state) return '';
+                const clean = String(state).trim().toLowerCase();
+                for (const key of Object.keys(SOS_URLS)) {
+                    if (key.toLowerCase() === clean) return key;
+                }
+                return String(state).trim();
+            }
+
             function buildSosUrl(state, query, type = 'name') {
-                const rec = SOS_URLS[state];
+                const rec = SOS_URLS[canonicalizeState(state)];
                 if (!rec) return null;
                 const base = rec[type] || rec.name;
                 if (!query) return base;
@@ -242,6 +251,7 @@
                     actionsRow.appendChild(btn);
                     setupDnaButton();
                     loadDnaSummary();
+            loadKountSummary();
                 }
                 if (actionsRow && !xrayBtn) {
                     const xbtn = document.createElement("button");
@@ -449,7 +459,7 @@
             if (rest) lines.push(rest);
             const display = lines.map(escapeHtml).join('<br>');
             const escFull = escapeHtml(addr);
-            return `<span class="address-wrapper"><a href="#" class="copilot-address" data-address="${escFull}">${display}</a><span class="copilot-usps" data-address="${escFull}" title="USPS Lookup"> ✉️</span></span>`;
+            return `<span class="address-wrapper"><a href="#" class="copilot-address" data-address="${escFull}">${display}</a><span class="copilot-usps" data-address="${escFull}" title="USPS Lookup"> ✉️</span><span class="copilot-copy-icon" data-copy="${escFull}" title="Copy">⧉</span></span>`;
         }
 
         // Format billing address into two lines and add USPS verification
@@ -487,7 +497,7 @@
             if (line1) lines.push(escapeHtml(line1));
             if (line2) lines.push(escapeHtml(line2));
             const escFull = escapeHtml(addr);
-            return `<span class="address-wrapper"><a href="#" class="copilot-address" data-address="${escFull}">${lines.join('<br>')}</a><span class="copilot-usps" data-address="${escFull}" title="USPS Lookup"> ✉️</span></span>`;
+            return `<span class="address-wrapper"><a href="#" class="copilot-address" data-address="${escFull}">${lines.join('<br>')}</a><span class="copilot-usps" data-address="${escFull}" title="USPS Lookup"> ✉️</span><span class="copilot-copy-icon" data-copy="${escFull}" title="Copy">⧉</span></span>`;
         }
 
         function normalizeAddr(a) {
@@ -886,7 +896,7 @@
             return `<table class="dna-tx-table"><thead><tr><th>Type</th><th>Total</th></tr></thead><tbody>${rows}</tbody></table>`;
         }
 
-        function buildDnaHtml(info) {
+       function buildDnaHtml(info) {
             if (!info || !info.payment) return null;
             const p = info.payment;
             const card = p.card || {};
@@ -951,13 +961,13 @@
 
             function formatCvv(text) {
                 const t = (text || '').toLowerCase();
-                if (t.includes('matched')) {
+                if ((/\bmatch(es|ed)?\b/.test(t) || /\(m\)/.test(t)) && !/not\s+match/.test(t)) {
                     return { label: 'CVV: MATCH', result: 'green' };
                 }
-                if (t.includes('not matched')) {
+                if (/not\s+match/.test(t) || /\(n\)/.test(t)) {
                     return { label: 'CVV: NO MATCH', result: 'purple' };
                 }
-                if (t.includes('not provided') || t.includes('not checked') || t.includes('error') || t.includes('not supplied') || t.includes('unknown')) {
+                if (/not provided|not checked|error|not supplied|unknown/.test(t)) {
                     return { label: 'CVV: UNKNOWN', result: 'black' };
                 }
                 return { label: 'CVV: UNKNOWN', result: 'black' };
@@ -1014,7 +1024,30 @@
             if (txTable) parts.push(txTable);
 
             if (!parts.length) return null;
-            return `<div class="section-label">ADYEN'S DNA</div><div class="white-box" style="margin-bottom:10px">${parts.join('')}</div>`;
+           return `<div class="section-label">ADYEN'S DNA</div><div class="white-box" style="margin-bottom:10px">${parts.join('')}</div>`;
+       }
+
+        function buildKountHtml(info) {
+            if (!info) return null;
+            const parts = [];
+            if (info.emailAge) parts.push(`<div><b>Email age:</b> ${escapeHtml(info.emailAge)}</div>`);
+            if (info.deviceLocation || info.ip) {
+                const loc = escapeHtml(info.deviceLocation || '');
+                const ip = escapeHtml(info.ip || '');
+                parts.push(`<div><b>Device:</b> ${loc} ${ip}</div>`);
+            }
+            if (Array.isArray(info.declines) && info.declines.length) {
+                parts.push(`<div><b>DECLINE LIST</b><br>${info.declines.map(escapeHtml).join('<br>')}</div>`);
+            }
+            if (info.ekata) {
+                const e = info.ekata;
+                const ipLine = e.ipValid || e.proxyRisk ? `<div><b>IP Valid:</b> ${escapeHtml(e.ipValid || '')} <b>Proxy:</b> ${escapeHtml(e.proxyRisk || '')}</div>` : '';
+                const addrLine = e.addressToName || e.residentName ? `<div><b>Address to Name:</b> ${escapeHtml(e.addressToName || '')}<br><b>Resident Name:</b> ${escapeHtml(e.residentName || '')}</div>` : '';
+                if (ipLine) parts.push(ipLine);
+                if (addrLine) parts.push(addrLine);
+            }
+            if (!parts.length) return null;
+            return `<div class="section-label">KOUNT</div><div class="white-box" style="margin-bottom:10px">${parts.join('')}</div>`;
         }
 
        function loadDnaSummary() {
@@ -1032,6 +1065,16 @@
                 }
                 attachCommonListeners(container);
                 repositionDnaSummary();
+            });
+        }
+
+        function loadKountSummary() {
+            const container = document.getElementById('kount-summary');
+            if (!container) return;
+            chrome.storage.local.get({ kountInfo: null }, ({ kountInfo }) => {
+                const html = buildKountHtml(kountInfo);
+                container.innerHTML = html || '';
+                attachCommonListeners(container);
             });
         }
 
@@ -1107,6 +1150,7 @@
             const dbBox = document.getElementById('db-summary-section');
             const issueContent = document.getElementById('issue-summary-content');
             const issueLabel = document.getElementById('issue-status-label');
+            const issueBox = document.getElementById('issue-summary-box');
             const icon = `<img src="${chrome.runtime.getURL('fennec_icon.png')}" class="loading-fennec"/>`;
             const dnaBox = document.querySelector('.copilot-dna');
             if (orderContainer) {
@@ -1114,7 +1158,38 @@
             }
             if (orderBox) orderBox.innerHTML = icon;
             if (dbBox) dbBox.innerHTML = icon;
-            if (issueContent) issueContent.innerHTML = icon;
+            if (issueBox) {
+                const msg = document.getElementById('quick-resolve-confirm');
+                if (msg) msg.remove();
+                const cText = document.getElementById('quick-resolve-comment-text');
+                if (cText) cText.remove();
+                let input = document.getElementById('issue-comment-input');
+                if (!input) {
+                    input = document.createElement('textarea');
+                    input.id = 'issue-comment-input';
+                    input.className = 'quick-resolve-comment';
+                    input.placeholder = 'Comment...';
+                    issueBox.appendChild(input);
+                } else {
+                    input.value = '';
+                }
+                let btn = document.getElementById('issue-resolve-btn');
+                if (!btn) {
+                    btn = document.createElement('button');
+                    btn.id = 'issue-resolve-btn';
+                    btn.className = 'copilot-button';
+                    btn.style.marginTop = '4px';
+                    btn.textContent = 'COMMENT & RESOLVE';
+                    issueBox.appendChild(btn);
+                } else {
+                    btn.textContent = 'COMMENT & RESOLVE';
+                }
+                if (issueContent) issueContent.innerHTML = icon;
+                issueBox.style.display = 'block';
+                setupResolveButton();
+            } else if (issueContent) {
+                issueContent.innerHTML = icon;
+            }
             if (dnaBox) {
                 const summary = dnaBox.querySelector('#dna-summary');
                 if (summary) summary.innerHTML = '';
@@ -1143,6 +1218,34 @@
                 if (content) content.innerHTML = '';
                 const label = issueBox.querySelector('#issue-status-label');
                 if (label) label.textContent = '';
+                const msg = document.getElementById('quick-resolve-confirm');
+                if (msg) msg.remove();
+                const cText = document.getElementById('quick-resolve-comment-text');
+                if (cText) cText.remove();
+                let input = document.getElementById('issue-comment-input');
+                if (!input) {
+                    input = document.createElement('textarea');
+                    input.id = 'issue-comment-input';
+                    input.className = 'quick-resolve-comment';
+                    input.placeholder = 'Comment...';
+                    issueBox.appendChild(input);
+                } else {
+                    input.value = '';
+                    issueBox.appendChild(input);
+                }
+                let btn = document.getElementById('issue-resolve-btn');
+                if (!btn) {
+                    btn = document.createElement('button');
+                    btn.id = 'issue-resolve-btn';
+                    btn.className = 'copilot-button';
+                    btn.style.marginTop = '4px';
+                    btn.textContent = 'COMMENT & RESOLVE';
+                    issueBox.appendChild(btn);
+                } else {
+                    btn.textContent = 'COMMENT & RESOLVE';
+                    issueBox.appendChild(btn);
+                }
+                setupResolveButton();
             }
             if (dnaSummary) dnaSummary.innerHTML = '';
             repositionDnaSummary();
@@ -1156,10 +1259,15 @@
                     chrome.storage.local.set({ sidebarFreezeId: null, adyenDnaInfo: null });
                 }
             });
+            if (!ctx) {
+                showInitialStatus();
+                return;
+            }
             fillOrderSummaryBox(ctx);
             loadDbSummary(ctx && ctx.orderNumber);
             if (ctx && ctx.orderNumber) checkLastIssue(ctx.orderNumber);
             loadDnaSummary();
+            loadKountSummary();
         }
 
         function clearSidebar() {
@@ -1175,6 +1283,7 @@
             showInitialStatus();
             applyReviewMode();
             loadDnaSummary();
+            loadKountSummary();
             repositionDnaSummary();
         }
 
@@ -1240,6 +1349,7 @@
                     </div>
                     <div class="copilot-dna">
                         <div id="dna-summary" style="margin-top:16px"></div>
+                        <div id="kount-summary" style="margin-top:10px"></div>
                     </div>
                     <div class="order-summary-box">
                         <div id="order-summary-content" style="color:#ccc; font-size:13px;">
@@ -1251,7 +1361,7 @@
                     <div class="issue-summary-box" id="issue-summary-box" style="margin-top:10px;">
                         <strong>ISSUE <span id="issue-status-label" class="issue-status-label"></span></strong><br>
                         <div id="issue-summary-content" style="color:#ccc; font-size:13px; white-space:pre-line;">No issue data yet.</div>
-                        <input id="issue-comment-input" class="quick-resolve-comment" type="text" placeholder="Comment..." />
+                        <textarea id="issue-comment-input" class="quick-resolve-comment" placeholder="Comment..."></textarea>
                         <button id="issue-resolve-btn" class="copilot-button" style="margin-top:4px;">COMMENT &amp; RESOLVE</button>
                     </div>
                     ${devMode ? `<div class="copilot-footer"><button id="copilot-refresh" class="copilot-button">🔄 REFRESH</button></div>` : ``}
@@ -1271,6 +1381,7 @@
             // Start with empty layout showing only action buttons.
             showInitialStatus();
             loadDnaSummary();
+            loadKountSummary();
             repositionDnaSummary();
             // Details load after the user interacts with SEARCH or when
             // opened automatically with context.
@@ -1299,29 +1410,10 @@
             const clearSb = document.getElementById("copilot-clear");
             if (clearSb) clearSb.onclick = clearSidebar;
 
-            const resolveBtn = document.getElementById("issue-resolve-btn");
-            const commentInput = document.getElementById("issue-comment-input");
-            if (resolveBtn && commentInput) {
-                resolveBtn.onclick = () => {
-                    const comment = commentInput.value.trim();
-                    const orderId = (storedOrderInfo && storedOrderInfo.orderId) ||
-                        (currentContext && currentContext.orderNumber);
-                    if (!orderId) {
-                        alert("No order ID detected.");
-                        return;
-                    }
-                    if (!comment) {
-                        commentInput.focus();
-                        return;
-                    }
-                    chrome.storage.local.set({ fennecPendingComment: { orderId, comment } }, () => {
-                        const url = `https://db.incfile.com/incfile/order/detail/${orderId}`;
-                        chrome.runtime.sendMessage({ action: "openOrReuseTab", url, refocus: true, active: true });
-                    });
-                };
-            }
+            setupResolveButton();
             applyReviewMode();
             loadDnaSummary();
+            loadKountSummary();
         }
 
         function injectSidebarIfMissing() {
@@ -1350,6 +1442,7 @@
             }
             if (area === 'local' && changes.adyenDnaInfo) {
                 loadDnaSummary();
+            loadKountSummary();
             }
             if (area === 'sync' && changes.fennecReviewMode) {
                 reviewMode = changes.fennecReviewMode.newValue;
@@ -1403,6 +1496,7 @@
         // Ensure DNA summary refreshes when returning from Adyen
         window.addEventListener('focus', () => {
             loadDnaSummary();
+            loadKountSummary();
         });
 
         // --- OPEN ORDER listener reutilizable ---
@@ -1423,6 +1517,30 @@
                     elapsed += intervalTime;
                 }, intervalTime);
             });
+        }
+
+        function setupResolveButton() {
+            const resolveBtn = document.getElementById("issue-resolve-btn");
+            const commentInput = document.getElementById("issue-comment-input");
+            if (!resolveBtn || !commentInput || resolveBtn.dataset.listenerAttached) return;
+            resolveBtn.dataset.listenerAttached = "true";
+            resolveBtn.onclick = () => {
+                const comment = commentInput.value.trim();
+                const orderId = (storedOrderInfo && storedOrderInfo.orderId) ||
+                    (currentContext && currentContext.orderNumber);
+                if (!orderId) {
+                    alert("No order ID detected.");
+                    return;
+                }
+                if (!comment) {
+                    commentInput.focus();
+                    return;
+                }
+                chrome.storage.local.set({ fennecPendingComment: { orderId, comment } }, () => {
+                    const url = `https://db.incfile.com/incfile/order/detail/${orderId}`;
+                    chrome.runtime.sendMessage({ action: "openOrReuseTab", url, refocus: true, active: true });
+                });
+            };
         }
 
         function setupDnaButton() {

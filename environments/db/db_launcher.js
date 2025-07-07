@@ -9,10 +9,46 @@
     let initQuickSummary = null;
     let annualReportMode = false;
     let reinstatementMode = false;
+    let miscMode = false;
+    let autoFamilyTreeDone = false;
+    let noStore = new URLSearchParams(location.search).get('fennec_no_store') === '1';
     // Tracks whether Review Mode is active across DB pages
     let reviewMode = false;
     let devMode = false;
-    const fraudXray = new URLSearchParams(location.search).get('fraud_xray') === '1';
+    let fraudXray = new URLSearchParams(location.search).get('fraud_xray') === '1';
+    let subCheck = new URLSearchParams(location.search).get('fennec_sub_check') === '1';
+    const currentId = (location.pathname.match(/(?:detail|storage\/incfile)\/(\d+)/) || [])[1];
+    const xrayDoneId = localStorage.getItem('fraudXrayCompleted');
+    const xrayDone = xrayDoneId && currentId && xrayDoneId === currentId;
+    if (xrayDoneId && currentId && xrayDoneId !== currentId) {
+        localStorage.removeItem('fraudXrayCompleted');
+    }
+    if (fraudXray && xrayDone) {
+        const params = new URLSearchParams(location.search);
+        params.delete('fraud_xray');
+        const newUrl = location.pathname + (params.toString() ? '?' + params.toString() : '');
+        history.replaceState(null, '', newUrl);
+        localStorage.removeItem('fraudXrayCompleted');
+        fraudXray = false;
+    }
+
+    // Some DB pages do not show the correct LTV value until the order is
+    // refreshed. This should only happen during FRAUD REVIEW or REVIEW XRAY
+    // flows so the sidebar retrieves accurate data.
+    (function refreshForLtv() {
+        const m = location.pathname.match(/(?:detail|storage\/incfile)\/(\d+)/);
+        const orderId = m ? m[1] : null;
+        if (!orderId) return;
+        if (!fraudXray && !subCheck) return;
+        const key = 'fennecLtvRefreshed_' + orderId;
+        if (sessionStorage.getItem(key)) return;
+        sessionStorage.setItem(key, '1');
+        sessionStorage.setItem('fraudXrayPending', '1');
+        window.addEventListener('load', () => {
+            console.log('[Copilot] Auto-refreshing order page to load LTV');
+            setTimeout(() => location.reload(), 300);
+        }, { once: true });
+    })();
 
     function showFloatingIcon() {
         if (document.getElementById("fennec-floating-icon")) return;
@@ -41,8 +77,10 @@
     }
 
     function autoOpenFamilyTree() {
+        if (autoFamilyTreeDone) return;
         const ftIcon = document.getElementById('family-tree-icon');
         if (ftIcon && ftIcon.style.display !== 'none') {
+            autoFamilyTreeDone = true;
             ftIcon.click();
         }
     }
@@ -58,7 +96,7 @@
                 attachCommonListeners(body);
                 updateReviewDisplay();
                 checkLastIssue(currentId);
-                if (annualReportMode) {
+                if (miscMode) {
                     setTimeout(autoOpenFamilyTree, 100);
                 }
             } else {
@@ -319,6 +357,16 @@
             });
             return true;
         }
+        if (msg.action === 'getActiveSubs') {
+            try {
+                const subs = getActiveSubscriptions();
+                sendResponse({ subs });
+            } catch (err) {
+                console.warn('[FENNEC] Error extracting subscriptions:', err);
+                sendResponse({ subs: [] });
+            }
+            return true;
+        }
     });
     function getOrderType() {
         const el = document.getElementById("ordType");
@@ -385,8 +433,8 @@
     }
 
     chrome.storage.local.get({ extensionEnabled: true, lightMode: false, fennecReviewMode: false, fennecDevMode: false }, ({ extensionEnabled, lightMode, fennecReviewMode, fennecDevMode }) => {
-        if (!extensionEnabled) {
-            console.log('[FENNEC] Extension disabled, skipping DB launcher.');
+        if (!extensionEnabled || noStore) {
+            console.log('[FENNEC] Extension disabled or no-store mode, skipping DB launcher.');
             return;
         }
         if (lightMode) {
@@ -436,6 +484,7 @@
                         <div class="copilot-body" id="copilot-body-content">
                             <div class="copilot-dna">
                                 <div id="dna-summary" style="margin-top:16px"></div>
+                                <div id="kount-summary" style="margin-top:10px"></div>
                             </div>
                             <div style="text-align:center; color:#888; margin-top:20px;">Cargando resumen...</div>
                             <div class="issue-summary-box" id="issue-summary-box" style="display:none; margin-top:10px;">
@@ -492,6 +541,7 @@
                         currentOrderTypeText = normalizeOrderType(rawType);
                         annualReportMode = /annual report/i.test(currentOrderTypeText);
                         reinstatementMode = /reinstat/i.test(currentOrderTypeText);
+                        miscMode = !/formation/i.test(currentOrderTypeText);
                         const frozen = sidebarFreezeId && sidebarFreezeId === currentId;
                         const hasStored = Array.isArray(sidebarDb) && sidebarDb.length && sidebarOrderId === currentId;
                         if (isStorage || (frozen && hasStored)) {
@@ -510,7 +560,8 @@
                             }
                         }
                         loadDnaSummary();
-                        setTimeout(runFraudXray, 500);
+                        loadKountSummary();
+                        if (fraudXray) setTimeout(runFraudXray, 500);
                     });
                     const qsToggle = sidebar.querySelector('#qs-toggle');
                     initQuickSummary = () => {
@@ -649,8 +700,17 @@
     }
 
 
+    function canonicalizeState(state) {
+        if (!state) return '';
+        const clean = String(state).trim().toLowerCase();
+        for (const key of Object.keys(SOS_URLS)) {
+            if (key.toLowerCase() === clean) return key;
+        }
+        return String(state).trim();
+    }
+
     function buildSosUrl(state, query, type = 'name') {
-        const rec = SOS_URLS[state];
+        const rec = SOS_URLS[canonicalizeState(state)];
         if (!rec) return null;
         const base = rec[type] || rec.name;
         if (!query) return base;
@@ -695,7 +755,7 @@
         const escFull = escapeHtml(addr);
         const extra = isVA
             ? ` <span class="copilot-tag copilot-tag-green">VA</span>`
-            : `<span class="copilot-usps" data-address="${escFull}" title="USPS Lookup"> ✉️</span>`;
+            : `<span class="copilot-usps" data-address="${escFull}" title="USPS Lookup"> ✉️</span><span class="copilot-copy-icon" data-copy="${escFull}" title="Copy">⧉</span>`;
         return `<span class="address-wrapper"><a href="#" class="copilot-address" data-address="${escFull}">${display}</a>${extra}</span>`;
     }
 
@@ -724,7 +784,7 @@
         if (!displayLines.length) return '';
         const full = [line1, line2].filter(Boolean).join(', ');
         const escFull = escapeHtml(full);
-        return `<span class="address-wrapper"><a href="#" class="copilot-address" data-address="${escFull}">${displayLines.join('<br>')}</a><span class="copilot-usps" data-address="${escFull}" title="USPS Lookup"> ✉️</span></span>`;
+        return `<span class="address-wrapper"><a href="#" class="copilot-address" data-address="${escFull}">${displayLines.join('<br>')}</a><span class="copilot-usps" data-address="${escFull}" title="USPS Lookup"> ✉️</span><span class="copilot-copy-icon" data-copy="${escFull}" title="Copy">⧉</span></span>`;
     }
 
     function formatExpiry(text) {
@@ -1103,7 +1163,7 @@
 
 
     function extractAndShowFormationData(isAmendment = false) {
-        const dbSections = [];
+        let dbSections = [];
         function addEmptySection(label, text = "NO INFO") {
             const section = `
             <div class="section-label">${label}</div>
@@ -1563,9 +1623,7 @@
                 `<span class="${vaClass}">VA: ${hasVA ? "Sí" : "No"}</span></div>`
             );
             const stateAttr = company.state ? ` data-state="${escapeHtml(company.state)}"` : '';
-            const compSection = reviewMode
-                ? `<div class="white-box company-box"${stateAttr} style="margin-bottom:10px">${companyLines.join('').trim()}</div>`
-                : `<div class="section-label">COMPANY:</div><div class="white-box company-box"${stateAttr} style="margin-bottom:10px">${companyLines.join('').trim()}</div>`;
+            const compSection = `<div class="section-label">COMPANY:</div><div class="white-box company-box"${stateAttr} style="margin-bottom:10px">${companyLines.join('').trim()}</div>`;
             if (companyLines.length) {
                 html += compSection;
                 dbSections.push(compSection);
@@ -1682,6 +1740,32 @@
             }
         }
 
+        if (reviewMode) {
+            const grab = label => {
+                const idx = dbSections.findIndex(s => s.includes(label));
+                return idx >= 0 ? dbSections.splice(idx, 1)[0] : '';
+            };
+            const ordered = [];
+            const company = grab('COMPANY:');
+            if (company) ordered.push(company);
+            const quick = grab('id="quick-summary"');
+            if (quick) ordered.push(quick);
+            const billing = grab('BILLING:');
+            if (billing) ordered.push(billing);
+            const client = grab('CLIENT:');
+            if (client) ordered.push(client);
+            const agent = grab('AGENT:');
+            if (agent) ordered.push(agent);
+            const members = grab('MEMBERS:') || grab('DIRECTORS:');
+            if (members) ordered.push(members);
+            const sh = grab('SHAREHOLDERS:');
+            if (sh) ordered.push(sh);
+            const off = grab('OFFICERS:');
+            if (off) ordered.push(off);
+            ordered.push(...dbSections);
+            dbSections = ordered;
+            html = dbSections.join('');
+        }
         if (!html) {
             html = `<div style="text-align:center; color:#aaa; margin-top:40px">No se encontró información relevante de la orden.</div>`;
         }
@@ -1710,7 +1794,9 @@
             formationDate: company ? company.formationDate : null,
             registeredAgent: hasAgentInfo ? { name: agent.name, address: agent.address } : null,
             members: directors,
-            billing
+            billing,
+            clientLtv: client.ltv,
+            clientEmail: client.email
         };
         chrome.storage.local.set({
             sidebarDb: dbSections,
@@ -1726,7 +1812,7 @@
             initMistralChat();
             updateReviewDisplay();
             checkLastIssue(orderInfo.orderId);
-            if (annualReportMode) {
+            if (miscMode) {
                 setTimeout(autoOpenFamilyTree, 100);
             }
         }
@@ -1848,9 +1934,15 @@
         }
         function formatCvv(text) {
             const t = (text || '').toLowerCase();
-            if (t.includes('matched')) { return { label: 'CVV: MATCH', result: 'green' }; }
-            if (t.includes('not matched')) { return { label: 'CVV: NO MATCH', result: 'purple' }; }
-            if (t.includes('not provided') || t.includes('not checked') || t.includes('error') || t.includes('not supplied') || t.includes('unknown')) { return { label: 'CVV: UNKNOWN', result: 'black' }; }
+            if ((/\bmatch(es|ed)?\b/.test(t) || /\(m\)/.test(t)) && !/not\s+match/.test(t)) {
+                return { label: 'CVV: MATCH', result: 'green' };
+            }
+            if (/not\s+match/.test(t) || /\(n\)/.test(t)) {
+                return { label: 'CVV: NO MATCH', result: 'purple' };
+            }
+            if (/not provided|not checked|error|not supplied|unknown/.test(t)) {
+                return { label: 'CVV: UNKNOWN', result: 'black' };
+            }
             return { label: 'CVV: UNKNOWN', result: 'black' };
         }
         function formatAvs(text) {
@@ -1901,6 +1993,39 @@
         if (!container) return;
         chrome.storage.local.get({ adyenDnaInfo: null }, ({ adyenDnaInfo }) => {
             const html = buildDnaHtml(adyenDnaInfo);
+            container.innerHTML = html || '';
+            attachCommonListeners(container);
+        });
+    }
+
+    function buildKountHtml(info) {
+        if (!info) return null;
+        const parts = [];
+        if (info.emailAge) parts.push(`<div><b>Email age:</b> ${escapeHtml(info.emailAge)}</div>`);
+        if (info.deviceLocation || info.ip) {
+            const loc = escapeHtml(info.deviceLocation || '');
+            const ip = escapeHtml(info.ip || '');
+            parts.push(`<div><b>Device:</b> ${loc} ${ip}</div>`);
+        }
+        if (Array.isArray(info.declines) && info.declines.length) {
+            parts.push(`<div><b>DECLINE LIST</b><br>${info.declines.map(escapeHtml).join('<br>')}</div>`);
+        }
+        if (info.ekata) {
+            const e = info.ekata;
+            const ipLine = e.ipValid || e.proxyRisk ? `<div><b>IP Valid:</b> ${escapeHtml(e.ipValid || '')} <b>Proxy:</b> ${escapeHtml(e.proxyRisk || '')}</div>` : '';
+            const addrLine = e.addressToName || e.residentName ? `<div><b>Address to Name:</b> ${escapeHtml(e.addressToName || '')}<br><b>Resident Name:</b> ${escapeHtml(e.residentName || '')}</div>` : '';
+            if (ipLine) parts.push(ipLine);
+            if (addrLine) parts.push(addrLine);
+        }
+        if (!parts.length) return null;
+        return `<div class="section-label">KOUNT</div><div class="white-box" style="margin-bottom:10px">${parts.join('')}</div>`;
+    }
+
+    function loadKountSummary() {
+        const container = document.getElementById('kount-summary');
+        if (!container) return;
+        chrome.storage.local.get({ kountInfo: null }, ({ kountInfo }) => {
+            const html = buildKountHtml(kountInfo);
             container.innerHTML = html || '';
             attachCommonListeners(container);
         });
@@ -2012,6 +2137,7 @@
             sessionStorage.removeItem('fennecCancelPending');
             cancelLink.click();
             selectCancelReason();
+            fillCancelDescription();
         }, 500);
     }
 
@@ -2019,11 +2145,17 @@
         const sel = document.querySelector('select');
         if (!sel) return setTimeout(selectCancelReason, 500);
         const opt = Array.from(sel.options)
-            .find(o => /client.*cancell?ation/i.test(o.textContent));
+            .find(o => /other/i.test(o.textContent));
         if (opt) {
             sel.value = opt.value;
             sel.dispatchEvent(new Event('change', { bubbles: true }));
         }
+    }
+
+    function fillCancelDescription() {
+        const ta = document.querySelector('textarea');
+        if (!ta) return setTimeout(fillCancelDescription, 500);
+        ta.value = 'DUPLICATE ORDER';
     }
 
     function formatDateLikeParent(text) {
@@ -2280,6 +2412,20 @@
             return (isNaN(db) ? 0 : db) - (isNaN(da) ? 0 : da);
         });
         return info;
+    }
+
+    function getActiveSubscriptions() {
+        const tab = document.querySelector('#vsubscriptions');
+        if (!tab) return [];
+        const rows = Array.from(tab.querySelectorAll('table tbody tr'));
+        return rows.filter(r => /active/i.test(getText(r))).map(r => {
+            const link = r.querySelector('a[href*="/order/detail/"]');
+            if (link) {
+                const m = link.href.match(/detail\/(\d+)/);
+                if (m) return m[1];
+            }
+            return null;
+        }).filter(Boolean);
     }
 
     function getBasicOrderInfo() {
@@ -2600,6 +2746,14 @@ function getLastHoldUser() {
 
     function runFraudXray() {
         if (!fraudXray) return;
+        const orderId = getBasicOrderInfo().orderId;
+        const key = 'fennecLtvRefreshed_' + orderId;
+        if (sessionStorage.getItem('fraudXrayPending')) {
+            sessionStorage.removeItem('fraudXrayPending');
+        } else if (!sessionStorage.getItem(key)) {
+            return;
+        }
+        fraudXray = false;
         const info = getBasicOrderInfo();
         const client = getClientInfo();
         const parts = [];
@@ -2616,8 +2770,13 @@ function getLastHoldUser() {
         }
         if (info.orderId) {
             const adyenUrl = `https://ca-live.adyen.com/ca/ca/overview/default.shtml?fennec_order=${info.orderId}`;
+            chrome.storage.local.set({ fennecFraudAdyen: adyenUrl });
+        }
+        const kountLink = document.querySelector('a[href*="awc.kount.net/workflow/detail"]');
+        if (kountLink) {
+            const kountUrl = kountLink.href;
             setTimeout(() => {
-                chrome.runtime.sendMessage({ action: 'openTab', url: adyenUrl, active: true });
+                chrome.runtime.sendMessage({ action: 'openTab', url: kountUrl, active: true });
             }, 1000);
         }
     }
@@ -2663,10 +2822,14 @@ chrome.storage.onChanged.addListener((changes, area) => {
     if (area === 'local' && changes.adyenDnaInfo) {
         loadDnaSummary();
     }
+    if (area === 'local' && changes.kountInfo) {
+        loadKountSummary();
+    }
 });
 
 // Refresh DNA summary when returning from Adyen
 window.addEventListener('focus', () => {
     loadDnaSummary();
+    loadKountSummary();
 });
 })();

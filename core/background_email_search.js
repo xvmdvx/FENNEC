@@ -271,7 +271,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
                 console.warn("[Copilot] Invalid sender URL", sender.tab.url);
             }
         }
-        const url = `${base}/incfile/order/detail/${orderId}`;
+        const url = `${base}/incfile/order/detail/${orderId}?fennec_no_store=1`;
         const query = { url: `${url}*` };
         let attempts = 15;
         let delay = 1000;
@@ -283,11 +283,11 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
                 const ensureLoaded = () => {
                     if (!tab || tab.status !== "complete") {
                         if (attempts > 0) {
-                            if (!tab) {
-                            chrome.tabs.create({ url, active: false, windowId: sender.tab ? sender.tab.windowId : undefined }, t => {
-                                tab = t;
-                                createdTabId = t.id;
-                            });
+                            if (!tab && !createdTabId) {
+                                chrome.tabs.create({ url, active: false, windowId: sender.tab ? sender.tab.windowId : undefined }, t => {
+                                    tab = t;
+                                    createdTabId = t.id;
+                                });
                             }
                             setTimeout(() => {
                                 attempts--;
@@ -389,6 +389,58 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         return true;
     }
 
+    if (message.action === "detectSubscriptions" && message.email && sender.tab) {
+        const originTab = sender.tab.id;
+        let base = "https://db.incfile.com";
+        try {
+            const url = new URL(sender.tab.url);
+            if (url.hostname.endsWith("incfile.com")) base = url.origin;
+        } catch (err) {
+            console.warn("[Copilot] Invalid sender URL", sender.tab.url);
+        }
+        const url = `${base}/order-tracker/orders/order-search?fennec_email=${encodeURIComponent(message.email)}`;
+        chrome.tabs.create({ url, active: false, windowId: sender.tab.windowId }, tab => {
+            if (chrome.runtime.lastError || !tab) { sendResponse(null); return; }
+            const resultListener = (msg, snd) => {
+                if (msg.action === 'dbEmailSearchResults' && snd.tab && snd.tab.id === tab.id) {
+                    chrome.runtime.onMessage.removeListener(resultListener);
+                    const orders = msg.orders || [];
+                    const formationIds = orders
+                        .filter(o => /formation|silver|gold|platinum/i.test(o.type))
+                        .map(o => o.orderId)
+                        .filter(Boolean);
+                    let idx = 0;
+                    const activeSubs = [];
+                    const checkNext = () => {
+                        if (idx >= formationIds.length) {
+                            chrome.tabs.remove(tab.id);
+                            chrome.tabs.update(originTab, { active: true });
+                            sendResponse({ orderCount: orders.length, activeSubs, ltv: message.ltv });
+                            return;
+                        }
+                        const id = formationIds[idx++];
+                        const detailUrl = `${base}/incfile/order/detail/${id}?fennec_sub_check=1`;
+                        chrome.tabs.create({ url: detailUrl, active: false, windowId: sender.tab.windowId }, oTab => {
+                            const listener = (tid, info) => {
+                                if (tid === oTab.id && info.status === 'complete') {
+                                    chrome.tabs.onUpdated.removeListener(listener);
+                                    chrome.tabs.sendMessage(oTab.id, { action: 'getActiveSubs' }, resp => {
+                                        if (resp && Array.isArray(resp.subs) && resp.subs.length) activeSubs.push(id);
+                                        chrome.tabs.remove(oTab.id, checkNext);
+                                    });
+                                }
+                            };
+                            chrome.tabs.onUpdated.addListener(listener);
+                        });
+                    };
+                    checkNext();
+                }
+            };
+            chrome.runtime.onMessage.addListener(resultListener);
+        });
+        return true;
+    }
+
     if (message.action === "sosSearch" && message.url && message.query) {
         const openSearchTab = () => {
             chrome.tabs.create({ url: message.url, active: true }, (tab) => {
@@ -404,7 +456,10 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
                                 ? ["id", "number", "document", "control", "filing", "account"]
                                 : ["name", "business", "entity", "organization", "company", "keyword", "search"];
                             const skip = ["login", "email", "user", "password"];
-                            let attempts = 10;
+                            // Some SOS sites, like Wyoming, load their search
+                            // fields slowly or behind security checks.
+                            // Give them more time before giving up.
+                            let attempts = 20; // was 10
                             const run = () => {
                                 const inputs = Array.from(document.querySelectorAll("input[type='text'],input[type='search'],input:not([type]),textarea"));
                                 const field = inputs.find(i => {

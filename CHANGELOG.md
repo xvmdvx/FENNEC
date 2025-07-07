@@ -3,6 +3,7 @@
 ## Unreleased
 
 - The payment step logs the dropdown selector and value before clicking **Continue** so you can confirm **Client Account** is selected.
+- Fraud Review shows a floating **TRIAL SUMMARY** with CVV, AVS, DB match and Kount checks after returning from XRAY.
 - Family Tree detects duplicate orders in review, processing or hold and adds a ❌ icon to cancel and refund them.
 - Diagnose overlay now supports Reinstatement orders and detects amendments or reinstatements in review.
 - Replaced `form.submit()` fallback with a submit event to mimic real clicks.
@@ -37,6 +38,12 @@
 
 - Quick Summary no longer auto-expands on Annual Report orders and the
   Family Tree panel loads automatically.
+- DB order pages now refresh automatically only during FRAUD REVIEW or
+  REVIEW XRAY flows to ensure the LTV value loads correctly.
+- Fixed duplicate parent order tabs in the Family Tree flow by creating only one background tab.
+- Fixed Family Tree auto-open on miscellaneous orders so the parent order opens only once.
+- Fetching the Family Tree for miscellaneous orders no longer overwrites Gmail
+  sidebar data with the parent order information.
 
 ## v0.3 - 2025-06-24
 
@@ -136,3 +143,6 @@
 - The payment step now verifies **Client Account** is selected before continuing.
 - Comment & Resolve in Gmail now reuses an open DB tab and only resolves when the issue is active.
 - DNA summary refreshes when returning focus to DB or Gmail so results from XRAY appear consistently.
+- XRAY now opens the Kount workflow page when a Kount link is present on the DB page.
+- Kount summary box displays email age, device location and Ekata results below DNA.
+- CVV tags in DB SB Fraud Review correctly detect "Matches (M)" and the Fraud Review summary reappears after using CLEAR.
